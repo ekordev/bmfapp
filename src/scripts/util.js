@@ -50,3 +50,28 @@ export function getSessionid() {
  });
  
 }
+
+export function checkSessionid(sessionid) {
+  var request = require('request');
+  console.log('genSessionid - calling API');
+  var url = `http://${apihost}/getSessionid?sessionid=`+sessionid;
+  console.log("getSeesionid - URL: " + url);
+  
+  return new Promise(function(resolve, reject) {
+  request(url, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log('getSessionid - Response from API' + body);
+     // sessionid = body;
+      resolve(body);
+    }
+    else {
+      
+      console.log("getSessionid -API Server not running: "+error);
+      return reject(error);
+    }
+    console.log("getSessionid - Returning from API call")
+  });
+
+ });
+ 
+}

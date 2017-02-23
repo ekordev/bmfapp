@@ -5,7 +5,7 @@ import Login from '../login/Login';
 import ErrorPage from '../error/ErrorPage';
 import Home from'../home/Home';
 import { apihost, host } from '../../config';
-import {getSessionid} from '../../scripts/util';
+import {getSessionid, checkSessionid} from '../../scripts/util';
 
 var request = require('request');
 
@@ -30,12 +30,16 @@ export default {
     sessionid = query.sessionid;
     console.log(userEmail);
     console.log(password);
-    console.log("SessionId: ")+sessionid;
-    if ( sessionid === undefined || sessionid == '')
+    console.log("SessionId: "+sessionid);
+    var sessionbody = await checkSessionid(sessionid);
+    console.log("Session Exist: "+sessionbody);
+    if ( sessionid === undefined || sessionid == '' || sessionbody == 'false')
        {
-         var sessionbody = await getSessionid();
-         return <Login sessionid = {sessionbody}/>
+         var newsessionid = await getSessionid();
+         console.log("inside the if");
+         return <Login sessionid = {newsessionid}/>
        }
+    
 
     url = `http://${apihost}/checklogin?usernameOrEmail=` + userEmail + '&password=' + password;
     

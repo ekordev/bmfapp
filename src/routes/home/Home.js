@@ -224,7 +224,7 @@ function Home({ sessionid, email, bookinglist }, context) {
         </form>
        </div> 
       
-    }
+    
    
      </div>
     

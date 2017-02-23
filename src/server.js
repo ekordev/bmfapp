@@ -8,8 +8,9 @@ import expressJwt from 'express-jwt';
 import expressGraphQL from 'express-graphql';
 import jwt from 'jsonwebtoken';
 import ReactDOM from 'react-dom/server';
+//import UniversalRouter from 'universal-router';
 import { match } from 'universal-router';
-import { resolve } from 'universal-router/legacy';
+//import { resolve } from 'universal-router';
 import PrettyError from 'pretty-error';
 import passport from './core/passport';
 import models from './data/models';
@@ -93,9 +94,8 @@ app.get('*', async (req, res, next) => {
       data.trackingId = analytics.google.trackingId;
     }
     
-    await resolve(routes, {
+    await match(routes, {
       path: req.path,
-      body : req.body,
       query: req.query,
       
       context: {
