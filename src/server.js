@@ -8,7 +8,7 @@ import expressJwt from 'express-jwt';
 import expressGraphQL from 'express-graphql';
 import jwt from 'jsonwebtoken';
 import ReactDOM from 'react-dom/server';
-//import UniversalRouter from 'universal-router';
+import UniversalRouter from 'universal-router';
 import { match } from 'universal-router';
 import { resolve } from 'universal-router';
 import PrettyError from 'pretty-error';
