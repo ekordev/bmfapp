@@ -15,7 +15,7 @@ import fetch from './lib/fetch';
 // For more information visit http://gitolite.com/deploy.html
 const getRemote = (slot) => ({
   name: slot || 'production',
-  url: 'https://github.com/parthipansowmi/bmf.git',
+  url: 'https://github.com/parthipansowmi/bmfapp.git',
   website: `http://bmf.azurewebsites.net/`,
 });
 
