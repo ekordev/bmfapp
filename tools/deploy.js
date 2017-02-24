@@ -16,7 +16,7 @@ import fetch from './lib/fetch';
 const getRemote = (slot) => ({
   name: slot || 'production',
   url: 'https://github.com/parthipansowmi/bmf.git',
-  website: `http://example${slot ? `-${slot}` : ''}.azurewebsites.net`,
+  website: `http://bmf.azurewebsites.net/`,
 });
 
 /**

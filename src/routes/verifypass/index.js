@@ -31,9 +31,9 @@ export default {
     console.log(userEmail);
     console.log(password);
     console.log("SessionId: "+sessionid);
-    var sessionbody = await checkSessionid(sessionid);
-    console.log("Session Exist: "+sessionbody);
-    if ( sessionid === undefined || sessionid == '' || sessionbody == 'false')
+    //var sessionbody = await checkSessionid(sessionid);
+    //console.log("Session Exist: "+sessionbody);
+    if ( sessionid === undefined || sessionid == '')
        {
          var newsessionid = await getSessionid();
          console.log("inside the if");
