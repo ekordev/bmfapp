@@ -10,7 +10,7 @@ export default {
   path: '/booking',
 
   async action({query}) {
-
+ 
     var date = new Date();
     var currentdate = date.getDate() + '/' + date.getMonth()+1 + '/' + date.getFullYear();
     var sessionid = query.sessionid;
