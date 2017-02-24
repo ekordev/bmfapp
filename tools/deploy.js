@@ -35,8 +35,8 @@ async function deploy() {
   // Fetch the remote repository if it exists
   if ((await repo.hasRef(remote.url, 'master'))) {
     await repo.fetch(remote.name);
-    await repo.reset(`${remote.name}/master`, { hard: true });
-    await repo.clean({ force: true });
+   //await repo.reset(`${remote.name}/master`, { hard: true });
+   // await repo.clean({ force: true });
   }
 
   // Build the project in RELEASE mode which
