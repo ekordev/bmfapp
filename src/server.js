@@ -12,7 +12,7 @@ import ReactDOM from 'react-dom/server';
 import { match } from 'universal-router';
 import { resolve } from 'universal-router';
 import PrettyError from 'pretty-error';
-import passport from './core/passport';
+//import passport from './core/passport';
 //import models from './data/models';
 //import schema from './data/schema';
 import routes from './routes';
@@ -54,7 +54,7 @@ app.use(expressJwt({
   getToken: req => req.cookies.id_token,
   /* jscs:enable requireCamelCaseOrUpperCaseIdentifiers */
 }));
-app.use(passport.initialize());
+/*app.use(passport.initialize());
 
 app.get('/login/facebook',
   passport.authenticate('facebook', { scope: ['email', 'user_location'], session: false })
@@ -67,7 +67,7 @@ app.get('/login/facebook/return',
     res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
     res.redirect('/');
   }
-);
+);*/
 
 //
 // Register API middleware
