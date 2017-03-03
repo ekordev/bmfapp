@@ -13,8 +13,8 @@ import { match } from 'universal-router';
 import { resolve } from 'universal-router';
 import PrettyError from 'pretty-error';
 import passport from './core/passport';
-import models from './data/models';
-import schema from './data/schema';
+//import models from './data/models';
+//import schema from './data/schema';
 import routes from './routes';
 import assets from '../node_modules/assets'; // eslint-disable-line import/no-unresolved
 import { port, auth, analytics, mongodbUrl } from './config';
@@ -72,12 +72,12 @@ app.get('/login/facebook/return',
 //
 // Register API middleware
 // -----------------------------------------------------------------------------
-app.use('/graphql', expressGraphQL(req => ({
+/*app.use('/graphql', expressGraphQL(req => ({
   schema,
   graphiql: true,
   rootValue: { request: req },
   pretty: process.env.NODE_ENV !== 'production',
-})));
+})));*/
 
 //
 // Register server-side rendering middleware
@@ -142,9 +142,9 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 // Launch the server
 // -----------------------------------------------------------------------------
 /* eslint-disable no-console */
-models.sync().catch(err => console.error(err.stack)).then(() => {
+//models.sync().catch(err => console.error(err.stack)).then(() => {
   app.listen(port, () => {
     console.log(`The server is running at http://localhost:${port}/`);
   });
-});
+//});
 /* eslint-enable no-console */

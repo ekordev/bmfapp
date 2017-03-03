@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './VerifyPass.css';
-import me from '../../data/queries/me.js';
+//import me from '../../data/queries/me.js';
 
 const title = 'Verify Credential';
 const user = 'Customer'
