@@ -215,7 +215,7 @@ function sendEmail() {
   console.log("URL: " + url);
 
   var subject = "Your Registration for our service";
-  var message = "<b>Thank you for Register. </b> <br> <b> Assuring best service. Your password for login is: "+password+"<b> ";
+  var message = "<b>Thank you for Registeration. </b> <br> <b> Assuring best service. Your password for login is: "+password+"<b> ";
   var formdata = { 
   tomail: email, 
   subject: subject, 

@@ -14,12 +14,16 @@ import { resolve } from 'universal-router';
 import PrettyError from 'pretty-error';
 //import passport from './core/passport';
 //import models from './data/models';
-//import schema from './data/schema';
+import schema from './data/schema';
 import routes from './routes';
 import assets from '../node_modules/assets'; // eslint-disable-line import/no-unresolved
 import { port, auth, analytics, mongodbUrl } from './config';
 var mongodb = require('mongodb');
-var session = require('express-session')
+var session = require('express-session');
+
+const debug = require('debug')('bmfapp')  
+const name = 'bmfapp';
+debug('booting %s', name);
 
 const app = express();
 app.use(session({
@@ -72,12 +76,12 @@ app.get('/login/facebook/return',
 //
 // Register API middleware
 // -----------------------------------------------------------------------------
-/*app.use('/graphql', expressGraphQL(req => ({
+app.use('/graphql', expressGraphQL(req => ({
   schema,
   graphiql: true,
   rootValue: { request: req },
   pretty: process.env.NODE_ENV !== 'production',
-})));*/
+})));
 
 //
 // Register server-side rendering middleware
