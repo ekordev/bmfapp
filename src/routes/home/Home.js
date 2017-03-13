@@ -19,7 +19,7 @@ const user = 'Customer';
 function Home({ sessionid, email, bookinglist }, context) {
   context.setTitle(title);
   context.setUser(user);
- // context.getUser('user');
+ //context.getUser('user');
   var logoutlink = "/logout?sessionid="+sessionid;
   var bookinglink = "/booking?sessionid="+sessionid+"&email="+email;
   var cateringbookinglink = "/cateringbooking?sessionid="+sessionid+"&email="+email;
@@ -190,7 +190,7 @@ function Home({ sessionid, email, bookinglist }, context) {
            { bookingdata.map((obj, index) => (
                    
           <tr key={index}>
-            <td><input type="radio" name="bookingid" value={obj.bookingid} checked /> </td>                
+            <td><input type="radio" name="bookingid" value={obj.bookingid} defaultChecked /> </td>                
             <td> {obj.bookingid}</td>
             <td> {obj.dateofbooking}</td>
             <td> {obj.functiondate} </td>
@@ -216,7 +216,7 @@ function Home({ sessionid, email, bookinglist }, context) {
               />
         <br/>
         <br/>
-        <input type="radio" name="manage" value="cancel" checked />Cancel<br/>
+        <input type="radio" name="manage" value="cancel" defaultChecked />Cancel<br/>
         <input type="radio" name="manage" value="changedate"  />Changedate<br/>
         <button  value="change" type="submit" >
          submit
