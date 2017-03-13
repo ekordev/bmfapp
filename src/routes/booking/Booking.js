@@ -80,7 +80,7 @@ function Booking({sessionid, bookingid, email, phone}, context) {
               id="catering"
               type="checkbox"
               name="catering"
-                           
+              defaultValue='no'            
               />
             <br/>
             <label className={s.label} htmlFor="Travel">
