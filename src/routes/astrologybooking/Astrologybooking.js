@@ -1,7 +1,7 @@
 
 import React, { PropTypes } from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import s from './Booking.css';
+import s from './Astrologybooking.css';
 
 const title = 'New Event Booking';
 
@@ -12,13 +12,13 @@ var year = date.getFullYear();
 var currentdate = day + '/' + month + '/' + year;
 
 
-function Booking({sessionid, bookingid, email, phone}, context) {
+function Astrologybooking({sessionid, bookingid, email, phone}, context) {
   context.setTitle(title);
   return (
     <div className={s.root}>
       <div className={s.container}>
         <h1>{title}</h1>
-        <form name="form1" method="post" action="savebooking" >
+        <form name="form1" method="put" action="savebooking" >
           <div className= {s.leftContainer}>
           <input id="status" type="hidden"  value="booked" name="status" />
             <label className={s.label} htmlFor="dateofbooking">
@@ -136,6 +136,6 @@ function Booking({sessionid, bookingid, email, phone}, context) {
   );
 }
 
-Booking.contextTypes = { setTitle: PropTypes.func.isRequired };
+Astrologybooking.contextTypes = { setTitle: PropTypes.func.isRequired };
 
-export default withStyles(s)(Booking);
+export default withStyles(s)(Astrologybooking);

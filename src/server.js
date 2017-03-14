@@ -86,12 +86,51 @@ app.use('/graphql', expressGraphQL(req => ({
 //
 // Register server-side rendering middleware
 // -----------------------------------------------------------------------------
-app.get('*', async (req, res, next) => {
+app.post('*', async (req, res, next) => {
   try {
     let css = [];
     let statusCode = 200;
     const template = require('./views/index.jade'); // eslint-disable-line global-require
     const data = { title: '', description: '', user: '', css: '', body: '', entry:'assets.main.js'  }; //assets.main.js
+    //var sess = req.session;
+
+    if (process.env.NODE_ENV === 'production') {
+      data.trackingId = analytics.google.trackingId;
+    }
+    
+    await resolve(routes, {
+      path: req.path,
+      query: req.body,
+      
+      context: {
+        insertCss: styles => css.push(styles._getCss()), // eslint-disable-line no-underscore-dangle
+        setTitle: value => (data.title = value),
+        setUser: value => (data.user = value),
+        setMeta: (key, value) => (data[key] = value),
+        getUser: (key) => (data[key]),        
+      },
+      render(component, status = 200) {
+        css = [];
+        statusCode = status;
+        data.body = ReactDOM.renderToString(component);
+        data.css = css.join('');
+        return true;
+      },
+    });
+
+    res.status(statusCode);
+    res.send(template(data));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('*', async (req, res, next) => {
+  try {
+    let css = [];
+    let statusCode = 200;
+    const template = require('./views/index.jade'); // eslint-disable-line global-require
+    const data = { title: '', description: '', user: 'customer', css: '', body: '', entry:'assets.main.js'  }; //assets.main.js
     //var sess = req.session;
 
     if (process.env.NODE_ENV === 'production') {

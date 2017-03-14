@@ -1,10 +1,9 @@
 
 
 import React from 'react';
-import Booking from './Booking';
+import Astrologybooking from './Astrologybooking';
 import Login from '../login/Login';
 import { apihost } from '../../config';
-import {getSessionid} from '../../scripts/util';
 
 export default {
 
@@ -14,17 +13,15 @@ export default {
  
     var date = new Date();
     var currentdate = date.getDate() + '/' + date.getMonth()+1 + '/' + date.getFullYear();
-    console.log("Query String",JSON.stringify(query));
     var sessionid = query.sessionid;
     var email = query.email;
-    console.log("Sessionid - index.js - Booking : "+sessionid);
 
     var customerrec = JSON.parse(await getCustomerRecord(email));
     console.log("booking Record: "+customerrec);
     var customermobile = customerrec[0].phone;
     
     //console.log("Booking Id: "+bookingid);
-    
+    console.log("Sessionid - index.js - Booking : "+sessionid);
        if ( sessionid === undefined || sessionid == '')
        {
          var body = await getSessionid();
@@ -43,7 +40,7 @@ export default {
 };
 
 
-/*function getSessionid() {
+function getSessionid() {
   var request = require('request');
   console.log('genSessionid - calling API');
   var url = `http://${apihost}/genSessionid`;
@@ -66,7 +63,7 @@ export default {
 
  });
  
-}*/
+}
 
 function getCustomerRecord(email) {
   var request = require('request');

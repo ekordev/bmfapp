@@ -4,6 +4,7 @@ import React from 'react';
 import Cateringbooking from './Cateringbooking';
 import Login from '../login/Login';
 import { apihost } from '../../config';
+import {getSessionid} from '../../scripts/util';
 
 export default {
 
@@ -40,7 +41,7 @@ export default {
 };
 
 
-function getSessionid() {
+/*function getSessionid() {
   var request = require('request');
   console.log('genSessionid - calling API');
   var url = `http://${apihost}/genSessionid`;
@@ -63,7 +64,7 @@ function getSessionid() {
 
  });
  
-}
+}*/
 
 function getCustomerRecord(email) {
   var request = require('request');

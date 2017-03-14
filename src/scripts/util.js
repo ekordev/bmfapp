@@ -76,7 +76,7 @@ export function checkSessionid(sessionid) {
  
 }
 
-function sendSMS() {
+function sendSMS(phone, SMSmessage) {
   console.log('calling API - sendSMS method');
   
   var url = `http://${apihost}/sendSMS?authkey=`+ smsAPIKey+'&mobiles='+ phone +'&message='+SMSmessage+'&sender=DTSBMF&route=4&country=91';
@@ -102,13 +102,13 @@ function sendSMS() {
 }
 
 
-function sendEmail() {
+function sendEmail(email, subject, message) {
   console.log('calling API - sendEmail');
   var url = `http://${apihost}/sendmail`;
   console.log("URL: " + url);
 
-  var subject = "Your booking for the event in BMY";
-  var message = "<b>Thank you for booking and service provider will get in touch shortly. </b> <br> <b> Your Booking id is <b> "+bookingid;
+  //var subject = "Your booking for the event in BMY";
+  //var message = "<b>Thank you for booking and service provider will get in touch shortly. </b> <br> <b> Your Booking id is <b> "+bookingid;
   var formdata = { 
   tomail: email, 
   subject: subject, 

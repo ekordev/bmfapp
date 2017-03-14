@@ -18,7 +18,7 @@ function Providerlogin({sessionid, message}, context) {
         <h1>{title}</h1>
         <p className={s.lead}>Log in with your username or email address.</p>
         <div className={s.formGroup}>
-        <form name="form1" method="get"  action="verifyproviderlogin" >
+        <form name="form1" method="post"  action="verifyproviderlogin" >
           <div className={s.formGroup}>
             <label className={s.label} htmlFor="usernameOrEmail">
               Username or email address:

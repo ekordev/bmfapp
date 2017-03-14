@@ -82,7 +82,7 @@ function Login( {sessionid, message}, context ) {
         </div>
 <strong className={s.lineThrough}>OR</strong>
 
-        <form name="form1" method="get"  action="verifypass" >
+        <form name="form1" method="post"  action="verifypass" >
           <div className={s.formGroup}>
             <label className={s.label} htmlFor="usernameOrEmail">
               Username or email address:
