@@ -39,6 +39,7 @@ import updateprovideremail from './updateprovideremail';
 import updateproviderphone from './updateproviderphone';
 import confirmOTP from './confirmOTP';
 import cateringbooking from './cateringbooking';
+import astrologybooking from './astrologybooking'
 
 export default {
 
@@ -80,6 +81,7 @@ export default {
     savebooking,
     linkprovider,
     cateringbooking,
+    astrologybooking,
     content,
     error,
 
@@ -87,7 +89,7 @@ export default {
 
   async action({ next, render, context }) {
     const component = await next();
-    console.log("User: "+context.getUser('user'));
+    //console.log("User: "+context.getUser('user'));
     
     if (component === undefined) return component;
     return render(

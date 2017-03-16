@@ -4,10 +4,11 @@ import React from 'react';
 import Astrologybooking from './Astrologybooking';
 import Login from '../login/Login';
 import { apihost } from '../../config';
+import {getSessionid} from '../../scripts/util';
 
 export default {
 
-  path: '/booking',
+  path: '/astrologybooking',
 
   async action({query}) {
  
@@ -17,11 +18,11 @@ export default {
     var email = query.email;
 
     var customerrec = JSON.parse(await getCustomerRecord(email));
-    console.log("booking Record: "+customerrec);
+    console.log("Astrologybooking Record: "+customerrec);
     var customermobile = customerrec[0].phone;
     
-    //console.log("Booking Id: "+bookingid);
-    console.log("Sessionid - index.js - Booking : "+sessionid);
+    //console.log("Astrologybooking Id: "+Astrologybookingid);
+    console.log("Sessionid - index.js - Astrologybooking : "+sessionid);
        if ( sessionid === undefined || sessionid == '')
        {
          var body = await getSessionid();
@@ -31,7 +32,7 @@ export default {
        else
         {
           var bookingid = Math.floor(1000000 + Math.random() * 9000000);
-          return  <Booking sessionid={sessionid} bookingid={bookingid} email={email} phone={customermobile}/>;
+          return  <Astrologybooking sessionid={sessionid} bookingid={bookingid} email={email} phone={customermobile}/>;
         }
         
     
@@ -40,7 +41,7 @@ export default {
 };
 
 
-function getSessionid() {
+/*function getSessionid() {
   var request = require('request');
   console.log('genSessionid - calling API');
   var url = `http://${apihost}/genSessionid`;
@@ -63,7 +64,7 @@ function getSessionid() {
 
  });
  
-}
+}*/
 
 function getCustomerRecord(email) {
   var request = require('request');

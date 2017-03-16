@@ -2,6 +2,12 @@
 import React, { PropTypes } from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Astrologybooking.css';
+var DatePicker = require("react-bootstrap-date-picker");
+import FormGroup from 'react-bootstrap/lib/FormGroup';
+import ControlLabel from 'react-bootstrap/lib/ControlLabel';
+import HelpBlock from 'react-bootstrap/lib/HelpBlock';
+
+//import { DateField, Calendar } from 'react-date-picker'
 
 const title = 'New Event Booking';
 
@@ -13,6 +19,13 @@ var currentdate = day + '/' + month + '/' + year;
 
 
 function Astrologybooking({sessionid, bookingid, email, phone}, context) {
+
+  const onChange = (dateString, { dateMoment, timestamp }) => {
+  console.log(dateString)
+}
+ 
+let date1 = '2017-04-24'
+
   context.setTitle(title);
   return (
     <div className={s.root}>
@@ -33,17 +46,7 @@ function Astrologybooking({sessionid, bookingid, email, phone}, context) {
               autoFocus
               readOnly
               />
-          
-            <label className={s.label} htmlFor="eventdate">
-              <span>Event Date: </span>
-            </label>
-            <input
-              className={s.input}
-              id="functiondate"
-              type="date"
-              name="functiondate"
-              required
-              />
+       
           </div>
 
           <div >
@@ -72,38 +75,13 @@ function Astrologybooking({sessionid, bookingid, email, phone}, context) {
           </div>
 
           <div className={s.formGroup} >
-            <label className={s.label} htmlFor="catering">
-              Need Catering:
+            <label className={s.label} htmlFor="">
+              Upload Jathagam:
             </label>
-            <input
-              className={s.squaredOne}
-              id="catering"
-              type="checkbox"
-              name="catering"
-              defaultValue='no'            
-              />
-            <br/>
-            <label className={s.label} htmlFor="Travel">
-              Need Travel Arrangment:
-            </label>
-            <input
-              className={s.squaredOne}
-              id="travel"
-              type="checkbox"
-              name="travel"
-              
-              />
+            <input type="file" name="astroFile" />
           </div>
           <div>
-            <label className={s.label} htmlFor="Function" >
-              <span>Function: </span>
-            </label>
-            <select name="eventtype">
-              <option value="House Warming">House Warming</option>
-              <option value="Ayush  Homam">Ayush  Homam</option>
-              <option value="60th Birthday">60th Birthday</option>
-              <option value="80th Birthday">80th Birthday</option>
-            </select>
+            
             <input
               id="sessionid"
               type="hidden"

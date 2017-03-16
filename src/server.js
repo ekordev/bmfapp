@@ -130,7 +130,7 @@ app.get('*', async (req, res, next) => {
     let css = [];
     let statusCode = 200;
     const template = require('./views/index.jade'); // eslint-disable-line global-require
-    const data = { title: '', description: '', user: 'customer', css: '', body: '', entry:'assets.main.js'  }; //assets.main.js
+    const data = { title: '', description: '', user: '', css: '', body: '', entry:'assets.main.js'  }; //assets.main.js
     //var sess = req.session;
 
     if (process.env.NODE_ENV === 'production') {

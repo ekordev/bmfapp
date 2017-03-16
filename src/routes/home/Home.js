@@ -23,6 +23,8 @@ function Home({ sessionid, email, bookinglist }, context) {
   var logoutlink = "/logout?sessionid="+sessionid;
   var bookinglink = "/booking?sessionid="+sessionid+"&email="+email;
   var cateringbookinglink = "/cateringbooking?sessionid="+sessionid+"&email="+email;
+  var astrologybookinglink = "/astrologybooking?sessionid="+sessionid+"&email="+email;
+  console.log("Astrologybooking Link: "+astrologybookinglink);
   var bookingdata = JSON.parse(bookinglist);
   var size = bookingdata.length;
   console.log("Size of the booking List: "+size);
@@ -67,12 +69,10 @@ function Home({ sessionid, email, bookinglist }, context) {
     <header>
         <h2>Service Booking</h2>
       </header>
-      <Link className={s.link} to={bookinglink}>Home Function</Link>
-      
-      <Link className={s.link} to="/contact">Astrology</Link>
+      <Link className={s.link} to={bookinglink}>Home Function</Link>      
+      <Link className={s.link} to={astrologybookinglink}>Astrology</Link>
      <br/>
-      <Link className={s.link } to="/">Marriage Services</Link>
-      
+      <Link className={s.link} to="/">Marriage Services</Link>      
       <Link className={s.link} to={cateringbookinglink}>Catering</Link>
       <br/>
       <Link className={s.link} to={logoutlink} >Logout</Link>
@@ -150,7 +150,7 @@ function Home({ sessionid, email, bookinglist }, context) {
       </header>
       <Link className={s.link} to={bookinglink}>Home Function</Link>
       
-      <Link className={s.link} to="/contact">Astrology</Link>
+      <Link className={s.link} to={astrologybookinglink}>Astrology</Link>
      <br/>
       <Link className={s.link } to="/">Marriage Services</Link>
       
