@@ -39,7 +39,8 @@ import updateprovideremail from './updateprovideremail';
 import updateproviderphone from './updateproviderphone';
 import confirmOTP from './confirmOTP';
 import cateringbooking from './cateringbooking';
-import astrologybooking from './astrologybooking'
+import astrologybooking from './astrologybooking';
+import saveastrobooking from './saveastrobooking';
 
 export default {
 
@@ -82,6 +83,7 @@ export default {
     linkprovider,
     cateringbooking,
     astrologybooking,
+    saveastrobooking,
     content,
     error,
 

@@ -43,6 +43,7 @@ global.navigator.userAgent = global.navigator.userAgent || 'all';
 //
 // Register Node.js middleware
 // -----------------------------------------------------------------------------
+//app.use(bodyParser);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -101,13 +102,14 @@ app.post('*', async (req, res, next) => {
     await resolve(routes, {
       path: req.path,
       query: req.body,
+      files: req.file,
       
       context: {
         insertCss: styles => css.push(styles._getCss()), // eslint-disable-line no-underscore-dangle
         setTitle: value => (data.title = value),
         setUser: value => (data.user = value),
         setMeta: (key, value) => (data[key] = value),
-        getUser: (key) => (data[key]),        
+        getUser: (key) => (data[key])       
       },
       render(component, status = 200) {
         css = [];
@@ -140,13 +142,14 @@ app.get('*', async (req, res, next) => {
     await resolve(routes, {
       path: req.path,
       query: req.query,
+      files: req.files,
       
       context: {
         insertCss: styles => css.push(styles._getCss()), // eslint-disable-line no-underscore-dangle
         setTitle: value => (data.title = value),
         setUser: value => (data.user = value),
         setMeta: (key, value) => (data[key] = value),
-        getUser: (key) => (data[key]),        
+        getUser: (key) => (data[key])        
       },
       render(component, status = 200) {
         css = [];

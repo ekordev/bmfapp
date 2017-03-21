@@ -1,5 +1,5 @@
 import React from 'react';
-import Savebooking from './Savebooking';
+import Saveastrobooking from './Saveastrobooking';
 import Providerlist from '../providerlist/Providerlist';
 import Login from '../Login';
 import { host, apihost, smsAPIKey, SMSmessage } from '../../config';
@@ -19,14 +19,18 @@ var bookingtype;
 
 export default {
 
-path: '/savebooking',
+path: '/saveastrobooking',
 
- async action({query}, {path}) {
-    console.log("Query String - index.js - Savebooking: " + JSON.stringify(query));
+ async action({query}, {files}) {
+    console.log("Query String - index.js - Saveastrobooking: " + JSON.stringify(query));
+    console.log("File Data: "+files);
     phone = query.mobile;
     email = query.email;
-    bookingtype = query.bookingtype;
-    console.log("Bookingtype: "+bookingtype);
+
+    var file_path = req.files.astroFile.path;
+    var target_path = '../src/astrofiles/' + req.files.astroFile.name;
+    /*bookingtype = query.bookingtype;
+    console.log("Bookingtype: "+bookingtype);*/
     console.log("Email: "+email);
     sessionid = query.sessionid;
     bookingid=query.bookingid;
@@ -38,25 +42,27 @@ path: '/savebooking',
          return <Login sessionid = {sessionbody}/>
        }        
       
-       
+     query.filepath=target_path;
+     console.log("Modifie Query String - index.js - Saveastrobooking: " + JSON.stringify(query));
+
     var body = await SavebookingData(query);
     console.log("Calling SendEmail");
-    var mail = await sendEmail();
+    //var mail = await sendEmail();
     console.log("Calling sendSMS");
-    var sms = await sendSMS();
+    //var sms = await sendSMS();
     console.log("Body: "+body);
     if (!status) {
       message = 'Unable to book the Event';
       href = `http://${host}/booking`;
       message1 = 'Click here to Register.';
-      return <Savebooking message={message} redirectlink={href} message1={message1} sessionid = {sessionid} />;
+      return <Saveastrobooking message={message} redirectlink={href} message1={message1} sessionid = {sessionid} />;
     }
     else
     {
       providerlist = await getProviderData();
       console.log("Service Provider List: "+providerlist);
       return <Providerlist providerlist={providerlist} customeremail={email} sessionid = {sessionid} bookingid={bookingid} />
-     // return <Savebooking message={message} redirectlink={href} message1={message1} />;
+     // return <Saveastrobooking message={message} redirectlink={href} message1={message1} />;
     }
    
   },
@@ -65,14 +71,14 @@ path: '/savebooking',
 
 function SavebookingData(data) {
 
-  console.log('calling API - SavebookingData method');
-  var url = `http://${apihost}/newBooking`;
+  console.log('calling API - SaveastrobookingData method');
+  var url = `http://${apihost}/newastroBooking`;
   console.log("URL: " + url);
-  delete data.bookingtype;
+ // delete data.bookingtype;
 return new Promise(function(resolve, reject) {
   request.post(url, { form: data }, function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      console.log('Inside SavebookingData Response from API (body)' + body);
+      console.log('Inside SaveastrobookingData Response from API (body)' + body);
 
       if (body == 'true')
         status = true;

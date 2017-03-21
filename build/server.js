@@ -104,7 +104,7 @@ module.exports =
   
   var _routes2 = _interopRequireDefault(_routes);
   
-  var _assets = __webpack_require__(224);
+  var _assets = __webpack_require__(236);
   
   var _assets2 = _interopRequireDefault(_assets);
   
@@ -114,13 +114,13 @@ module.exports =
   
   //import passport from './core/passport';
   //import models from './data/models';
-  var mongodb = __webpack_require__(245); // eslint-disable-line import/no-unresolved
+  var mongodb = __webpack_require__(257); // eslint-disable-line import/no-unresolved
   
   //import UniversalRouter from 'universal-router';
   
-  var session = __webpack_require__(246);
+  var session = __webpack_require__(258);
   
-  var debug = __webpack_require__(247)('bmfapp');
+  var debug = __webpack_require__(259)('bmfapp');
   var name = 'bmfapp';
   debug('booting %s', name);
   
@@ -142,6 +142,7 @@ module.exports =
   //
   // Register Node.js middleware
   // -----------------------------------------------------------------------------
+  //app.use(bodyParser);
   app.use(_express2.default.static(_path2.default.join(__dirname, 'public')));
   app.use((0, _cookieParser2.default)());
   app.use(_bodyParser2.default.urlencoded({ extended: true }));
@@ -188,7 +189,7 @@ module.exports =
   //
   // Register server-side rendering middleware
   // -----------------------------------------------------------------------------
-  app.get('*', function () {
+  app.post('*', function () {
     var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(req, res, next) {
       return _regenerator2.default.wrap(function _callee2$(_context2) {
         while (1) {
@@ -203,7 +204,7 @@ module.exports =
                       case 0:
                         css = [];
                         statusCode = 200;
-                        template = __webpack_require__(248); // eslint-disable-line global-require
+                        template = __webpack_require__(260); // eslint-disable-line global-require
   
                         data = { title: '', description: '', user: '', css: '', body: '', entry: 'assets.main.js' }; //assets.main.js
                         //var sess = req.session;
@@ -215,7 +216,8 @@ module.exports =
                         _context.next = 7;
                         return (0, _universalRouter.resolve)(_routes2.default, {
                           path: req.path,
-                          query: req.query,
+                          query: req.body,
+                          files: req.files,
   
                           context: {
                             insertCss: function insertCss(styles) {
@@ -281,6 +283,100 @@ module.exports =
     };
   }());
   
+  app.get('*', function () {
+    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(req, res, next) {
+      return _regenerator2.default.wrap(function _callee4$(_context4) {
+        while (1) {
+          switch (_context4.prev = _context4.next) {
+            case 0:
+              _context4.prev = 0;
+              return _context4.delegateYield(_regenerator2.default.mark(function _callee3() {
+                var css, statusCode, template, data;
+                return _regenerator2.default.wrap(function _callee3$(_context3) {
+                  while (1) {
+                    switch (_context3.prev = _context3.next) {
+                      case 0:
+                        css = [];
+                        statusCode = 200;
+                        template = __webpack_require__(260); // eslint-disable-line global-require
+  
+                        data = { title: '', description: '', user: '', css: '', body: '', entry: 'assets.main.js' }; //assets.main.js
+                        //var sess = req.session;
+  
+                        if (false) {
+                          data.trackingId = _config.analytics.google.trackingId;
+                        }
+  
+                        _context3.next = 7;
+                        return (0, _universalRouter.resolve)(_routes2.default, {
+                          path: req.path,
+                          query: req.query,
+                          files: req.files,
+  
+                          context: {
+                            insertCss: function insertCss(styles) {
+                              return css.push(styles._getCss());
+                            }, // eslint-disable-line no-underscore-dangle
+                            setTitle: function setTitle(value) {
+                              return data.title = value;
+                            },
+                            setUser: function setUser(value) {
+                              return data.user = value;
+                            },
+                            setMeta: function setMeta(key, value) {
+                              return data[key] = value;
+                            },
+                            getUser: function getUser(key) {
+                              return data[key];
+                            }
+                          },
+                          render: function render(component) {
+                            var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 200;
+  
+                            css = [];
+                            statusCode = status;
+                            data.body = _server2.default.renderToString(component);
+                            data.css = css.join('');
+                            return true;
+                          }
+                        });
+  
+                      case 7:
+  
+                        res.status(statusCode);
+                        res.send(template(data));
+  
+                      case 9:
+                      case 'end':
+                        return _context3.stop();
+                    }
+                  }
+                }, _callee3, undefined);
+              })(), 't0', 2);
+  
+            case 2:
+              _context4.next = 7;
+              break;
+  
+            case 4:
+              _context4.prev = 4;
+              _context4.t1 = _context4['catch'](0);
+  
+              next(_context4.t1);
+  
+            case 7:
+            case 'end':
+              return _context4.stop();
+          }
+        }
+      }, _callee4, undefined, [[0, 4]]);
+    }));
+  
+    return function (_x5, _x6, _x7) {
+      return _ref2.apply(this, arguments);
+    };
+  }());
+  
   //
   // Error handling
   // -----------------------------------------------------------------------------
@@ -291,7 +387,7 @@ module.exports =
   app.use(function (err, req, res, next) {
     // eslint-disable-line no-unused-vars
     console.log(pe.render(err)); // eslint-disable-line no-console
-    var template = __webpack_require__(250); // eslint-disable-line global-require
+    var template = __webpack_require__(262); // eslint-disable-line global-require
     var statusCode = err.status || 500;
     res.status(statusCode);
     res.send(template({
@@ -1259,6 +1355,14 @@ module.exports =
   
   var _cateringbooking2 = _interopRequireDefault(_cateringbooking);
   
+  var _astrologybooking = __webpack_require__(224);
+  
+  var _astrologybooking2 = _interopRequireDefault(_astrologybooking);
+  
+  var _saveastrobooking = __webpack_require__(232);
+  
+  var _saveastrobooking2 = _interopRequireDefault(_saveastrobooking);
+  
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
   // Child routes
@@ -1266,7 +1370,7 @@ module.exports =
   
     path: '/',
   
-    children: [_home2.default, _searchprovider2.default, _logout2.default, _bookinglist2.default, _contact2.default, _login2.default, _providerlogin2.default, _providerhome2.default, _providerlogout2.default, _verifypass2.default, _verifyproviderlogin2.default, _forgotpass2.default, _changepassword2.default, _providerforgotpass2.default, _providerchangepassword2.default, _changeprovideremail2.default, _changeproviderphone2.default, _updatepass2.default, _updateproviderpass2.default, _updateprovideremail2.default, _confirmOTP2.default, _updateproviderphone2.default, _register2.default, _savecustomer2.default, _serviceprovider2.default, _saveprovider2.default, _booking2.default, _managebooking2.default, _cancelbooking2.default, _changebookingdate2.default, _providerlist2.default, _savebooking2.default, _linkprovider2.default, _cateringbooking2.default, _content2.default, _error2.default],
+    children: [_home2.default, _searchprovider2.default, _logout2.default, _bookinglist2.default, _contact2.default, _login2.default, _providerlogin2.default, _providerhome2.default, _providerlogout2.default, _verifypass2.default, _verifyproviderlogin2.default, _forgotpass2.default, _changepassword2.default, _providerforgotpass2.default, _providerchangepassword2.default, _changeprovideremail2.default, _changeproviderphone2.default, _updatepass2.default, _updateproviderpass2.default, _updateprovideremail2.default, _confirmOTP2.default, _updateproviderphone2.default, _register2.default, _savecustomer2.default, _serviceprovider2.default, _saveprovider2.default, _booking2.default, _managebooking2.default, _cancelbooking2.default, _changebookingdate2.default, _providerlist2.default, _savebooking2.default, _linkprovider2.default, _cateringbooking2.default, _astrologybooking2.default, _saveastrobooking2.default, _content2.default, _error2.default],
   
     action: function action(_ref) {
       var _this = this;
@@ -1286,23 +1390,21 @@ module.exports =
               case 2:
                 component = _context.sent;
   
-                console.log("User: " + context.getUser());
-  
                 if (!(component === undefined)) {
-                  _context.next = 6;
+                  _context.next = 5;
                   break;
                 }
   
                 return _context.abrupt('return', component);
   
-              case 6:
+              case 5:
                 return _context.abrupt('return', render(_react2.default.createElement(
                   _App2.default,
                   { context: context },
                   component
                 )));
   
-              case 7:
+              case 6:
               case 'end':
                 return _context.stop();
             }
@@ -2729,6 +2831,8 @@ module.exports =
     var logoutlink = "/logout?sessionid=" + sessionid;
     var bookinglink = "/booking?sessionid=" + sessionid + "&email=" + email;
     var cateringbookinglink = "/cateringbooking?sessionid=" + sessionid + "&email=" + email;
+    var astrologybookinglink = "/astrologybooking?sessionid=" + sessionid + "&email=" + email;
+    console.log("Astrologybooking Link: " + astrologybookinglink);
     var bookingdata = JSON.parse(bookinglist);
     var size = bookingdata.length;
     console.log("Size of the booking List: " + size);
@@ -2799,7 +2903,7 @@ module.exports =
           ),
           _react2.default.createElement(
             _Link2.default,
-            { className: _Home2.default.link, to: '/contact' },
+            { className: _Home2.default.link, to: astrologybookinglink },
             'Astrology'
           ),
           _react2.default.createElement('br', null),
@@ -2932,7 +3036,7 @@ module.exports =
             ),
             _react2.default.createElement(
               _Link2.default,
-              { className: _Home2.default.link, to: '/contact' },
+              { className: _Home2.default.link, to: astrologybookinglink },
               'Astrology'
             ),
             _react2.default.createElement('br', null),
@@ -3337,7 +3441,7 @@ module.exports =
         ),
         _react2.default.createElement(
           'form',
-          { name: 'form1', method: 'get', action: 'verifypass' },
+          { name: 'form1', method: 'post', action: 'verifypass' },
           _react2.default.createElement(
             'div',
             { className: _Login2.default.formGroup },
@@ -3587,7 +3691,7 @@ module.exports =
     });
   }
   
-  function sendSMS() {
+  function sendSMS(phone, SMSmessage) {
     console.log('calling API - sendSMS method');
   
     var url = "http://" + _config.apihost + "/sendSMS?authkey=" + _config.smsAPIKey + '&mobiles=' + phone + '&message=' + SMSmessage + '&sender=DTSBMF&route=4&country=91';
@@ -3610,13 +3714,13 @@ module.exports =
     });
   }
   
-  function sendEmail() {
+  function sendEmail(email, subject, message) {
     console.log('calling API - sendEmail');
     var url = "http://" + _config.apihost + "/sendmail";
     console.log("URL: " + url);
   
-    var subject = "Your booking for the event in BMY";
-    var message = "<b>Thank you for booking and service provider will get in touch shortly. </b> <br> <b> Your Booking id is <b> " + bookingid;
+    //var subject = "Your booking for the event in BMY";
+    //var message = "<b>Thank you for booking and service provider will get in touch shortly. </b> <br> <b> Your Booking id is <b> "+bookingid;
     var formdata = {
       tomail: email,
       subject: subject,
@@ -5866,7 +5970,7 @@ module.exports =
         ),
         _react2.default.createElement(
           'form',
-          { name: 'form1', method: 'get', action: 'verifypass' },
+          { name: 'form1', method: 'post', action: 'verifypass' },
           _react2.default.createElement(
             'div',
             { className: _Login2.default.formGroup },
@@ -8058,6 +8162,10 @@ module.exports =
   
   var _regenerator2 = _interopRequireDefault(_regenerator);
   
+  var _stringify = __webpack_require__(45);
+  
+  var _stringify2 = _interopRequireDefault(_stringify);
+  
   var _asyncToGenerator2 = __webpack_require__(2);
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
@@ -8075,6 +8183,8 @@ module.exports =
   var _Login2 = _interopRequireDefault(_Login);
   
   var _config = __webpack_require__(30);
+  
+  var _util = __webpack_require__(82);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -8094,13 +8204,18 @@ module.exports =
               case 0:
                 date = new Date();
                 currentdate = date.getDate() + '/' + date.getMonth() + 1 + '/' + date.getFullYear();
+  
+                console.log("Query String", (0, _stringify2.default)(query));
                 sessionid = query.sessionid;
                 email = query.email;
+  
+                console.log("Sessionid - index.js - Booking : " + sessionid);
+  
                 _context.t0 = JSON;
-                _context.next = 7;
+                _context.next = 9;
                 return getCustomerRecord(email);
   
-              case 7:
+              case 9:
                 _context.t1 = _context.sent;
                 customerrec = _context.t0.parse.call(_context.t0, _context.t1);
   
@@ -8109,27 +8224,25 @@ module.exports =
   
                 //console.log("Booking Id: "+bookingid);
   
-                console.log("Sessionid - index.js - Booking : " + sessionid);
-  
                 if (!(sessionid === undefined || sessionid == '')) {
-                  _context.next = 20;
+                  _context.next = 21;
                   break;
                 }
   
-                _context.next = 15;
-                return getSessionid();
+                _context.next = 16;
+                return (0, _util.getSessionid)();
   
-              case 15:
+              case 16:
                 body = _context.sent;
   
                 console.log("Sessionid: " + body);
                 return _context.abrupt('return', _react2.default.createElement(_Login2.default, { sessionid: body }));
   
-              case 20:
+              case 21:
                 bookingid = Math.floor(1000000 + Math.random() * 9000000);
                 return _context.abrupt('return', _react2.default.createElement(_Booking2.default, { sessionid: sessionid, bookingid: bookingid, email: email, phone: customermobile }));
   
-              case 22:
+              case 23:
               case 'end':
                 return _context.stop();
             }
@@ -8139,28 +8252,30 @@ module.exports =
     }
   };
   
-  
-  function getSessionid() {
-    var request = __webpack_require__(83);
+  /*function getSessionid() {
+    var request = require('request');
     console.log('genSessionid - calling API');
-    var url = 'http://' + _config.apihost + '/genSessionid';
+    var url = `http://${apihost}/genSessionid`;
     console.log("getSeesionid - URL: " + url);
-  
-    return new _promise2.default(function (resolve, reject) {
-      request(url, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-          console.log('genSessionid - Response from API' + body);
-          // sessionid = body;
-          resolve(body);
-        } else {
-  
-          console.log("genSessionid -API Server not running: " + error);
-          return reject(error);
-        }
-        console.log("getSessionid - Returning from API call");
-      });
+    
+    return new Promise(function(resolve, reject) {
+    request(url, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        console.log('genSessionid - Response from API' + body);
+       // sessionid = body;
+        resolve(body);
+      }
+      else {
+        
+        console.log("genSessionid -API Server not running: "+error);
+        return reject(error);
+      }
+      console.log("getSessionid - Returning from API call")
     });
-  }
+  
+   });
+   
+  }*/
   
   function getCustomerRecord(email) {
     var request = __webpack_require__(83);
@@ -8236,7 +8351,7 @@ module.exports =
         ),
         _react2.default.createElement(
           'form',
-          { name: 'form1', method: 'put', action: 'savebooking' },
+          { name: 'form1', method: 'post', action: 'savebooking' },
           _react2.default.createElement(
             'div',
             { className: _Booking2.default.leftContainer },
@@ -8518,6 +8633,8 @@ module.exports =
   
   var _config = __webpack_require__(30);
   
+  var _util = __webpack_require__(82);
+  
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
   var request = __webpack_require__(83);
@@ -8543,7 +8660,7 @@ module.exports =
       var query = _ref.query;
       var path = _ref2.path;
       return (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
-        var sessionbody, body, sms;
+        var sessionbody, body, mail, sms;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -8564,7 +8681,7 @@ module.exports =
                 }
   
                 _context.next = 12;
-                return getSessionid();
+                return (0, _util.getSessionid)();
   
               case 12:
                 sessionbody = _context.sent;
@@ -8578,18 +8695,23 @@ module.exports =
                 body = _context.sent;
   
                 console.log("Calling SendEmail");
-                //var mail = await sendEmail();
+                _context.next = 20;
+                return sendEmail();
+  
+              case 20:
+                mail = _context.sent;
+  
                 console.log("Calling sendSMS");
-                _context.next = 21;
+                _context.next = 24;
                 return sendSMS();
   
-              case 21:
+              case 24:
                 sms = _context.sent;
   
                 console.log("Body: " + body);
   
                 if (status) {
-                  _context.next = 30;
+                  _context.next = 33;
                   break;
                 }
   
@@ -8598,17 +8720,17 @@ module.exports =
                 message1 = 'Click here to Register.';
                 return _context.abrupt('return', _react2.default.createElement(_Savebooking2.default, { message: message, redirectlink: href, message1: message1, sessionid: sessionid }));
   
-              case 30:
-                _context.next = 32;
+              case 33:
+                _context.next = 35;
                 return getProviderData();
   
-              case 32:
+              case 35:
                 providerlist = _context.sent;
   
                 console.log("Service Provider List: " + providerlist);
                 return _context.abrupt('return', _react2.default.createElement(_Providerlist2.default, { providerlist: providerlist, customeremail: email, sessionid: sessionid, bookingid: bookingid }));
   
-              case 35:
+              case 38:
               case 'end':
                 return _context.stop();
             }
@@ -8721,27 +8843,30 @@ module.exports =
     });
   }
   
-  function getSessionid() {
-    var request = __webpack_require__(83);
+  /*function getSessionid() {
+    var request = require('request');
     console.log('genSessionid - calling API');
-    var url = 'http://' + _config.apihost + '/genSessionid';
+    var url = `http://${apihost}/genSessionid`;
     console.log("getSeesionid - URL: " + url);
-  
-    return new _promise2.default(function (resolve, reject) {
-      request(url, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-          console.log('genSessionid - Response from API' + body);
-          //sessionid = body;
-          resolve(body);
-        } else {
-  
-          console.log("genSessionid -API Server not running: " + error);
-          return reject(error);
-        }
-        console.log("getSessionid - Returning from API call");
-      });
+    
+    return new Promise(function(resolve, reject) {
+    request(url, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        console.log('genSessionid - Response from API' + body);
+        //sessionid = body;
+        resolve(body);
+      }
+      else {
+        
+        console.log("genSessionid -API Server not running: "+error);
+        return reject(error);
+      }
+      console.log("getSessionid - Returning from API call")
     });
-  }
+
+   });
+   
+  }*/
 
 /***/ },
 /* 145 */
@@ -9008,7 +9133,7 @@ module.exports =
           { className: _Providerlogin2.default.formGroup },
           _react2.default.createElement(
             'form',
-            { name: 'form1', method: 'get', action: 'verifyproviderlogin' },
+            { name: 'form1', method: 'post', action: 'verifyproviderlogin' },
             _react2.default.createElement(
               'div',
               { className: _Providerlogin2.default.formGroup },
@@ -9580,7 +9705,7 @@ module.exports =
           { className: _Providerlogin2.default.formGroup },
           _react2.default.createElement(
             'form',
-            { name: 'form1', method: 'get', action: 'verifyproviderlogin' },
+            { name: 'form1', method: 'post', action: 'verifyproviderlogin' },
             _react2.default.createElement(
               'div',
               { className: _Providerlogin2.default.formGroup },
@@ -15193,6 +15318,8 @@ module.exports =
   
   var _config = __webpack_require__(30);
   
+  var _util = __webpack_require__(82);
+  
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
   exports.default = {
@@ -15234,7 +15361,7 @@ module.exports =
                 }
   
                 _context.next = 15;
-                return getSessionid();
+                return (0, _util.getSessionid)();
   
               case 15:
                 body = _context.sent;
@@ -15256,28 +15383,30 @@ module.exports =
     }
   };
   
-  
-  function getSessionid() {
-    var request = __webpack_require__(83);
+  /*function getSessionid() {
+    var request = require('request');
     console.log('genSessionid - calling API');
-    var url = 'http://' + _config.apihost + '/genSessionid';
+    var url = `http://${apihost}/genSessionid`;
     console.log("getSeesionid - URL: " + url);
-  
-    return new _promise2.default(function (resolve, reject) {
-      request(url, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-          console.log('genSessionid - Response from API' + body);
-          // sessionid = body;
-          resolve(body);
-        } else {
-  
-          console.log("genSessionid -API Server not running: " + error);
-          return reject(error);
-        }
-        console.log("getSessionid - Returning from API call");
-      });
+    
+    return new Promise(function(resolve, reject) {
+    request(url, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        console.log('genSessionid - Response from API' + body);
+       // sessionid = body;
+        resolve(body);
+      }
+      else {
+        
+        console.log("genSessionid -API Server not running: "+error);
+        return reject(error);
+      }
+      console.log("getSessionid - Returning from API call")
     });
-  }
+  
+   });
+   
+  }*/
   
   function getCustomerRecord(email) {
     var request = __webpack_require__(83);
@@ -15528,7 +15657,7 @@ module.exports =
   
   
   // module
-  exports.push([module.id, " .Cateringbooking_root_1Q_ {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Cateringbooking_container_23u {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.Cateringbooking_lead_1Z7 {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.Cateringbooking_formGroup_1r6 {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.Cateringbooking_label_3Y1 {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.Cateringbooking_input_3_y {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.Cateringbooking_input_3_y:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Cateringbooking_button_tVd {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.Cateringbooking_button_tVd:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Cateringbooking_button_tVd:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Cateringbooking_leftContainer_L21 {\r\n   float:left;\r\n}\r\n\r\n.Cateringbooking_rightContainer_1uZ {\r\n   float:right;\r\n}\r\n\r\n.Cateringbooking_icon_22O {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.Cateringbooking_lineThrough_1jF {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.Cateringbooking_lineThrough_1jF::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.Cateringbooking_lineThrough_1jF::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n#Cateringbooking_lastname_167{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.Cateringbooking_squaredOne_2bf {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0%, #fcfff4), color-stop(40%, #dfe5d7), to(#b3bead));\r\n  background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: -o-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n          box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: -webkit-gradient(linear, left top, left bottom, from(#222), to(#45484d));\r\n    background: -webkit-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: -o-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n            box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1)\r\n  }\r\n  label:after {\r\n    content: '';\r\n    width: 16px;\r\n    height: 16px;\r\n    position: absolute;\r\n    top: 2px;\r\n    left: 2px;\r\n    background: $activeColor;\r\n    background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0%, $activeColor), to($darkenColor));\r\n    background: -webkit-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: -o-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n            box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n    opacity: 0;\r\n  }\r\n  label:hover::after {\r\n    opacity: 0.3;\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden   \r\n  }\r\n  input[type=checkbox]:checked + label:after {\r\n    opacity: 1;\r\n  } \r\n}", "", {"version":3,"sources":["/./routes/cateringbooking/Cateringbooking.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,oBAAoB;;CAErB;;AAED;;EAEE,mBAAmB;EACnB,gBAAgB;EAChB,iBAAiB;EACjB,YAAY;CACb;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,WAAW;EACX,uBAAuB;EACvB,kBAAkB;EAClB,iBAAiB;EACjB,yDAAiD;UAAjD,iDAAiD;EACjD,eAAe;EACf,gBAAgB;EAChB,uBAAuB;EACvB,yFAAyE;EAAzE,iFAAyE;EAAzE,4EAAyE;EAAzE,yEAAyE;EAAzE,+GAAyE;EACzE,SAAS;EACT,cAAc;;CAEf;;AAED;EACE,sBAAsB;EACtB,yFAAiF;UAAjF,iFAAiF;CAClF;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,YAAY;EACZ,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,iBAAiB;CAClB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAED;GACG,WAAW;CACb;;AAED;GACG,YAAY;CACd;;AAGD;EACE,sBAAsB;EACtB,yBAAyB;EACzB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,mBAAmB;CACpB;;AAED;EACE,mBAAmB;EACnB,WAAW;EACX,eAAe;EACf,oBAAoB;EACpB,YAAY;EACZ,eAAe;EACf,mBAAmB;EACnB,eAAe;CAChB;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,UAAU;EACV,YAAY;EACZ,iBAAiB;EACjB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,YAAY;CACb;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,YAAY;EACZ,eAAe;EACf,YAAY;EACZ,8BAA8B;EAC9B,YAAY;CACb;;AACD;IACI,gBAAgB;IAChB,WAAW;CACd;;AAED;EACE,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,kBAAkB;EAClB,oBAAoB;EACpB,uIAAwE;EAAxE,gFAAwE;EAAxE,2EAAwE;EAAxE,wEAAwE;EACxE,yEAAiE;UAAjE,iEAAiE;EACjE;IACE,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,gBAAgB;IAChB,qFAAwD;IAAxD,gEAAwD;IAAxD,2DAAwD;IAAxD,wDAAwD;IACxD,uFAA+E;YAA/E,8EAA+E;GAgBhF;EAfC;IACE,YAAY;IACZ,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,yBAAyB;IACzB,uHAAqE;IAArE,6EAAqE;IAArE,wEAAqE;IAArE,qEAAqE;IACrE,yEAAiE;YAAjE,iEAAiE;IACjE,WAAW;GACZ;EACD;IACE,aAAa;GACd;EAEH;IACE,kBAAmB;GAIpB;EAHC;IACE,WAAW;GACZ;CAEJ","file":"Cateringbooking.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.lead {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.formGroup {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.label {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.input {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.input:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.leftContainer {\r\n   float:left;\r\n}\r\n\r\n.rightContainer {\r\n   float:right;\r\n}\r\n\r\n\r\n.icon {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.lineThrough {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.lineThrough::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.lineThrough::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n#lastname{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.squaredOne {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n    &:after {\r\n      content: '';\r\n      width: 16px;\r\n      height: 16px;\r\n      position: absolute;\r\n      top: 2px;\r\n      left: 2px;\r\n      background: $activeColor;\r\n      background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n      box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n      opacity: 0;\r\n    }\r\n    &:hover::after {\r\n      opacity: 0.3;\r\n    }\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden;\r\n    &:checked + label:after {\r\n      opacity: 1;\r\n    }   \r\n  } \r\n}"],"sourceRoot":"webpack://"}]);
+  exports.push([module.id, " .Cateringbooking_root_1Q_ {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Cateringbooking_container_23u {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.Cateringbooking_lead_1Z7 {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.Cateringbooking_formGroup_1r6 {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.Cateringbooking_label_3Y1 {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.Cateringbooking_input_3_y {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.Cateringbooking_input_3_y:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Cateringbooking_button_tVd {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.Cateringbooking_button_tVd:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Cateringbooking_button_tVd:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Cateringbooking_leftContainer_L21 {\r\n   float:left;\r\n}\r\n\r\n.Cateringbooking_rightContainer_1uZ {\r\n   float:right;\r\n}\r\n\r\n.Cateringbooking_icon_22O {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.Cateringbooking_lineThrough_1jF {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.Cateringbooking_lineThrough_1jF::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.Cateringbooking_lineThrough_1jF::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n#Cateringbooking_lastname_167{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.Cateringbooking_squaredOne_2bf {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: -webkit-gradient(linear, left top, left bottom, from(#fcfff4), color-stop(40%, #dfe5d7), to(#b3bead));\r\n  background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: -o-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n          box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0%, #222), to(#45484d));\r\n    background: -webkit-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: -o-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n            box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1)\r\n  }\r\n  label:after {\r\n    content: '';\r\n    width: 16px;\r\n    height: 16px;\r\n    position: absolute;\r\n    top: 2px;\r\n    left: 2px;\r\n    background: $activeColor;\r\n    background: -webkit-gradient(linear, left top, left bottom, from($activeColor), to($darkenColor));\r\n    background: -webkit-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: -o-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n            box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n    opacity: 0;\r\n  }\r\n  label:hover::after {\r\n    opacity: 0.3;\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden   \r\n  }\r\n  input[type=checkbox]:checked + label:after {\r\n    opacity: 1;\r\n  } \r\n}", "", {"version":3,"sources":["/./routes/cateringbooking/Cateringbooking.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,oBAAoB;;CAErB;;AAED;;EAEE,mBAAmB;EACnB,gBAAgB;EAChB,iBAAiB;EACjB,YAAY;CACb;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,WAAW;EACX,uBAAuB;EACvB,kBAAkB;EAClB,iBAAiB;EACjB,yDAAiD;UAAjD,iDAAiD;EACjD,eAAe;EACf,gBAAgB;EAChB,uBAAuB;EACvB,yFAAyE;EAAzE,iFAAyE;EAAzE,4EAAyE;EAAzE,yEAAyE;EAAzE,+GAAyE;EACzE,SAAS;EACT,cAAc;;CAEf;;AAED;EACE,sBAAsB;EACtB,yFAAiF;UAAjF,iFAAiF;CAClF;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,YAAY;EACZ,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,iBAAiB;CAClB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAED;GACG,WAAW;CACb;;AAED;GACG,YAAY;CACd;;AAGD;EACE,sBAAsB;EACtB,yBAAyB;EACzB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,mBAAmB;CACpB;;AAED;EACE,mBAAmB;EACnB,WAAW;EACX,eAAe;EACf,oBAAoB;EACpB,YAAY;EACZ,eAAe;EACf,mBAAmB;EACnB,eAAe;CAChB;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,UAAU;EACV,YAAY;EACZ,iBAAiB;EACjB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,YAAY;CACb;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,YAAY;EACZ,eAAe;EACf,YAAY;EACZ,8BAA8B;EAC9B,YAAY;CACb;;AACD;IACI,gBAAgB;IAChB,WAAW;CACd;;AAED;EACE,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,kBAAkB;EAClB,oBAAoB;EACpB,kHAAwE;EAAxE,gFAAwE;EAAxE,2EAAwE;EAAxE,wEAAwE;EACxE,yEAAiE;UAAjE,iEAAiE;EACjE;IACE,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,gBAAgB;IAChB,0GAAwD;IAAxD,gEAAwD;IAAxD,2DAAwD;IAAxD,wDAAwD;IACxD,uFAA+E;YAA/E,8EAA+E;GAgBhF;EAfC;IACE,YAAY;IACZ,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,yBAAyB;IACzB,kGAAqE;IAArE,6EAAqE;IAArE,wEAAqE;IAArE,qEAAqE;IACrE,yEAAiE;YAAjE,iEAAiE;IACjE,WAAW;GACZ;EACD;IACE,aAAa;GACd;EAEH;IACE,kBAAmB;GAIpB;EAHC;IACE,WAAW;GACZ;CAEJ","file":"Cateringbooking.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.lead {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.formGroup {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.label {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.input {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.input:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.leftContainer {\r\n   float:left;\r\n}\r\n\r\n.rightContainer {\r\n   float:right;\r\n}\r\n\r\n\r\n.icon {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.lineThrough {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.lineThrough::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.lineThrough::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n#lastname{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.squaredOne {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n    &:after {\r\n      content: '';\r\n      width: 16px;\r\n      height: 16px;\r\n      position: absolute;\r\n      top: 2px;\r\n      left: 2px;\r\n      background: $activeColor;\r\n      background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n      box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n      opacity: 0;\r\n    }\r\n    &:hover::after {\r\n      opacity: 0.3;\r\n    }\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden;\r\n    &:checked + label:after {\r\n      opacity: 1;\r\n    }   \r\n  } \r\n}"],"sourceRoot":"webpack://"}]);
   
   // exports
   exports.locals = {
@@ -15551,7 +15680,844 @@ module.exports =
 /* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var extend = __webpack_require__(225);
+  'use strict';
+  
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  
+  var _promise = __webpack_require__(73);
+  
+  var _promise2 = _interopRequireDefault(_promise);
+  
+  var _regenerator = __webpack_require__(1);
+  
+  var _regenerator2 = _interopRequireDefault(_regenerator);
+  
+  var _asyncToGenerator2 = __webpack_require__(2);
+  
+  var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+  
+  var _react = __webpack_require__(33);
+  
+  var _react2 = _interopRequireDefault(_react);
+  
+  var _Astrologybooking = __webpack_require__(225);
+  
+  var _Astrologybooking2 = _interopRequireDefault(_Astrologybooking);
+  
+  var _Login = __webpack_require__(77);
+  
+  var _Login2 = _interopRequireDefault(_Login);
+  
+  var _config = __webpack_require__(30);
+  
+  var _util = __webpack_require__(82);
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  
+  exports.default = {
+  
+    path: '/astrologybooking',
+  
+    action: function action(_ref) {
+      var _this = this;
+  
+      var query = _ref.query;
+      return (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+        var date, currentdate, sessionid, email, customerrec, customermobile, body, bookingid;
+        return _regenerator2.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                date = new Date();
+                currentdate = date.getDate() + '/' + date.getMonth() + 1 + '/' + date.getFullYear();
+                sessionid = query.sessionid;
+                email = query.email;
+                _context.t0 = JSON;
+                _context.next = 7;
+                return getCustomerRecord(email);
+  
+              case 7:
+                _context.t1 = _context.sent;
+                customerrec = _context.t0.parse.call(_context.t0, _context.t1);
+  
+                console.log("Astrologybooking Record: " + customerrec);
+                customermobile = customerrec[0].phone;
+  
+                //console.log("Astrologybooking Id: "+Astrologybookingid);
+  
+                console.log("Sessionid - index.js - Astrologybooking : " + sessionid);
+  
+                if (!(sessionid === undefined || sessionid == '')) {
+                  _context.next = 20;
+                  break;
+                }
+  
+                _context.next = 15;
+                return (0, _util.getSessionid)();
+  
+              case 15:
+                body = _context.sent;
+  
+                console.log("Sessionid: " + body);
+                return _context.abrupt('return', _react2.default.createElement(_Login2.default, { sessionid: body }));
+  
+              case 20:
+                bookingid = Math.floor(1000000 + Math.random() * 9000000);
+                return _context.abrupt('return', _react2.default.createElement(_Astrologybooking2.default, { sessionid: sessionid, bookingid: bookingid, email: email, phone: customermobile }));
+  
+              case 22:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, _this);
+      }))();
+    }
+  };
+  
+  /*function getSessionid() {
+    var request = require('request');
+    console.log('genSessionid - calling API');
+    var url = `http://${apihost}/genSessionid`;
+    console.log("getSeesionid - URL: " + url);
+    
+    return new Promise(function(resolve, reject) {
+    request(url, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        console.log('genSessionid - Response from API' + body);
+       // sessionid = body;
+        resolve(body);
+      }
+      else {
+        
+        console.log("genSessionid -API Server not running: "+error);
+        return reject(error);
+      }
+      console.log("getSessionid - Returning from API call")
+    });
+  
+   });
+   
+  }*/
+  
+  function getCustomerRecord(email) {
+    var request = __webpack_require__(83);
+    console.log('getCustomerRecord - calling API');
+    var url = 'http://' + _config.apihost + '/getCustomer?email=' + email;
+    console.log("getCustomerRecord - URL: " + url);
+  
+    return new _promise2.default(function (resolve, reject) {
+      request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          console.log('getCustomerRecord - linkbooking - Response from API' + body);
+          //sessionid = body;
+          resolve(body);
+        } else {
+  
+          console.log("getCustomerRecord - linkbooking -API Server not running: " + error);
+          return reject(error);
+        }
+        console.log("getCustomerRecord - Returning from API call");
+      });
+    });
+  }
+
+/***/ },
+/* 225 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  
+  var _react = __webpack_require__(33);
+  
+  var _react2 = _interopRequireDefault(_react);
+  
+  var _withStyles = __webpack_require__(48);
+  
+  var _withStyles2 = _interopRequireDefault(_withStyles);
+  
+  var _Astrologybooking = __webpack_require__(226);
+  
+  var _Astrologybooking2 = _interopRequireDefault(_Astrologybooking);
+  
+  var _FormGroup = __webpack_require__(228);
+  
+  var _FormGroup2 = _interopRequireDefault(_FormGroup);
+  
+  var _ControlLabel = __webpack_require__(229);
+  
+  var _ControlLabel2 = _interopRequireDefault(_ControlLabel);
+  
+  var _HelpBlock = __webpack_require__(230);
+  
+  var _HelpBlock2 = _interopRequireDefault(_HelpBlock);
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  
+  var DatePicker = __webpack_require__(231);
+  
+  
+  //import { DateField, Calendar } from 'react-date-picker'
+  
+  var title = 'New Event Booking';
+  
+  var date = new Date();
+  var day = date.getDate();
+  var month = date.getMonth() + 1;
+  var year = date.getFullYear();
+  var currentdate = day + '/' + month + '/' + year;
+  
+  function Astrologybooking(_ref, context) {
+    var sessionid = _ref.sessionid,
+        bookingid = _ref.bookingid,
+        email = _ref.email,
+        phone = _ref.phone;
+  
+  
+    var onChange = function onChange(dateString, _ref2) {
+      var dateMoment = _ref2.dateMoment,
+          timestamp = _ref2.timestamp;
+  
+      console.log(dateString);
+    };
+  
+    var date1 = '2017-04-24';
+  
+    context.setTitle(title);
+    return _react2.default.createElement(
+      'div',
+      { className: _Astrologybooking2.default.root },
+      _react2.default.createElement(
+        'div',
+        { className: _Astrologybooking2.default.container },
+        _react2.default.createElement(
+          'h1',
+          null,
+          title
+        ),
+        _react2.default.createElement(
+          'form',
+          { name: 'form1', method: 'post', action: 'saveastrobooking' },
+          _react2.default.createElement(
+            'div',
+            { className: _Astrologybooking2.default.leftContainer },
+            _react2.default.createElement('input', { id: 'status', type: 'hidden', value: 'booked', name: 'status' }),
+            _react2.default.createElement(
+              'label',
+              { className: _Astrologybooking2.default.label, htmlFor: 'dateofbooking' },
+              'Date of Booking:'
+            ),
+            _react2.default.createElement('input', {
+              className: _Astrologybooking2.default.input,
+              id: 'dateofbooking',
+              type: 'text',
+              name: 'dateofbooking',
+              value: currentdate,
+              autoFocus: true,
+              readOnly: true
+            })
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(
+              'label',
+              { className: _Astrologybooking2.default.label, htmlFor: 'email' },
+              _react2.default.createElement(
+                'span',
+                null,
+                'E-mail: '
+              )
+            ),
+            _react2.default.createElement('input', {
+              className: _Astrologybooking2.default.input,
+              id: 'email',
+              type: 'email',
+              name: 'email',
+              value: email,
+              readOnly: true
+            }),
+            _react2.default.createElement(
+              'label',
+              { className: _Astrologybooking2.default.label, htmlFor: 'mobile' },
+              _react2.default.createElement(
+                'span',
+                null,
+                'Mobile Number: '
+              )
+            ),
+            _react2.default.createElement('input', {
+              className: _Astrologybooking2.default.input,
+              id: 'mobile',
+              type: 'number',
+              name: 'mobile',
+              value: phone,
+              readOnly: true
+            })
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: _Astrologybooking2.default.formGroup },
+            _react2.default.createElement(
+              'label',
+              { className: _Astrologybooking2.default.label, htmlFor: '' },
+              'Upload Jathagam:'
+            ),
+            _react2.default.createElement('input', { type: 'file', name: 'astroFile' })
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement('input', {
+              id: 'sessionid',
+              type: 'hidden',
+              name: 'sessionid',
+              value: sessionid
+            }),
+            _react2.default.createElement('input', {
+              id: 'bookingid',
+              type: 'hidden',
+              name: 'bookingid',
+              value: bookingid
+            }),
+            _react2.default.createElement('input', {
+              id: 'bookingtype',
+              type: 'hidden',
+              name: 'bookingtype',
+              value: 'astrology'
+            })
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: _Astrologybooking2.default.formGroup },
+            _react2.default.createElement(
+              'button',
+              { className: _Astrologybooking2.default.button, value: 'submit', type: 'submit' },
+              'Book Event'
+            )
+          )
+        )
+      )
+    );
+  }
+  
+  Astrologybooking.contextTypes = { setTitle: _react.PropTypes.func.isRequired };
+  
+  exports.default = (0, _withStyles2.default)(_Astrologybooking2.default)(Astrologybooking);
+
+/***/ },
+/* 226 */
+/***/ function(module, exports, __webpack_require__) {
+
+  
+      var content = __webpack_require__(227);
+      var insertCss = __webpack_require__(44);
+  
+      if (typeof content === 'string') {
+        content = [[module.id, content, '']];
+      }
+  
+      module.exports = content.locals || {};
+      module.exports._getCss = function() { return content.toString(); };
+      module.exports._insertCss = function(options) { return insertCss(content, options) };
+    
+      // Hot Module Replacement
+      // https://webpack.github.io/docs/hot-module-replacement
+      // Only activated in browser context
+      if (false) {
+        var removeCss = function() {};
+        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Astrologybooking.css", function() {
+          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Astrologybooking.css");
+  
+          if (typeof content === 'string') {
+            content = [[module.id, content, '']];
+          }
+  
+          removeCss = insertCss(content, { replace: true });
+        });
+        module.hot.dispose(function() { removeCss(); });
+      }
+    
+
+/***/ },
+/* 227 */
+/***/ function(module, exports, __webpack_require__) {
+
+  exports = module.exports = __webpack_require__(43)();
+  // imports
+  
+  
+  // module
+  exports.push([module.id, " .Astrologybooking_root_1Zg {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Astrologybooking_container_1Ub {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.Astrologybooking_lead__ke {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.Astrologybooking_formGroup_lrJ {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.Astrologybooking_label_1Np {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.Astrologybooking_input_dvp {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.Astrologybooking_input_dvp:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Astrologybooking_button_24W {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.Astrologybooking_button_24W:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Astrologybooking_button_24W:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Astrologybooking_leftContainer_aeQ {\r\n   float:left;\r\n}\r\n\r\n.Astrologybooking_rightContainer_waS {\r\n   float:right;\r\n}\r\n\r\n.Astrologybooking_icon_1aP {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.Astrologybooking_lineThrough_1CJ {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.Astrologybooking_lineThrough_1CJ::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.Astrologybooking_lineThrough_1CJ::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n#Astrologybooking_lastname_3Af{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.Astrologybooking_squaredOne_3Uq {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0%, #fcfff4), color-stop(40%, #dfe5d7), to(#b3bead));\r\n  background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: -o-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n          box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: -webkit-gradient(linear, left top, left bottom, from(#222), to(#45484d));\r\n    background: -webkit-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: -o-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n            box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1)\r\n  }\r\n  label:after {\r\n    content: '';\r\n    width: 16px;\r\n    height: 16px;\r\n    position: absolute;\r\n    top: 2px;\r\n    left: 2px;\r\n    background: $activeColor;\r\n    background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0%, $activeColor), to($darkenColor));\r\n    background: -webkit-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: -o-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n            box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n    opacity: 0;\r\n  }\r\n  label:hover::after {\r\n    opacity: 0.3;\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden   \r\n  }\r\n  input[type=checkbox]:checked + label:after {\r\n    opacity: 1;\r\n  } \r\n}", "", {"version":3,"sources":["/./routes/astrologybooking/Astrologybooking.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,oBAAoB;;CAErB;;AAED;;EAEE,mBAAmB;EACnB,gBAAgB;EAChB,iBAAiB;EACjB,YAAY;CACb;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,WAAW;EACX,uBAAuB;EACvB,kBAAkB;EAClB,iBAAiB;EACjB,yDAAiD;UAAjD,iDAAiD;EACjD,eAAe;EACf,gBAAgB;EAChB,uBAAuB;EACvB,yFAAyE;EAAzE,iFAAyE;EAAzE,4EAAyE;EAAzE,yEAAyE;EAAzE,+GAAyE;EACzE,SAAS;EACT,cAAc;;CAEf;;AAED;EACE,sBAAsB;EACtB,yFAAiF;UAAjF,iFAAiF;CAClF;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,YAAY;EACZ,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,iBAAiB;CAClB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAED;GACG,WAAW;CACb;;AAED;GACG,YAAY;CACd;;AAGD;EACE,sBAAsB;EACtB,yBAAyB;EACzB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,mBAAmB;CACpB;;AAED;EACE,mBAAmB;EACnB,WAAW;EACX,eAAe;EACf,oBAAoB;EACpB,YAAY;EACZ,eAAe;EACf,mBAAmB;EACnB,eAAe;CAChB;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,UAAU;EACV,YAAY;EACZ,iBAAiB;EACjB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,YAAY;CACb;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,YAAY;EACZ,eAAe;EACf,YAAY;EACZ,8BAA8B;EAC9B,YAAY;CACb;;AACD;IACI,gBAAgB;IAChB,WAAW;CACd;;AAED;EACE,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,kBAAkB;EAClB,oBAAoB;EACpB,uIAAwE;EAAxE,gFAAwE;EAAxE,2EAAwE;EAAxE,wEAAwE;EACxE,yEAAiE;UAAjE,iEAAiE;EACjE;IACE,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,gBAAgB;IAChB,qFAAwD;IAAxD,gEAAwD;IAAxD,2DAAwD;IAAxD,wDAAwD;IACxD,uFAA+E;YAA/E,8EAA+E;GAgBhF;EAfC;IACE,YAAY;IACZ,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,yBAAyB;IACzB,uHAAqE;IAArE,6EAAqE;IAArE,wEAAqE;IAArE,qEAAqE;IACrE,yEAAiE;YAAjE,iEAAiE;IACjE,WAAW;GACZ;EACD;IACE,aAAa;GACd;EAEH;IACE,kBAAmB;GAIpB;EAHC;IACE,WAAW;GACZ;CAEJ","file":"Astrologybooking.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.lead {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.formGroup {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.label {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.input {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.input:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.leftContainer {\r\n   float:left;\r\n}\r\n\r\n.rightContainer {\r\n   float:right;\r\n}\r\n\r\n\r\n.icon {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.lineThrough {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.lineThrough::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.lineThrough::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n#lastname{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.squaredOne {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n    &:after {\r\n      content: '';\r\n      width: 16px;\r\n      height: 16px;\r\n      position: absolute;\r\n      top: 2px;\r\n      left: 2px;\r\n      background: $activeColor;\r\n      background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n      box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n      opacity: 0;\r\n    }\r\n    &:hover::after {\r\n      opacity: 0.3;\r\n    }\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden;\r\n    &:checked + label:after {\r\n      opacity: 1;\r\n    }   \r\n  } \r\n}"],"sourceRoot":"webpack://"}]);
+  
+  // exports
+  exports.locals = {
+  	"root": "Astrologybooking_root_1Zg",
+  	"container": "Astrologybooking_container_1Ub",
+  	"lead": "Astrologybooking_lead__ke",
+  	"formGroup": "Astrologybooking_formGroup_lrJ",
+  	"label": "Astrologybooking_label_1Np",
+  	"input": "Astrologybooking_input_dvp",
+  	"button": "Astrologybooking_button_24W",
+  	"leftContainer": "Astrologybooking_leftContainer_aeQ",
+  	"rightContainer": "Astrologybooking_rightContainer_waS",
+  	"icon": "Astrologybooking_icon_1aP",
+  	"lineThrough": "Astrologybooking_lineThrough_1CJ",
+  	"lastname": "Astrologybooking_lastname_3Af",
+  	"squaredOne": "Astrologybooking_squaredOne_3Uq"
+  };
+
+/***/ },
+/* 228 */
+/***/ function(module, exports) {
+
+  module.exports = require("react-bootstrap/lib/FormGroup");
+
+/***/ },
+/* 229 */
+/***/ function(module, exports) {
+
+  module.exports = require("react-bootstrap/lib/ControlLabel");
+
+/***/ },
+/* 230 */
+/***/ function(module, exports) {
+
+  module.exports = require("react-bootstrap/lib/HelpBlock");
+
+/***/ },
+/* 231 */
+/***/ function(module, exports) {
+
+  module.exports = require("react-bootstrap-date-picker");
+
+/***/ },
+/* 232 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  
+  var _promise = __webpack_require__(73);
+  
+  var _promise2 = _interopRequireDefault(_promise);
+  
+  var _regenerator = __webpack_require__(1);
+  
+  var _regenerator2 = _interopRequireDefault(_regenerator);
+  
+  var _stringify = __webpack_require__(45);
+  
+  var _stringify2 = _interopRequireDefault(_stringify);
+  
+  var _asyncToGenerator2 = __webpack_require__(2);
+  
+  var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+  
+  var _react = __webpack_require__(33);
+  
+  var _react2 = _interopRequireDefault(_react);
+  
+  var _Saveastrobooking = __webpack_require__(233);
+  
+  var _Saveastrobooking2 = _interopRequireDefault(_Saveastrobooking);
+  
+  var _Providerlist = __webpack_require__(88);
+  
+  var _Providerlist2 = _interopRequireDefault(_Providerlist);
+  
+  var _Login = __webpack_require__(108);
+  
+  var _Login2 = _interopRequireDefault(_Login);
+  
+  var _config = __webpack_require__(30);
+  
+  var _util = __webpack_require__(82);
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  
+  var request = __webpack_require__(83);
+  
+  var message = 'Booking done Sucessfully  ';
+  var href = 'http://' + _config.host + '/';
+  var message1 = 'Click here to login';
+  var status = true;
+  var email;
+  var phone;
+  var bookingid;
+  var providerlist;
+  var sessionid;
+  var bookingtype;
+  
+  exports.default = {
+  
+    path: '/saveastrobooking',
+  
+    action: function action(_ref, _ref2) {
+      var _this = this;
+  
+      var query = _ref.query;
+      var files = _ref2.files;
+      return (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+        var file_path, target_path, sessionbody, body;
+        return _regenerator2.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                console.log("Query String - index.js - Saveastrobooking: " + (0, _stringify2.default)(query));
+                console.log("File Data: " + files);
+                phone = query.mobile;
+                email = query.email;
+  
+                file_path = req.files.astroFile.path;
+                target_path = '../src/astrofiles/' + req.files.astroFile.name;
+                /*bookingtype = query.bookingtype;
+                console.log("Bookingtype: "+bookingtype);*/
+  
+                console.log("Email: " + email);
+                sessionid = query.sessionid;
+                bookingid = query.bookingid;
+                console.log("Sessionid - index.js - Savebooking " + sessionid);
+  
+                if (!(sessionid === undefined || sessionid == '')) {
+                  _context.next = 15;
+                  break;
+                }
+  
+                _context.next = 13;
+                return (0, _util.getSessionid)();
+  
+              case 13:
+                sessionbody = _context.sent;
+                return _context.abrupt('return', _react2.default.createElement(_Login2.default, { sessionid: sessionbody }));
+  
+              case 15:
+  
+                query.filepath = target_path;
+                console.log("Modifie Query String - index.js - Saveastrobooking: " + (0, _stringify2.default)(query));
+  
+                _context.next = 19;
+                return SavebookingData(query);
+  
+              case 19:
+                body = _context.sent;
+  
+                console.log("Calling SendEmail");
+                //var mail = await sendEmail();
+                console.log("Calling sendSMS");
+                //var sms = await sendSMS();
+                console.log("Body: " + body);
+  
+                if (status) {
+                  _context.next = 30;
+                  break;
+                }
+  
+                message = 'Unable to book the Event';
+                href = 'http://' + _config.host + '/booking';
+                message1 = 'Click here to Register.';
+                return _context.abrupt('return', _react2.default.createElement(_Saveastrobooking2.default, { message: message, redirectlink: href, message1: message1, sessionid: sessionid }));
+  
+              case 30:
+                _context.next = 32;
+                return getProviderData();
+  
+              case 32:
+                providerlist = _context.sent;
+  
+                console.log("Service Provider List: " + providerlist);
+                return _context.abrupt('return', _react2.default.createElement(_Providerlist2.default, { providerlist: providerlist, customeremail: email, sessionid: sessionid, bookingid: bookingid }));
+  
+              case 35:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, _this);
+      }))();
+    }
+  };
+  
+  
+  function SavebookingData(data) {
+  
+    console.log('calling API - SaveastrobookingData method');
+    var url = 'http://' + _config.apihost + '/newastroBooking';
+    console.log("URL: " + url);
+    // delete data.bookingtype;
+    return new _promise2.default(function (resolve, reject) {
+      request.post(url, { form: data }, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          console.log('Inside SaveastrobookingData Response from API (body)' + body);
+  
+          if (body == 'true') status = true;
+          resolve(body);
+          //sendSMS();
+          //var result = await sendEmail();
+        }
+        if (error) {
+          console.log("Error in storing customer data");
+          status = false;
+          return reject(error);
+        }
+      });
+  
+      console.log('returning');
+    });
+  }
+  
+  function sendSMS() {
+    console.log('calling API - sendSMS method');
+  
+    var url = 'http://' + _config.apihost + '/sendSMS?authkey=' + _config.smsAPIKey + '&mobiles=' + phone + '&message=' + _config.SMSmessage + '&sender=DTSBMF&route=4&country=91';
+    console.log("URL: " + url);
+    return new _promise2.default(function (resolve, reject) {
+      request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          console.log('Inside sendSMS - Response from API (body)' + body);
+  
+          if (error) {
+            console.log("Error in Sending SMS");
+            status = false;
+            return reject(error);
+          }
+  
+          if (body == 'true') status = true;
+          resolve(body);
+        }
+      });
+    });
+  }
+  
+  function sendEmail() {
+    console.log('calling API - sendEmail');
+    var url = 'http://' + _config.apihost + '/sendmail';
+    console.log("URL: " + url);
+  
+    var subject = "Your booking for the event in BMY";
+    var message = "<b>Thank you for booking and service provider will get in touch shortly. </b> <br> <b> Your Booking id is <b> " + bookingid;
+    var formdata = {
+      tomail: email,
+      subject: subject,
+      message: message
+    };
+  
+    //data = JSON.stringify('{\"tomail\": \"'+email+'\", \"subject\": '+subject+'\", \"message\": \" '+message+'\"}');
+    console.log("Data: " + formdata);
+    return new _promise2.default(function (resolve, reject) {
+      request.post(url, { form: formdata }, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          console.log('Inside sendEmail - Response from API (body)' + body);
+  
+          if (body == 'true') resolve(body);
+          status = true;
+        }
+        if (error) {
+          console.log("Error in Sending Mail");
+          status = false;
+          return reject(error);
+        }
+      });
+    });
+  }
+  
+  function getProviderData() {
+    var request = __webpack_require__(83);
+  
+    console.log('calling API');
+    var url = 'http://' + _config.apihost + '/searchByType?servicetype=' + bookingtype;
+    console.log("URL: " + url);
+    return new _promise2.default(function (resolve, reject) {
+      request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          //console.log('Inside getProviderData Response from API (body)' + body);
+          providerlist = body;
+          //console.log("Providerlist: "+providerlist);
+          resolve(body);
+        } else {
+          return reject(body);
+        }
+      });
+    });
+  }
+  
+  /*function getSessionid() {
+    var request = require('request');
+    console.log('genSessionid - calling API');
+    var url = `http://${apihost}/genSessionid`;
+    console.log("getSeesionid - URL: " + url);
+    
+    return new Promise(function(resolve, reject) {
+    request(url, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        console.log('genSessionid - Response from API' + body);
+        //sessionid = body;
+        resolve(body);
+      }
+      else {
+        
+        console.log("genSessionid -API Server not running: "+error);
+        return reject(error);
+      }
+      console.log("getSessionid - Returning from API call")
+    });
+
+   });
+   
+  }*/
+
+/***/ },
+/* 233 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  
+  var _react = __webpack_require__(33);
+  
+  var _react2 = _interopRequireDefault(_react);
+  
+  var _withStyles = __webpack_require__(48);
+  
+  var _withStyles2 = _interopRequireDefault(_withStyles);
+  
+  var _Saveastrobooking = __webpack_require__(234);
+  
+  var _Saveastrobooking2 = _interopRequireDefault(_Saveastrobooking);
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  
+  var title = 'New Booking'; /**
+                              * React Starter Kit (https://www.reactstarterkit.com/)
+                              *
+                              * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
+                              *
+                              * This source code is licensed under the MIT license found in the
+                              * LICENSE.txt file in the root directory of this source tree.
+                              */
+  
+  function Saveastrobooking(_ref, context) {
+    var message = _ref.message,
+        redirectlink = _ref.redirectlink,
+        message1 = _ref.message1,
+        sessionid = _ref.sessionid;
+  
+    context.setTitle(title);
+    return _react2.default.createElement(
+      'div',
+      { className: _Saveastrobooking2.default.root },
+      _react2.default.createElement(
+        'div',
+        { className: _Saveastrobooking2.default.container },
+        _react2.default.createElement(
+          'h1',
+          null,
+          title
+        ),
+        _react2.default.createElement(
+          'p',
+          null,
+          message
+        ),
+        _react2.default.createElement(
+          'a',
+          { href: redirectlink },
+          message1,
+          ' '
+        ),
+        _react2.default.createElement('input', {
+          id: 'sessionid',
+          type: 'hidden',
+          name: 'sessionid',
+          value: sessionid
+        })
+      )
+    );
+  }
+  
+  Saveastrobooking.contextTypes = { setTitle: _react.PropTypes.func.isRequired };
+  
+  exports.default = (0, _withStyles2.default)(_Saveastrobooking2.default)(Saveastrobooking);
+
+/***/ },
+/* 234 */
+/***/ function(module, exports, __webpack_require__) {
+
+  
+      var content = __webpack_require__(235);
+      var insertCss = __webpack_require__(44);
+  
+      if (typeof content === 'string') {
+        content = [[module.id, content, '']];
+      }
+  
+      module.exports = content.locals || {};
+      module.exports._getCss = function() { return content.toString(); };
+      module.exports._insertCss = function(options) { return insertCss(content, options) };
+    
+      // Hot Module Replacement
+      // https://webpack.github.io/docs/hot-module-replacement
+      // Only activated in browser context
+      if (false) {
+        var removeCss = function() {};
+        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Saveastrobooking.css", function() {
+          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Saveastrobooking.css");
+  
+          if (typeof content === 'string') {
+            content = [[module.id, content, '']];
+          }
+  
+          removeCss = insertCss(content, { replace: true });
+        });
+        module.hot.dispose(function() { removeCss(); });
+      }
+    
+
+/***/ },
+/* 235 */
+/***/ function(module, exports, __webpack_require__) {
+
+  exports = module.exports = __webpack_require__(43)();
+  // imports
+  
+  
+  // module
+  exports.push([module.id, " .Saveastrobooking_root_1zT {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Saveastrobooking_container_1Qe {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.Saveastrobooking_lead_2xZ {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.Saveastrobooking_formGroup_1yl {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.Saveastrobooking_label_20r {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.Saveastrobooking_input_E__ {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n}\r\n\r\n.Saveastrobooking_input_E__:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Saveastrobooking_button_32h {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer;\r\n}\r\n\r\n.Saveastrobooking_button_32h:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Saveastrobooking_button_32h:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Saveastrobooking_icon_2tv {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.Saveastrobooking_lineThrough_2LT {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.Saveastrobooking_lineThrough_2LT::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.Saveastrobooking_lineThrough_2LT::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n#Saveastrobooking_lastname_3tW{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.Saveastrobooking_div_1OX {\r\n  float:right;\r\n}\r\n\r\n#Saveastrobooking_leftContainer_2Ih {\r\n   float:left;\r\n}\r\n\r\n#Saveastrobooking_rightContainer_1Nl {\r\n   float:right;\r\n}", "", {"version":3,"sources":["/./routes/saveastrobooking/Saveastrobooking.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,oBAAoB;;CAErB;;AAED;;EAEE,mBAAmB;EACnB,gBAAgB;EAChB,iBAAiB;EACjB,YAAY;CACb;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,WAAW;EACX,uBAAuB;EACvB,kBAAkB;EAClB,iBAAiB;EACjB,yDAAiD;UAAjD,iDAAiD;EACjD,eAAe;EACf,gBAAgB;EAChB,uBAAuB;EACvB,yFAAyE;EAAzE,iFAAyE;EAAzE,4EAAyE;EAAzE,yEAAyE;EAAzE,+GAAyE;CAC1E;;AAED;EACE,sBAAsB;EACtB,yFAAiF;UAAjF,iFAAiF;CAClF;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,YAAY;EACZ,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,gBAAgB;CACjB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAID;EACE,sBAAsB;EACtB,yBAAyB;EACzB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,mBAAmB;CACpB;;AAED;EACE,mBAAmB;EACnB,WAAW;EACX,eAAe;EACf,oBAAoB;EACpB,YAAY;EACZ,eAAe;EACf,mBAAmB;EACnB,eAAe;CAChB;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,UAAU;EACV,YAAY;EACZ,iBAAiB;EACjB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,YAAY;CACb;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,YAAY;EACZ,eAAe;EACf,YAAY;EACZ,8BAA8B;EAC9B,YAAY;CACb;;AACD;IACI,gBAAgB;IAChB,WAAW;CACd;;AAED;EACE,YAAY;CACb;;AAED;GACG,WAAW;CACb;;AAED;GACG,YAAY;CACd","file":"Saveastrobooking.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.lead {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.formGroup {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.label {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.input {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n}\r\n\r\n.input:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n\r\n\r\n.icon {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.lineThrough {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.lineThrough::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.lineThrough::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n#lastname{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.div {\r\n  float:right;\r\n}\r\n\r\n#leftContainer {\r\n   float:left;\r\n}\r\n\r\n#rightContainer {\r\n   float:right;\r\n}"],"sourceRoot":"webpack://"}]);
+  
+  // exports
+  exports.locals = {
+  	"root": "Saveastrobooking_root_1zT",
+  	"container": "Saveastrobooking_container_1Qe",
+  	"lead": "Saveastrobooking_lead_2xZ",
+  	"formGroup": "Saveastrobooking_formGroup_1yl",
+  	"label": "Saveastrobooking_label_20r",
+  	"input": "Saveastrobooking_input_E__",
+  	"button": "Saveastrobooking_button_32h",
+  	"icon": "Saveastrobooking_icon_2tv",
+  	"lineThrough": "Saveastrobooking_lineThrough_2LT",
+  	"lastname": "Saveastrobooking_lastname_3tW",
+  	"div": "Saveastrobooking_div_1OX",
+  	"leftContainer": "Saveastrobooking_leftContainer_2Ih",
+  	"rightContainer": "Saveastrobooking_rightContainer_1Nl"
+  };
+
+/***/ },
+/* 236 */
+/***/ function(module, exports, __webpack_require__) {
+
+  var extend = __webpack_require__(237);
   
   function Assets(options) {
     if (!(this instanceof Assets)) {
@@ -15563,7 +16529,7 @@ module.exports =
   }
   
   ['data', 'path', 'size', 'url'].forEach(function (resolver) {
-    Assets[resolver] = __webpack_require__(226)("./" + resolver);
+    Assets[resolver] = __webpack_require__(238)("./" + resolver);
     Assets.prototype[resolver] = function (path, callback) {
       return Assets[resolver](path, this.options, callback);
     };
@@ -15573,42 +16539,42 @@ module.exports =
 
 
 /***/ },
-/* 225 */
+/* 237 */
 /***/ function(module, exports) {
 
   module.exports = require("lodash/object/extend");
 
 /***/ },
-/* 226 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
   var map = {
-  	"./__utils__/composeAbsolutePathname": 227,
-  	"./__utils__/composeAbsolutePathname.js": 227,
-  	"./__utils__/composeQueryString": 231,
-  	"./__utils__/composeQueryString.js": 231,
-  	"./__utils__/composeRelativePathname": 232,
-  	"./__utils__/composeRelativePathname.js": 232,
-  	"./__utils__/convertPathToUrl": 228,
-  	"./__utils__/convertPathToUrl.js": 228,
-  	"./__utils__/defaultCachebuster": 233,
-  	"./__utils__/defaultCachebuster.js": 233,
-  	"./__utils__/encodeBuffer": 234,
-  	"./__utils__/encodeBuffer.js": 234,
-  	"./__utils__/ensureTrailingSlash": 229,
-  	"./__utils__/ensureTrailingSlash.js": 229,
-  	"./__utils__/exists": 235,
-  	"./__utils__/exists.js": 235,
-  	"./data": 236,
-  	"./data.js": 236,
-  	"./index": 224,
-  	"./index.js": 224,
-  	"./path": 238,
-  	"./path.js": 238,
-  	"./size": 242,
-  	"./size.js": 242,
-  	"./url": 244,
-  	"./url.js": 244
+  	"./__utils__/composeAbsolutePathname": 239,
+  	"./__utils__/composeAbsolutePathname.js": 239,
+  	"./__utils__/composeQueryString": 243,
+  	"./__utils__/composeQueryString.js": 243,
+  	"./__utils__/composeRelativePathname": 244,
+  	"./__utils__/composeRelativePathname.js": 244,
+  	"./__utils__/convertPathToUrl": 240,
+  	"./__utils__/convertPathToUrl.js": 240,
+  	"./__utils__/defaultCachebuster": 245,
+  	"./__utils__/defaultCachebuster.js": 245,
+  	"./__utils__/encodeBuffer": 246,
+  	"./__utils__/encodeBuffer.js": 246,
+  	"./__utils__/ensureTrailingSlash": 241,
+  	"./__utils__/ensureTrailingSlash.js": 241,
+  	"./__utils__/exists": 247,
+  	"./__utils__/exists.js": 247,
+  	"./data": 248,
+  	"./data.js": 248,
+  	"./index": 236,
+  	"./index.js": 236,
+  	"./path": 250,
+  	"./path.js": 250,
+  	"./size": 254,
+  	"./size.js": 254,
+  	"./url": 256,
+  	"./url.js": 256
   };
   function webpackContext(req) {
   	return __webpack_require__(webpackContextResolve(req));
@@ -15621,17 +16587,17 @@ module.exports =
   };
   webpackContext.resolve = webpackContextResolve;
   module.exports = webpackContext;
-  webpackContext.id = 226;
+  webpackContext.id = 238;
 
 
 /***/ },
-/* 227 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var convertPathToUrl = __webpack_require__(228);
-  var ensureTrailingSlash = __webpack_require__(229);
+  var convertPathToUrl = __webpack_require__(240);
+  var ensureTrailingSlash = __webpack_require__(241);
   var path = __webpack_require__(4);
-  var url = __webpack_require__(230);
+  var url = __webpack_require__(242);
   
   module.exports = function (baseUrl, basePath, resolvedPath) {
     var from = ensureTrailingSlash(baseUrl);
@@ -15641,7 +16607,7 @@ module.exports =
 
 
 /***/ },
-/* 228 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
   var sep = __webpack_require__(4).sep;
@@ -15652,12 +16618,12 @@ module.exports =
 
 
 /***/ },
-/* 229 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var convertPathToUrl = __webpack_require__(228);
+  var convertPathToUrl = __webpack_require__(240);
   var path = __webpack_require__(4);
-  var url = __webpack_require__(230);
+  var url = __webpack_require__(242);
   
   module.exports = function (urlStr) {
     var urlObj = url.parse(urlStr);
@@ -15667,13 +16633,13 @@ module.exports =
 
 
 /***/ },
-/* 230 */
+/* 242 */
 /***/ function(module, exports) {
 
   module.exports = require("url");
 
 /***/ },
-/* 231 */
+/* 243 */
 /***/ function(module, exports) {
 
   module.exports = function (current, addon) {
@@ -15685,10 +16651,10 @@ module.exports =
 
 
 /***/ },
-/* 232 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var convertPathToUrl = __webpack_require__(228);
+  var convertPathToUrl = __webpack_require__(240);
   var path = __webpack_require__(4);
   
   module.exports = function (basePath, relativeTo, resolvedPath) {
@@ -15699,7 +16665,7 @@ module.exports =
 
 
 /***/ },
-/* 233 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
   var fs = __webpack_require__(21);
@@ -15711,7 +16677,7 @@ module.exports =
 
 
 /***/ },
-/* 234 */
+/* 246 */
 /***/ function(module, exports) {
 
   module.exports = function (buffer, mediaType) {
@@ -15723,7 +16689,7 @@ module.exports =
 
 
 /***/ },
-/* 235 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
   var fs = __webpack_require__(21);
@@ -15736,16 +16702,16 @@ module.exports =
 
 
 /***/ },
-/* 236 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var encodeBuffer = __webpack_require__(234);
-  var extend = __webpack_require__(225);
+  var encodeBuffer = __webpack_require__(246);
+  var extend = __webpack_require__(237);
   var fs = __webpack_require__(21);
-  var mime = __webpack_require__(237);
+  var mime = __webpack_require__(249);
   var Promise = __webpack_require__(22);
-  var resolvePath = __webpack_require__(238);
-  var url = __webpack_require__(230);
+  var resolvePath = __webpack_require__(250);
+  var url = __webpack_require__(242);
   
   var preadFile = Promise.promisify(fs.readFile);
   
@@ -15776,20 +16742,20 @@ module.exports =
 
 
 /***/ },
-/* 237 */
+/* 249 */
 /***/ function(module, exports) {
 
   module.exports = require("mime");
 
 /***/ },
-/* 238 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var async = __webpack_require__(239);
-  var exists = __webpack_require__(235);
-  var extend = __webpack_require__(225);
-  var flatten = __webpack_require__(240);
-  var glob = __webpack_require__(241);
+  var async = __webpack_require__(251);
+  var exists = __webpack_require__(247);
+  var extend = __webpack_require__(237);
+  var flatten = __webpack_require__(252);
+  var glob = __webpack_require__(253);
   var path = __webpack_require__(4);
   var Promise = __webpack_require__(22);
   
@@ -15834,30 +16800,30 @@ module.exports =
 
 
 /***/ },
-/* 239 */
+/* 251 */
 /***/ function(module, exports) {
 
   module.exports = require("async");
 
 /***/ },
-/* 240 */
+/* 252 */
 /***/ function(module, exports) {
 
   module.exports = require("lodash/array/flatten");
 
 /***/ },
-/* 241 */
+/* 253 */
 /***/ function(module, exports) {
 
   module.exports = require("glob");
 
 /***/ },
-/* 242 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var calipers = __webpack_require__(243)('webp', 'png', 'jpeg', 'gif', 'svg');
+  var calipers = __webpack_require__(255)('webp', 'png', 'jpeg', 'gif', 'svg');
   var Promise = __webpack_require__(22);
-  var resolvePath = __webpack_require__(238);
+  var resolvePath = __webpack_require__(250);
   
   module.exports = function (to, options, callback) {
     if (typeof options === 'function') {
@@ -15880,22 +16846,22 @@ module.exports =
 
 
 /***/ },
-/* 243 */
+/* 255 */
 /***/ function(module, exports) {
 
   module.exports = require("calipers");
 
 /***/ },
-/* 244 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var composeAbsolutePathname = __webpack_require__(227);
-  var composeQueryString = __webpack_require__(231);
-  var composeRelativePathname = __webpack_require__(232);
-  var defaultCachebuster = __webpack_require__(233);
-  var extend = __webpack_require__(225);
-  var resolvePath = __webpack_require__(238);
-  var url = __webpack_require__(230);
+  var composeAbsolutePathname = __webpack_require__(239);
+  var composeQueryString = __webpack_require__(243);
+  var composeRelativePathname = __webpack_require__(244);
+  var defaultCachebuster = __webpack_require__(245);
+  var extend = __webpack_require__(237);
+  var resolvePath = __webpack_require__(250);
+  var url = __webpack_require__(242);
   
   module.exports = function (to, options, callback) {
     if (typeof options === 'function') {
@@ -15945,28 +16911,28 @@ module.exports =
 
 
 /***/ },
-/* 245 */
+/* 257 */
 /***/ function(module, exports) {
 
   module.exports = require("mongodb");
 
 /***/ },
-/* 246 */
+/* 258 */
 /***/ function(module, exports) {
 
   module.exports = require("express-session");
 
 /***/ },
-/* 247 */
+/* 259 */
 /***/ function(module, exports) {
 
   module.exports = require("debug");
 
 /***/ },
-/* 248 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var jade = __webpack_require__(249);
+  var jade = __webpack_require__(261);
   
   module.exports = function template(locals) {
   var jade_debug = [ new jade.DebugItem( 1, "C:\\dtsolutions\\bmfapp\\src\\views\\index.jade" ) ];
@@ -16069,7 +17035,7 @@ module.exports =
   }
 
 /***/ },
-/* 249 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -16321,10 +17287,10 @@ module.exports =
 
 
 /***/ },
-/* 250 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var jade = __webpack_require__(249);
+  var jade = __webpack_require__(261);
   
   module.exports = function template(locals) {
   var jade_debug = [ new jade.DebugItem( 1, "C:\\dtsolutions\\bmfapp\\src\\views\\error.jade" ) ];
