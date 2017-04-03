@@ -13,7 +13,7 @@ import { match } from 'universal-router';
 import { resolve } from 'universal-router';
 import PrettyError from 'pretty-error';
 //import passport from './core/passport';
-//import models from './data/models';
+import models from './data/models';
 import schema from './data/schema';
 import routes from './routes';
 import assets from '../node_modules/assets'; // eslint-disable-line import/no-unresolved
@@ -94,10 +94,18 @@ app.post('*', async (req, res, next) => {
     const template = require('./views/index.jade'); // eslint-disable-line global-require
     const data = { title: '', description: '', user: '', css: '', body: '', entry:'assets.main.js'  }; //assets.main.js
     //var sess = req.session;
-
+   console.log("Path:"+req.path);
+   console.log("Query:"+JSON.stringify(req.query));
     if (process.env.NODE_ENV === 'production') {
       data.trackingId = analytics.google.trackingId;
     }
+
+    if ( req.query.user != undefined )
+
+    {
+      data.user = req.query.user;
+    }
+    
     
     await resolve(routes, {
       path: req.path,

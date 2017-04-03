@@ -52,11 +52,12 @@ class App extends Component {
   render() {
 
     //console.log( "this.props: "+this.props);
+    var userType = this.props.context.getUser('user');
+    //console.log("User Type: "+userType);
     return !this.props.error ? (
       <div>
         <Header />
         {this.props.children}
-        
         <Footer />
       </div>
     ) : this.props.children;

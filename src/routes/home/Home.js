@@ -12,6 +12,8 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Home.css';
 import Link from '../../components/Link';
 import cx from 'classnames';
+import homeUrl from './homefunction.png';
+import astroUrl from './astrology.png';
 
 const title = 'Welcome to World of Opporunity';
 const user = 'Customer';
@@ -40,6 +42,9 @@ function Home({ sessionid, email, bookinglist }, context) {
       <br/>
       <br/>
        <form name="searchform" method="get" action="searchprovider" >
+         <label className={s.label} htmlFor="Search">
+              Search:
+            </label>
       <input type="text" id="category" name="category" />
       
       <br/>
@@ -67,10 +72,15 @@ function Home({ sessionid, email, bookinglist }, context) {
 
     <div className={s.card}>
     <header>
-        <h2>Service Booking</h2>
+        <h2>Service Booking for you</h2>
       </header>
-      <Link className={s.link} to={bookinglink}>Home Function</Link>      
-      <Link className={s.link} to={astrologybookinglink}>Astrology</Link>
+      <Link className={s.link} to={bookinglink}>
+      <img src={homeUrl} width="38" height="38" align="left" alt="Home Function" />
+      <span> Home Function </span>
+      </Link>
+      <Link className={s.link} to={astrologybookinglink}>
+      <img src={astroUrl} width="38" height="38" align="left" alt="Home Function" />
+      Astrology</Link>
      <br/>
       <Link className={s.link} to="/">Marriage Services</Link>      
       <Link className={s.link} to={cateringbookinglink}>Catering</Link>
@@ -123,7 +133,7 @@ function Home({ sessionid, email, bookinglist }, context) {
       
       <br/>
       <br/>
-      <input type="radio" name="searchterm" value="pincode" />Pincode
+      <input type="radio" name="searchterm" value="pincode" defaultChecked/>Pincode
       <br/>
       <input type="radio" name="searchterm" value="city" />City
       <br/>
