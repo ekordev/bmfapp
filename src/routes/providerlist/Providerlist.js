@@ -14,12 +14,66 @@ import s from './Providerlist.css';
 const title = 'Service Provider Search';
 
 
-function Providerlist({providerlist, customeremail, sessionid, bookingid}, props, context) {
+function Providerlist({providerlist, cateringProviderlist, customeremail, sessionid, bookingid}, context) {
   //context.setTitle(title);
   
    var providerdata = JSON.parse(providerlist);
+   console.log("catering Provider List: "+cateringProviderlist);
+   var cateringproviderdata;
+   if (cateringProviderlist != undefined )
+    cateringproviderdata = JSON.parse(cateringProviderlist);
 
-   console.log("Provider Data: "+providerdata);
+   console.log("Provider Data: "+providerlist);
+
+   if ( cateringProviderlist === undefined )
+   {
+     return ( 
+     <div className={s.root}>
+      <div className={s.container}>
+        
+        <h1>Select Provider near by you</h1>
+        <div>
+        <form name="form1" method="post"  action="linkprovider" >
+          <div className={s.formGroup}>
+        <table>
+        <caption>Service Providers</caption>
+          <thead>
+          <tr>
+          <th>Select</th><th>Email</th><th>First Name</th><th>Last Name</th><th>Address</th><th>City</th><th>Phone</th></tr></thead>
+          <tbody>
+         
+           { providerdata.map((obj, index) => (
+          <tr key={index}>
+          <td><input type="radio" name="provideremail" value={obj.email} /> </td>
+            <td>{obj.email}</td>
+            <td> {obj.firstname}</td>
+            <td> {obj.lname} </td>
+            <td> {obj.address}</td>
+            <td> {obj.city}</td>
+            <td>{obj.phone}</td>
+          </tr>
+           ))}
+           </tbody>
+        </table>
+        </div>
+
+         <div >
+         <br></br>
+         <input type="hidden" name="customeremail"  value={customeremail} />
+         <input type="hidden" name="sessionid"  value={sessionid} />
+         <input type="hidden" name="bookingid"  value={bookingid} />
+         <button   className={s.button}  type="submit" >
+             Submit
+         </button>
+        </div>
+         </form>
+        </div>
+      </div>                     
+    </div>
+  );
+   }
+   else
+   {
     return (
     <div className={s.root}>
       <div className={s.container}>
@@ -49,6 +103,29 @@ function Providerlist({providerlist, customeremail, sessionid, bookingid}, props
            </tbody>
         </table>
         </div>
+
+         <div className={s.formGroup}>
+        <table>
+        <caption>Select Catering Provider</caption>
+          <thead>
+          <tr>
+          <th>Select</th><th>Email</th><th>First Name</th><th>Last Name</th><th>Address</th><th>City</th><th>Phone</th></tr></thead>
+          <tbody>
+         
+           { cateringproviderdata.map((obj, index) => (
+          <tr key={index}>
+          <td><input type="radio" name="cateringprovideremail" value={obj.email} /> </td>
+            <td>{obj.email}</td>
+            <td> {obj.firstname}</td>
+            <td> {obj.lname} </td>
+            <td> {obj.address}</td>
+            <td> {obj.city}</td>
+            <td>{obj.phone}</td>
+          </tr>
+           ))}
+           </tbody>
+        </table>
+        </div>
             
          <div >
          <br></br>
@@ -64,7 +141,7 @@ function Providerlist({providerlist, customeremail, sessionid, bookingid}, props
       </div>                     
     </div>
   );
-
+   }
 
 }
 

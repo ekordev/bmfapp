@@ -1,17 +1,10 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
 
 import React from 'react';
 import LinkProvider from './LinkProvider';
 import { host, apihost } from '../../config';
 import Login from '../login/Login';
-
+import {getSessionid} from '../../scripts/util';
+var request = require('request');
 
 var message = 'Booking done Sucessfully  '
 var href = `http://${host}/`;
@@ -25,23 +18,45 @@ export default {
   path: '/linkprovider',
 
 async  action({query}, {path}) {
-    console.log("Query String - index.js - linkprovider: " + JSON.stringify(query));
-    var provideremail = query.provideremail;
-    var customeremail = query.customeremail;
-    var providerphone;
-    var bookingid = query.bookingid;
-    var sessionid = query.sessionid;
 
-    var providerrec = JSON.parse(await getProviderRecord(provideremail));
-    console.log("Provider Record: "+providerrec);
-    providerphone = providerrec[0].phone;
-    console.log("Provider Phone: "+providerphone);
-    console.log("Sessionid - index.js - Home "+sessionid);
+  var sessionid = query.sessionid;
+  console.log("Sessionid - index.js - Home "+sessionid);
        if ( sessionid === undefined || sessionid == '')
        {
          var body = await getSessionid();
          return <Login sessionid = {body}/>
        }
+
+    console.log("Query String - index.js - linkprovider: " + JSON.stringify(query));
+    var provideremail = query.provideremail;
+    var customeremail = query.customeremail;
+    var cateringprovideremail = query.cateringprovideremail;
+    var providerphone;
+    var bookingid = query.bookingid;
+    
+    var providerrec = JSON.parse(await getProviderRecord(provideremail));
+        console.log("Provider Record: "+providerrec);
+    
+    
+    providerphone = providerrec[0].phone;
+    console.log("Provider Phone: "+providerphone);
+    if ( cateringprovideremail != undefined)
+    {
+        var bookingrec = JSON.parse(await getBookingRecord(bookingid));
+        console.log("Booking Record: "+bookingrec);
+        var cateringproviderrec = JSON.parse(await getProviderRecord(cateringprovideremail));
+        console.log("cateringprovider record: "+cateringproviderrec);
+        console.log(" Catering Provider Phone: "+cateringproviderrec[0].phone);
+        var cateringproviderphone = cateringproviderrec[0].phone;
+        bookingrec[0].provideremail=cateringprovideremail;
+        bookingrec[0].providerphone= cateringproviderphone;
+         delete bookingrec[0]._id;
+        console.log(" Booking Record after adding fields: "+JSON.stringify(bookingrec[0]));
+       
+        var bookingresponse = await SavebookingData(bookingrec[0]);
+    } 
+
+    
 
     var url = `http://${apihost}/updateProviderLink?provideremail=`+provideremail+'&email='+customeremail+'&phone='+providerphone+'&bookingid='+bookingid;
     console.log("Link Provider - Provider Email: "+provideremail);
@@ -56,7 +71,7 @@ async  action({query}, {path}) {
     }
    else
    {
-     var mail =  sendEmail(customeremail, provideremail, bookingid);
+    // var mail =  sendEmail(customeremail, provideremail, bookingid);
      href=`http://${host}/home?sessionid=`+sessionid+'&email='+customeremail;
    }
       return <LinkProvider message={message} redirectlink={href} message1={message1} sessionid={sessionid}/>;
@@ -89,36 +104,12 @@ function LinkProviderData(url) {
  });
  }
  
-function getSessionid(email) {
-  var request = require('request');
-  console.log('genSessionid - calling API');
-  var url = `http://${apihost}/genSessionid`;
-  console.log("getSeesionid - URL: " + url);
-  
-  return new Promise(function(resolve, reject) {
-  request(url, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      console.log('genSessionid - Response from API' + body);
-      //sessionid = body;
-      resolve(body);
-    }
-    else {
-      
-      console.log("genSessionid -API Server not running: "+error);
-      return reject(error);
-    }
-    console.log("getSessionid - Returning from API call")
-  });
-
- });
- 
-}
 
 function getProviderRecord(email) {
   var request = require('request');
   console.log('getProviderRecord - linkProvider - calling API');
   var url = `http://${apihost}/getProvider?email=`+email;
-  console.log("getSeesionid - URL: " + url);
+  console.log("getProviderRecord Method - URL: " + url);
   
   return new Promise(function(resolve, reject) {
   request(url, function (error, response, body) {
@@ -132,7 +123,7 @@ function getProviderRecord(email) {
       console.log("getProviderRecord - linkProvider -API Server not running: "+error);
       return reject(error);
     }
-    console.log("getSessionid - Returning from API call")
+    console.log("getProviderRecord - Returning from API call")
   });
 
  });
@@ -172,4 +163,58 @@ function sendEmail(email, provideremail, bookingid) {
 
   });
    });
+}
+
+function SavebookingData(data) {
+
+  console.log('calling API - SavebookingData method');
+  var url = `http://${apihost}/newcateringbooking`;
+  console.log("URL: " + url);
+  console.log("Booking Record in SavebookingData "+data);
+return new Promise(function(resolve, reject) {
+  request.post(url, { form: data }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log('Inside SavebookingData Response from API (body)' + body);
+
+      if (body == 'true')
+        status = true;
+        resolve(body);
+        //sendSMS();
+      //var result = await sendEmail();
+    }
+    if (error) {
+      console.log("Error in storing customer data");
+      status = false;
+      return reject(error);
+    }
+
+  console.log('returning');
+  });
+ 
+   });
+}
+
+function getBookingRecord(bookingid) {
+  var request = require('request');
+  console.log('getProviderRecord - linkProvider - calling API');
+  var url = `http://${apihost}/getbookingrec?bookingid=`+bookingid;
+  console.log("getBookingRecord Method - URL: " + url);
+  
+  return new Promise(function(resolve, reject) {
+  request(url, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log('getProviderRecord - linkProvider - Response from API' + body);
+      //sessionid = body;
+      resolve(body);
+    }
+    else {
+      
+      console.log("getProviderRecord - linkProvider -API Server not running: "+error);
+      return reject(error);
+    }
+    console.log("getBookingRecord - Returning from API call")
+  });
+
+ });
+ 
 }

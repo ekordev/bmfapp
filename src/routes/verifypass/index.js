@@ -49,7 +49,8 @@ export default {
       var body = await SaveSessionData();
       console.log(" Going to Home Page");
       var bookinglist = await getBookingData();
-      return <Home sessionid={sessionid} email={userEmail} bookinglist={bookinglist} />;
+      var usertype = 'customer';
+      return <Home sessionid={sessionid} email={userEmail} bookinglist={bookinglist} usertype={usertype}/>;
     }
 
     else {

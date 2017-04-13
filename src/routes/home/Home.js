@@ -18,7 +18,7 @@ import astroUrl from './astrology.png';
 const title = 'Welcome to World of Opporunity';
 const user = 'Customer';
 
-function Home({ sessionid, email, bookinglist }, context) {
+function Home({ sessionid, email, bookinglist, usertype }, context) {
   context.setTitle(title);
   context.setUser(user);
  //context.getUser('user');
@@ -67,6 +67,12 @@ function Home({ sessionid, email, bookinglist }, context) {
               name="email"
               value={email}
               />
+              < input
+              id="usertype"
+              type="hidden"
+              name="usertype"
+              value={usertype}
+              />
      </form>         
     </div>
 
@@ -99,6 +105,12 @@ function Home({ sessionid, email, bookinglist }, context) {
               name="email"
               value={email}
               />
+       < input
+              id="usertype"
+              type="hidden"
+              name="usertype"
+              value={usertype}
+              /> 
     </div>
     
     <div className={s.card}>
@@ -151,6 +163,12 @@ function Home({ sessionid, email, bookinglist }, context) {
               name="email"
               value={email}
               />
+              < input
+              id="usertype"
+              type="hidden"
+              name="usertype"
+              value={usertype}
+              />
      </form>         
     </div>
 
@@ -158,9 +176,14 @@ function Home({ sessionid, email, bookinglist }, context) {
     <header>
         <h2>Service Booking</h2>
       </header>
-      <Link className={s.link} to={bookinglink}>Home Function</Link>
-      
-      <Link className={s.link} to={astrologybookinglink}>Astrology</Link>
+      <Link className={s.link} to={bookinglink}>
+      <img src={homeUrl} width="38" height="38" align="left" alt="Home Function" />
+      <span> Home Function </span>
+      </Link>
+      <Link className={s.link} to={astrologybookinglink}>
+      <img src={astroUrl} width="38" height="38" align="left" alt="Home Function" />
+      Astrology</Link>
+     <br/>
      <br/>
       <Link className={s.link } to="/">Marriage Services</Link>
       
@@ -179,6 +202,12 @@ function Home({ sessionid, email, bookinglist }, context) {
               type="hidden"
               name="email"
               value={email}
+              />
+              < input
+              id="usertype"
+              type="hidden"
+              name="usertype"
+              value={usertype}
               />
     </div>
     
@@ -223,6 +252,12 @@ function Home({ sessionid, email, bookinglist }, context) {
               type="hidden"
               name="email"
               value={email}
+              />
+              < input
+              id="usertype"
+              type="hidden"
+              name="usertype"
+              value={usertype}
               />
         <br/>
         <br/>

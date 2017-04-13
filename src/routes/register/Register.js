@@ -26,7 +26,7 @@ function Register(props, context) {
     <div className={s.root}>
       <div className={s.container}>
         <h1>{title}</h1>
-        <form name="form1" method="put" action="savecustomer" >
+        <form name="form1" method="post" action="savecustomer" >
           <div classname= {s.leftContainer} >
           <input id="modifieddate" type="hidden"  value={currentdate} name="modifieddate" />
             <label className={s.label} htmlFor="firstname">

@@ -3,6 +3,7 @@ import React from 'react';
 import Providerlist from './Providerlist';
 import { host, apihost } from '../../config';
 import Login from '../login/Login';
+import {getSessionid} from '../../scripts/util';
 
  var providerlist;
  var sessionid;
@@ -55,7 +56,7 @@ function getProviderData() {
   });
 }
 
-function getSessionid() {
+/*function getSessionid() {
   var request = require('request');
   console.log('genSessionid - calling API');
   var url = `http://${apihost}/genSessionid`;
@@ -78,4 +79,5 @@ function getSessionid() {
 
  });
  
-}
+}*/
+

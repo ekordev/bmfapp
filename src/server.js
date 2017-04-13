@@ -94,8 +94,8 @@ app.post('*', async (req, res, next) => {
     const template = require('./views/index.jade'); // eslint-disable-line global-require
     const data = { title: '', description: '', user: '', css: '', body: '', entry:'assets.main.js'  }; //assets.main.js
     //var sess = req.session;
-   console.log("Path:"+req.path);
-   console.log("Query:"+JSON.stringify(req.query));
+   console.log("Path Post:"+req.path);
+   console.log("Query Post:"+JSON.stringify(req.body));
     if (process.env.NODE_ENV === 'production') {
       data.trackingId = analytics.google.trackingId;
     }
@@ -103,7 +103,8 @@ app.post('*', async (req, res, next) => {
     if ( req.query.user != undefined )
 
     {
-      data.user = req.query.user;
+      data['user'] = req.query.user;
+      console.log(" User: "+data.user);
     }
     
     
@@ -142,9 +143,17 @@ app.get('*', async (req, res, next) => {
     const template = require('./views/index.jade'); // eslint-disable-line global-require
     const data = { title: '', description: '', user: '', css: '', body: '', entry:'assets.main.js'  }; //assets.main.js
     //var sess = req.session;
-
+   console.log("Path get:"+req.path);
+   console.log("Query get:"+JSON.stringify(req.query));
     if (process.env.NODE_ENV === 'production') {
       data.trackingId = analytics.google.trackingId;
+    }
+    
+     if ( req.query.user != undefined )
+
+    {
+      data['user'] = req.query.user; 
+      console.log(" User: "+data.user);
     }
     
     await resolve(routes, {

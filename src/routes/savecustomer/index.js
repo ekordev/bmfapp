@@ -1,23 +1,15 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
 
 import React from 'react';
 import Savecustomer from './Savecustomer';
 import Login from '../Login';
 import { host, apihost, smsAPIKey } from '../../config';
 var request = require('request');
-var SMSmessage = 'Thanks for your Registration. Use your email id for login';
+var SMSmessage = 'Thanks for your Registration. Use your email id for login and password sent to your e-mail';
 
 var message = 'Sucessfully Registered. '
 var href = `http://${host}/login`;
 var message1 = 'Click here to login'
-var status = true;
+var status = false;
 var fn;
 var ln;
 var address;
@@ -43,12 +35,12 @@ export default {
     email = query.email;
     var body = await checkDuplicate(email);
     console.log("Response: "+body);
-    if ( body == 'false')
+    if ( status == 'true')
      {
       var customerdata = await saveCustomerData(query);
       console.log("Customerdata: "+customerdata);
       console.log("Status--saveCustomerData: "+status);
-      if ( customerdata == 'true')
+      if ( status == 'true')
       {
         password = await getPassword();
         console.log("generated Password: "+password);

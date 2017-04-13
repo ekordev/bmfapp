@@ -18,7 +18,7 @@ function Cateringbooking({sessionid, bookingid, email, phone}, context) {
     <div className={s.root}>
       <div className={s.container}>
         <h1>{title}</h1>
-        <form name="form1" method="put" action="savebooking" >
+        <form name="form1" method="post" action="savebooking" >
           <div className= {s.leftContainer}>
           <input id="status" type="hidden"  value="booked" name="status" />
             <label className={s.label} htmlFor="dateofbooking">

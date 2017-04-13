@@ -16,6 +16,8 @@ var bookingid;
 var providerlist;
 var sessionid;
 var bookingtype;
+var needCatering;
+var cateringProviderlist;
 
 export default {
 
@@ -26,10 +28,12 @@ path: '/savebooking',
     phone = query.mobile;
     email = query.email;
     bookingtype = query.bookingtype;
-    console.log("Bookingtype: "+bookingtype);
+   // console.log("Bookingtype: "+bookingtype);
     console.log("Email: "+email);
     sessionid = query.sessionid;
     bookingid=query.bookingid;
+    needCatering=query.catering;
+
     console.log("Sessionid - index.js - Savebooking "+sessionid);
 
     if ( sessionid === undefined || sessionid == '')
@@ -40,11 +44,11 @@ path: '/savebooking',
       
        
     var body = await SavebookingData(query);
-    console.log("Calling SendEmail");
+    /*console.log("Calling SendEmail");
     var mail = await sendEmail();
     console.log("Calling sendSMS");
     var sms = await sendSMS();
-    console.log("Body: "+body);
+    console.log("Body: "+body);*/
     if (!status) {
       message = 'Unable to book the Event';
       href = `http://${host}/booking`;
@@ -54,8 +58,14 @@ path: '/savebooking',
     else
     {
       providerlist = await getProviderData();
+      if ( needCatering != undefined)
+      {
+      bookingtype = 'Catering';
+      cateringProviderlist=await getProviderData();
+      console.log("Catering Service Providers: "+cateringProviderlist)
+      }
       console.log("Service Provider List: "+providerlist);
-      return <Providerlist providerlist={providerlist} customeremail={email} sessionid = {sessionid} bookingid={bookingid} />
+      return <Providerlist providerlist={providerlist} cateringProviderlist={cateringProviderlist} customeremail={email} sessionid = {sessionid} bookingid={bookingid} />
      // return <Savebooking message={message} redirectlink={href} message1={message1} />;
     }
    
@@ -155,15 +165,15 @@ function sendEmail() {
 
 function getProviderData() {
   var request = require('request');
- 
+  console.log("Booking Type: "+bookingtype);
   console.log('calling API');
   var url = `http://${apihost}/searchByType?servicetype=`+bookingtype;
   console.log("URL: " + url);
   return new Promise(function(resolve, reject) {
     request(url,  function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      //console.log('Inside getProviderData Response from API (body)' + body);
-      providerlist = body;
+      console.log('Inside getProviderData Response from API (body)' + body);
+      //providerlist = body;
       //console.log("Providerlist: "+providerlist);
       resolve(body);    
     }
@@ -176,6 +186,7 @@ function getProviderData() {
   });
   });
 }
+
 
 /*function getSessionid() {
   var request = require('request');
