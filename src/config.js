@@ -1,4 +1,4 @@
-export const port = process.env.PORT || 3006;
+export const port = process.env.PORT || 3000;
 export const host = process.env.WEBSITE_HOSTNAME || `localhost:${port}`;
 
 export const apiport = process.env.PORT || 3002;

@@ -44,7 +44,6 @@ export default {
 
 
 
-
 function getCustomerRecord(email) {
   var request = require('request');
   console.log('getCustomerRecord - calling API');

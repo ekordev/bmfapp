@@ -5,15 +5,15 @@ function mapCursor(mapResult) { return Cursor(mapResult); }
 var callbackMethods = {
   close: mapResult,
   count: mapResult,
-  each: mapResult,
   explain: mapResult,
-  forEach: mapResult,
-  next: mapResult,
-  nextObject: mapResult,
   toArray: mapResult
 };
 
 var methods = {
+  each: mapResult,
+  forEach: mapResult,
+  next: mapResult,
+  nextObject: mapResult,
   addCursorFlag: mapCursor,
   addQueryModifier: mapCursor,
   batchSize: mapCursor,

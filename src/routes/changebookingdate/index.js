@@ -2,6 +2,7 @@ import React from 'react';
 import Changebookingdate from './Changebookingdate';
 import Login from '../login/Login';
 import { host, apihost, smsAPIKey, SMSmessage } from '../../config';
+import {getSessionid} from '../../scripts/util';
 var request = require('request');
 
 var message = 'Booking done Sucessfully  '

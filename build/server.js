@@ -100,34 +100,37 @@ module.exports =
   
   var _prettyError2 = _interopRequireDefault(_prettyError);
   
-  var _models = __webpack_require__(15);
+  var _passport = __webpack_require__(15);
+  
+  var _passport2 = _interopRequireDefault(_passport);
+  
+  var _models = __webpack_require__(18);
   
   var _models2 = _interopRequireDefault(_models);
   
-  var _schema = __webpack_require__(23);
+  var _schema = __webpack_require__(26);
   
   var _schema2 = _interopRequireDefault(_schema);
   
-  var _routes = __webpack_require__(40);
+  var _routes = __webpack_require__(43);
   
   var _routes2 = _interopRequireDefault(_routes);
   
-  var _assets = __webpack_require__(245);
+  var _assets = __webpack_require__(248);
   
   var _assets2 = _interopRequireDefault(_assets);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
+  var mongodb = __webpack_require__(269); // eslint-disable-line import/no-unresolved
+  
   //import UniversalRouter from 'universal-router';
-  var mongodb = __webpack_require__(266); // eslint-disable-line import/no-unresolved
   
-  //import passport from './core/passport';
+  var session = __webpack_require__(270);
   
-  var session = __webpack_require__(267);
-  
-  var debug = __webpack_require__(268)('bmfapp');
+  var debug = __webpack_require__(271)('bmfapp');
   var name = 'bmfapp';
   debug('booting %s', name);
   
@@ -166,20 +169,15 @@ module.exports =
       return req.cookies.id_token;
     }
   }));
-  /*app.use(passport.initialize());
+  app.use(_passport2.default.initialize());
   
-  app.get('/login/facebook',
-    passport.authenticate('facebook', { scope: ['email', 'user_location'], session: false })
-  );
-  app.get('/login/facebook/return',
-    passport.authenticate('facebook', { failureRedirect: '/login', session: false }),
-    (req, res) => {
-      const expiresIn = 60 * 60 * 24 * 180; // 180 days
-      const token = jwt.sign(req.user, auth.jwt.secret, { expiresIn });
-      res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
-      res.redirect('/');
-    }
-  );*/
+  app.get('/login/facebook', _passport2.default.authenticate('facebook', { scope: ['email', 'user_location'], session: false }));
+  app.get('/login/facebook/return', _passport2.default.authenticate('facebook', { failureRedirect: '/login', session: false }), function (req, res) {
+    var expiresIn = 60 * 60 * 24 * 180; // 180 days
+    var token = _jsonwebtoken2.default.sign(req.user, _config.auth.jwt.secret, { expiresIn: expiresIn });
+    res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
+    res.redirect('/');
+  });
   
   //
   // Register API middleware
@@ -197,98 +195,84 @@ module.exports =
   // Register server-side rendering middleware
   // -----------------------------------------------------------------------------
   app.post('*', function () {
-    var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(req, res, next) {
-      return _regenerator2.default.wrap(function _callee2$(_context2) {
+    var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(req, res, next) {
+      var css, statusCode, template, data;
+      return _regenerator2.default.wrap(function _callee$(_context) {
         while (1) {
-          switch (_context2.prev = _context2.next) {
+          switch (_context.prev = _context.next) {
             case 0:
-              _context2.prev = 0;
-              return _context2.delegateYield(_regenerator2.default.mark(function _callee() {
-                var css, statusCode, template, data;
-                return _regenerator2.default.wrap(function _callee$(_context) {
-                  while (1) {
-                    switch (_context.prev = _context.next) {
-                      case 0:
-                        css = [];
-                        statusCode = 200;
-                        template = __webpack_require__(269); // eslint-disable-line global-require
+              _context.prev = 0;
+              css = [];
+              statusCode = 200;
+              template = __webpack_require__(272); // eslint-disable-line global-require
   
-                        data = { title: '', description: '', user: '', css: '', body: '', entry: 'assets.main.js' }; //assets.main.js
-                        //var sess = req.session;
+              data = { title: '', description: '', user: '', css: '', body: '', entry: 'assets.main.js' }; //assets.main.js
+              //var sess = req.session;
   
-                        console.log("Path:" + req.path);
-                        console.log("Query:" + (0, _stringify2.default)(req.query));
-                        if (false) {
-                          data.trackingId = _config.analytics.google.trackingId;
-                        }
+              console.log("Path Post:" + req.path);
+              console.log("Query Post:" + (0, _stringify2.default)(req.body));
+              if (false) {
+                data.trackingId = _config.analytics.google.trackingId;
+              }
   
-                        if (req.query.user != undefined) {
-                          data.user = req.query.user;
-                        }
+              if (req.query.user != undefined) {
+                data['user'] = req.query.user;
+                console.log(" User: " + data.user);
+              }
   
-                        _context.next = 10;
-                        return (0, _universalRouter.resolve)(_routes2.default, {
-                          path: req.path,
-                          query: req.body,
-                          files: req.file,
+              _context.next = 11;
+              return (0, _universalRouter.resolve)(_routes2.default, {
+                path: req.path,
+                query: req.body,
+                files: req.file,
   
-                          context: {
-                            insertCss: function insertCss(styles) {
-                              return css.push(styles._getCss());
-                            }, // eslint-disable-line no-underscore-dangle
-                            setTitle: function setTitle(value) {
-                              return data.title = value;
-                            },
-                            setUser: function setUser(value) {
-                              return data.user = value;
-                            },
-                            setMeta: function setMeta(key, value) {
-                              return data[key] = value;
-                            },
-                            getUser: function getUser(key) {
-                              return data[key];
-                            }
-                          },
-                          render: function render(component) {
-                            var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 200;
-  
-                            css = [];
-                            statusCode = status;
-                            data.body = _server2.default.renderToString(component);
-                            data.css = css.join('');
-                            return true;
-                          }
-                        });
-  
-                      case 10:
-  
-                        res.status(statusCode);
-                        res.send(template(data));
-  
-                      case 12:
-                      case 'end':
-                        return _context.stop();
-                    }
+                context: {
+                  insertCss: function insertCss(styles) {
+                    return css.push(styles._getCss());
+                  }, // eslint-disable-line no-underscore-dangle
+                  setTitle: function setTitle(value) {
+                    return data.title = value;
+                  },
+                  setUser: function setUser(value) {
+                    return data.user = value;
+                  },
+                  setMeta: function setMeta(key, value) {
+                    return data[key] = value;
+                  },
+                  getUser: function getUser(key) {
+                    return data[key];
                   }
-                }, _callee, undefined);
-              })(), 't0', 2);
+                },
+                render: function render(component) {
+                  var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 200;
   
-            case 2:
-              _context2.next = 7;
+                  css = [];
+                  statusCode = status;
+                  data.body = _server2.default.renderToString(component);
+                  data.css = css.join('');
+                  return true;
+                }
+              });
+  
+            case 11:
+  
+              res.status(statusCode);
+              res.send(template(data));
+              _context.next = 18;
               break;
   
-            case 4:
-              _context2.prev = 4;
-              _context2.t1 = _context2['catch'](0);
+            case 15:
+              _context.prev = 15;
+              _context.t0 = _context['catch'](0);
   
-              next(_context2.t1);
+              next(_context.t0);
   
-            case 7:
+            case 18:
             case 'end':
-              return _context2.stop();
+              return _context.stop();
           }
         }
-      }, _callee2, undefined, [[0, 4]]);
+      }, _callee, undefined, [[0, 15]]);
     }));
   
     return function (_x, _x2, _x3) {
@@ -297,92 +281,84 @@ module.exports =
   }());
   
   app.get('*', function () {
-    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4(req, res, next) {
-      return _regenerator2.default.wrap(function _callee4$(_context4) {
+    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2(req, res, next) {
+      var css, statusCode, template, data;
+      return _regenerator2.default.wrap(function _callee2$(_context2) {
         while (1) {
-          switch (_context4.prev = _context4.next) {
+          switch (_context2.prev = _context2.next) {
             case 0:
-              _context4.prev = 0;
-              return _context4.delegateYield(_regenerator2.default.mark(function _callee3() {
-                var css, statusCode, template, data;
-                return _regenerator2.default.wrap(function _callee3$(_context3) {
-                  while (1) {
-                    switch (_context3.prev = _context3.next) {
-                      case 0:
-                        css = [];
-                        statusCode = 200;
-                        template = __webpack_require__(269); // eslint-disable-line global-require
+              _context2.prev = 0;
+              css = [];
+              statusCode = 200;
+              template = __webpack_require__(272); // eslint-disable-line global-require
   
-                        data = { title: '', description: '', user: '', css: '', body: '', entry: 'assets.main.js' }; //assets.main.js
-                        //var sess = req.session;
+              data = { title: '', description: '', user: '', css: '', body: '', entry: 'assets.main.js' }; //assets.main.js
+              //var sess = req.session;
   
-                        if (false) {
-                          data.trackingId = _config.analytics.google.trackingId;
-                        }
+              console.log("Path get:" + req.path);
+              console.log("Query get:" + (0, _stringify2.default)(req.query));
+              if (false) {
+                data.trackingId = _config.analytics.google.trackingId;
+              }
   
-                        _context3.next = 7;
-                        return (0, _universalRouter.resolve)(_routes2.default, {
-                          path: req.path,
-                          query: req.query,
-                          files: req.files,
+              if (req.query.user != undefined) {
+                data['user'] = req.query.user;
+                console.log(" User: " + data.user);
+              }
   
-                          context: {
-                            insertCss: function insertCss(styles) {
-                              return css.push(styles._getCss());
-                            }, // eslint-disable-line no-underscore-dangle
-                            setTitle: function setTitle(value) {
-                              return data.title = value;
-                            },
-                            setUser: function setUser(value) {
-                              return data.user = value;
-                            },
-                            setMeta: function setMeta(key, value) {
-                              return data[key] = value;
-                            },
-                            getUser: function getUser(key) {
-                              return data[key];
-                            }
-                          },
-                          render: function render(component) {
-                            var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 200;
+              _context2.next = 11;
+              return (0, _universalRouter.resolve)(_routes2.default, {
+                path: req.path,
+                query: req.query,
+                files: req.files,
   
-                            css = [];
-                            statusCode = status;
-                            data.body = _server2.default.renderToString(component);
-                            data.css = css.join('');
-                            return true;
-                          }
-                        });
-  
-                      case 7:
-  
-                        res.status(statusCode);
-                        res.send(template(data));
-  
-                      case 9:
-                      case 'end':
-                        return _context3.stop();
-                    }
+                context: {
+                  insertCss: function insertCss(styles) {
+                    return css.push(styles._getCss());
+                  }, // eslint-disable-line no-underscore-dangle
+                  setTitle: function setTitle(value) {
+                    return data.title = value;
+                  },
+                  setUser: function setUser(value) {
+                    return data.user = value;
+                  },
+                  setMeta: function setMeta(key, value) {
+                    return data[key] = value;
+                  },
+                  getUser: function getUser(key) {
+                    return data[key];
                   }
-                }, _callee3, undefined);
-              })(), 't0', 2);
+                },
+                render: function render(component) {
+                  var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 200;
   
-            case 2:
-              _context4.next = 7;
+                  css = [];
+                  statusCode = status;
+                  data.body = _server2.default.renderToString(component);
+                  data.css = css.join('');
+                  return true;
+                }
+              });
+  
+            case 11:
+  
+              res.status(statusCode);
+              res.send(template(data));
+              _context2.next = 18;
               break;
   
-            case 4:
-              _context4.prev = 4;
-              _context4.t1 = _context4['catch'](0);
+            case 15:
+              _context2.prev = 15;
+              _context2.t0 = _context2['catch'](0);
   
-              next(_context4.t1);
+              next(_context2.t0);
   
-            case 7:
+            case 18:
             case 'end':
-              return _context4.stop();
+              return _context2.stop();
           }
         }
-      }, _callee4, undefined, [[0, 4]]);
+      }, _callee2, undefined, [[0, 15]]);
     }));
   
     return function (_x5, _x6, _x7) {
@@ -400,7 +376,7 @@ module.exports =
   app.use(function (err, req, res, next) {
     // eslint-disable-line no-unused-vars
     console.log(pe.render(err)); // eslint-disable-line no-console
-    var template = __webpack_require__(271); // eslint-disable-line global-require
+    var template = __webpack_require__(274); // eslint-disable-line global-require
     var statusCode = err.status || 500;
     res.status(statusCode);
     res.send(template({
@@ -412,11 +388,13 @@ module.exports =
   // Launch the server
   // -----------------------------------------------------------------------------
   /* eslint-disable no-console */
-  //models.sync().catch(err => console.error(err.stack)).then(() => {
-  app.listen(_config.port, function () {
-    console.log('The server is running at http://localhost:' + _config.port + '/');
+  _models2.default.sync().catch(function (err) {
+    return console.error(err.stack);
+  }).then(function () {
+    app.listen(_config.port, function () {
+      console.log('The server is running at http://localhost:' + _config.port + '/');
+    });
   });
-  //});
   /* eslint-enable no-console */
 
 /***/ },
@@ -512,27 +490,237 @@ module.exports =
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
+  
+  var _regenerator = __webpack_require__(1);
+  
+  var _regenerator2 = _interopRequireDefault(_regenerator);
+  
+  var _asyncToGenerator2 = __webpack_require__(3);
+  
+  var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+  
+  var _passport = __webpack_require__(16);
+  
+  var _passport2 = _interopRequireDefault(_passport);
+  
+  var _passportFacebook = __webpack_require__(17);
+  
+  var _models = __webpack_require__(18);
+  
+  var _config = __webpack_require__(21);
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  
+  /**
+   * Sign in with Facebook.
+   */
+  /**
+   * Passport.js reference implementation.
+   * The database schema used in this sample is available at
+   * https://github.com/membership/membership.db/tree/master/postgres
+   */
+  
+  _passport2.default.use(new _passportFacebook.Strategy({
+    clientID: _config.auth.facebook.id,
+    clientSecret: _config.auth.facebook.secret,
+    callbackURL: '/login/facebook/return',
+    profileFields: ['name', 'email', 'link', 'locale', 'timezone'],
+    passReqToCallback: true
+  }, function (req, accessToken, refreshToken, profile, done) {
+    /* eslint-disable no-underscore-dangle */
+    var loginName = 'facebook';
+    var claimType = 'urn:facebook:access_token';
+    var fooBar = function () {
+      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+        var userLogin, user, users, _user;
+  
+        return _regenerator2.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                if (!req.user) {
+                  _context.next = 14;
+                  break;
+                }
+  
+                _context.next = 3;
+                return _models.UserLogin.findOne({
+                  attributes: ['name', 'key'],
+                  where: { name: loginName, key: profile.id }
+                });
+  
+              case 3:
+                userLogin = _context.sent;
+  
+                if (!userLogin) {
+                  _context.next = 8;
+                  break;
+                }
+  
+                // There is already a Facebook account that belongs to you.
+                // Sign in with that account or delete it, then link it with your current account.
+                done();
+                _context.next = 12;
+                break;
+  
+              case 8:
+                _context.next = 10;
+                return _models.User.create({
+                  id: req.user.id,
+                  email: profile._json.email,
+                  logins: [{ name: loginName, key: profile.id }],
+                  claims: [{ type: claimType, value: profile.id }],
+                  profile: {
+                    displayName: profile.displayName,
+                    gender: profile._json.gender,
+                    picture: 'https://graph.facebook.com/' + profile.id + '/picture?type=large'
+                  }
+                }, {
+                  include: [{ model: _models.UserLogin, as: 'logins' }, { model: _models.UserClaim, as: 'claims' }, { model: _models.UserProfile, as: 'profile' }]
+                });
+  
+              case 10:
+                user = _context.sent;
+  
+                done(null, {
+                  id: user.id,
+                  email: user.email
+                });
+  
+              case 12:
+                _context.next = 32;
+                break;
+  
+              case 14:
+                _context.next = 16;
+                return _models.User.findAll({
+                  attributes: ['id', 'email'],
+                  where: { '$logins.name$': loginName, '$logins.key$': profile.id },
+                  include: [{
+                    attributes: ['name', 'key'],
+                    model: _models.UserLogin,
+                    as: 'logins',
+                    required: true
+                  }]
+                });
+  
+              case 16:
+                users = _context.sent;
+  
+                if (!users.length) {
+                  _context.next = 21;
+                  break;
+                }
+  
+                done(null, users[0]);
+                _context.next = 32;
+                break;
+  
+              case 21:
+                _context.next = 23;
+                return _models.User.findOne({ where: { email: profile._json.email } });
+  
+              case 23:
+                _user = _context.sent;
+  
+                if (!_user) {
+                  _context.next = 28;
+                  break;
+                }
+  
+                // There is already an account using this email address. Sign in to
+                // that account and link it with Facebook manually from Account Settings.
+                done(null);
+                _context.next = 32;
+                break;
+  
+              case 28:
+                _context.next = 30;
+                return _models.User.create({
+                  email: profile._json.email,
+                  emailVerified: true,
+                  logins: [{ name: loginName, key: profile.id }],
+                  claims: [{ type: claimType, value: accessToken }],
+                  profile: {
+                    displaynName: profile.displayName,
+                    gender: profile._json.gender,
+                    picture: 'https://graph.facebook.com/' + profile.id + '/picture?type=large'
+                  }
+                }, {
+                  include: [{ model: _models.UserLogin, as: 'logins' }, { model: _models.UserClaim, as: 'claims' }, { model: _models.UserProfile, as: 'profile' }]
+                });
+  
+              case 30:
+                _user = _context.sent;
+  
+                done(null, {
+                  id: _user.id,
+                  email: _user.email
+                });
+  
+              case 32:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, undefined);
+      }));
+  
+      return function fooBar() {
+        return _ref.apply(this, arguments);
+      };
+    }();
+  
+    fooBar().catch(done);
+  }));
+  
+  exports.default = _passport2.default;
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+  module.exports = require("passport");
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+  module.exports = require("passport-facebook");
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
   exports.UserProfile = exports.UserClaim = exports.UserLogin = exports.User = undefined;
   
-  var _User = __webpack_require__(16);
+  var _sequelize = __webpack_require__(19);
+  
+  var _sequelize2 = _interopRequireDefault(_sequelize);
+  
+  var _User = __webpack_require__(22);
   
   var _User2 = _interopRequireDefault(_User);
   
-  var _UserLogin = __webpack_require__(20);
+  var _UserLogin = __webpack_require__(23);
   
   var _UserLogin2 = _interopRequireDefault(_UserLogin);
   
-  var _UserClaim = __webpack_require__(21);
+  var _UserClaim = __webpack_require__(24);
   
   var _UserClaim2 = _interopRequireDefault(_UserClaim);
   
-  var _UserProfile = __webpack_require__(22);
+  var _UserProfile = __webpack_require__(25);
   
   var _UserProfile2 = _interopRequireDefault(_UserProfile);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
-  //import sequelize from '../sequelize';
   _User2.default.hasMany(_UserLogin2.default, {
     foreignKey: 'userId',
     as: 'logins',
@@ -554,19 +742,18 @@ module.exports =
     onDelete: 'cascade'
   });
   
-  /*function sync(...args) {
-    return sequelize.sync(...args);
+  function sync() {
+    return _sequelize2.default.sync.apply(_sequelize2.default, arguments);
   }
   
-  
-  export default { sync };*/
+  exports.default = { sync: sync };
   exports.User = _User2.default;
   exports.UserLogin = _UserLogin2.default;
   exports.UserClaim = _UserClaim2.default;
   exports.UserProfile = _UserProfile2.default;
 
 /***/ },
-/* 16 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -575,72 +762,11 @@ module.exports =
     value: true
   });
   
-  var _sequelize = __webpack_require__(17);
+  var _sequelize = __webpack_require__(20);
   
   var _sequelize2 = _interopRequireDefault(_sequelize);
   
-  var _sequelize3 = __webpack_require__(18);
-  
-  var _sequelize4 = _interopRequireDefault(_sequelize3);
-  
-  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-  
-  /**
-   * React Starter Kit (https://www.reactstarterkit.com/)
-   *
-   * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
-   *
-   * This source code is licensed under the MIT license found in the
-   * LICENSE.txt file in the root directory of this source tree.
-   */
-  
-  var User = _sequelize4.default.define('User', {
-  
-    id: {
-      type: _sequelize2.default.UUID,
-      defaultValue: _sequelize2.default.UUIDV1,
-      primaryKey: true
-    },
-  
-    email: {
-      type: _sequelize2.default.STRING(256),
-      validate: { isEmail: true }
-    },
-  
-    emailConfirmed: {
-      type: _sequelize2.default.BOOLEAN,
-      defaultValue: false
-    }
-  
-  }, {
-  
-    indexes: [{ fields: ['email'] }]
-  
-  });
-  
-  exports.default = User;
-
-/***/ },
-/* 17 */
-/***/ function(module, exports) {
-
-  module.exports = require("sequelize");
-
-/***/ },
-/* 18 */
-/***/ function(module, exports, __webpack_require__) {
-
-  'use strict';
-  
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  
-  var _sequelize = __webpack_require__(17);
-  
-  var _sequelize2 = _interopRequireDefault(_sequelize);
-  
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -662,7 +788,13 @@ module.exports =
   exports.default = sequelize;
 
 /***/ },
-/* 19 */
+/* 20 */
+/***/ function(module, exports) {
+
+  module.exports = require("sequelize");
+
+/***/ },
+/* 21 */
 /***/ function(module, exports) {
 
   'use strict';
@@ -670,7 +802,7 @@ module.exports =
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  var port = exports.port = process.env.PORT || 3006;
+  var port = exports.port = process.env.PORT || 3000;
   var host = exports.host = process.env.WEBSITE_HOSTNAME || 'localhost:' + port;
   
   var apiport = exports.apiport = process.env.PORT || 3002;
@@ -712,7 +844,7 @@ module.exports =
   };
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -721,11 +853,66 @@ module.exports =
     value: true
   });
   
-  var _sequelize = __webpack_require__(17);
+  var _sequelize = __webpack_require__(20);
   
   var _sequelize2 = _interopRequireDefault(_sequelize);
   
-  var _sequelize3 = __webpack_require__(18);
+  var _sequelize3 = __webpack_require__(19);
+  
+  var _sequelize4 = _interopRequireDefault(_sequelize3);
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  
+  /**
+   * React Starter Kit (https://www.reactstarterkit.com/)
+   *
+   * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE.txt file in the root directory of this source tree.
+   */
+  
+  var User = _sequelize4.default.define('User', {
+  
+    id: {
+      type: _sequelize2.default.UUID,
+      defaultValue: _sequelize2.default.UUIDV1,
+      primaryKey: true
+    },
+  
+    email: {
+      type: _sequelize2.default.STRING(256),
+      validate: { isEmail: true }
+    },
+  
+    emailConfirmed: {
+      type: _sequelize2.default.BOOLEAN,
+      defaultValue: false
+    }
+  
+  }, {
+  
+    indexes: [{ fields: ['email'] }]
+  
+  });
+  
+  exports.default = User;
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  
+  var _sequelize = __webpack_require__(20);
+  
+  var _sequelize2 = _interopRequireDefault(_sequelize);
+  
+  var _sequelize3 = __webpack_require__(19);
   
   var _sequelize4 = _interopRequireDefault(_sequelize3);
   
@@ -757,7 +944,7 @@ module.exports =
   exports.default = UserLogin;
 
 /***/ },
-/* 21 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -766,11 +953,11 @@ module.exports =
     value: true
   });
   
-  var _sequelize = __webpack_require__(17);
+  var _sequelize = __webpack_require__(20);
   
   var _sequelize2 = _interopRequireDefault(_sequelize);
   
-  var _sequelize3 = __webpack_require__(18);
+  var _sequelize3 = __webpack_require__(19);
   
   var _sequelize4 = _interopRequireDefault(_sequelize3);
   
@@ -800,7 +987,7 @@ module.exports =
   exports.default = UserClaim;
 
 /***/ },
-/* 22 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -809,11 +996,11 @@ module.exports =
     value: true
   });
   
-  var _sequelize = __webpack_require__(17);
+  var _sequelize = __webpack_require__(20);
   
   var _sequelize2 = _interopRequireDefault(_sequelize);
   
-  var _sequelize3 = __webpack_require__(18);
+  var _sequelize3 = __webpack_require__(19);
   
   var _sequelize4 = _interopRequireDefault(_sequelize3);
   
@@ -851,7 +1038,7 @@ module.exports =
   exports.default = UserProfile;
 
 /***/ },
-/* 23 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -860,17 +1047,17 @@ module.exports =
     value: true
   });
   
-  var _graphql = __webpack_require__(24);
+  var _graphql = __webpack_require__(27);
   
-  var _me = __webpack_require__(25);
+  var _me = __webpack_require__(28);
   
   var _me2 = _interopRequireDefault(_me);
   
-  var _content = __webpack_require__(27);
+  var _content = __webpack_require__(30);
   
   var _content2 = _interopRequireDefault(_content);
   
-  var _news = __webpack_require__(36);
+  var _news = __webpack_require__(39);
   
   var _news2 = _interopRequireDefault(_news);
   
@@ -899,13 +1086,13 @@ module.exports =
   exports.default = schema;
 
 /***/ },
-/* 24 */
+/* 27 */
 /***/ function(module, exports) {
 
   module.exports = require("graphql");
 
 /***/ },
-/* 25 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -914,7 +1101,7 @@ module.exports =
     value: true
   });
   
-  var _UserType = __webpack_require__(26);
+  var _UserType = __webpack_require__(29);
   
   var _UserType2 = _interopRequireDefault(_UserType);
   
@@ -942,7 +1129,7 @@ module.exports =
   exports.default = me;
 
 /***/ },
-/* 26 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -951,7 +1138,7 @@ module.exports =
     value: true
   });
   
-  var _graphql = __webpack_require__(24);
+  var _graphql = __webpack_require__(27);
   
   var UserType = new _graphql.GraphQLObjectType({
     name: 'User',
@@ -971,7 +1158,7 @@ module.exports =
   exports.default = UserType;
 
 /***/ },
-/* 27 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -980,7 +1167,7 @@ module.exports =
     value: true
   });
   
-  var _getIterator2 = __webpack_require__(28);
+  var _getIterator2 = __webpack_require__(31);
   
   var _getIterator3 = _interopRequireDefault(_getIterator2);
   
@@ -992,7 +1179,7 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _assign = __webpack_require__(29);
+  var _assign = __webpack_require__(32);
   
   var _assign2 = _interopRequireDefault(_assign);
   
@@ -1141,31 +1328,31 @@ module.exports =
     };
   }();
   
-  var _fs = __webpack_require__(30);
+  var _fs = __webpack_require__(33);
   
   var _fs2 = _interopRequireDefault(_fs);
   
   var _path = __webpack_require__(5);
   
-  var _bluebird = __webpack_require__(31);
+  var _bluebird = __webpack_require__(34);
   
   var _bluebird2 = _interopRequireDefault(_bluebird);
   
-  var _jade = __webpack_require__(32);
+  var _jade = __webpack_require__(35);
   
   var _jade2 = _interopRequireDefault(_jade);
   
-  var _frontMatter = __webpack_require__(33);
+  var _frontMatter = __webpack_require__(36);
   
   var _frontMatter2 = _interopRequireDefault(_frontMatter);
   
-  var _markdownIt = __webpack_require__(34);
+  var _markdownIt = __webpack_require__(37);
   
   var _markdownIt2 = _interopRequireDefault(_markdownIt);
   
-  var _graphql = __webpack_require__(24);
+  var _graphql = __webpack_require__(27);
   
-  var _ContentType = __webpack_require__(35);
+  var _ContentType = __webpack_require__(38);
   
   var _ContentType2 = _interopRequireDefault(_ContentType);
   
@@ -1266,49 +1453,49 @@ module.exports =
   exports.default = content;
 
 /***/ },
-/* 28 */
+/* 31 */
 /***/ function(module, exports) {
 
   module.exports = require("babel-runtime/core-js/get-iterator");
 
 /***/ },
-/* 29 */
+/* 32 */
 /***/ function(module, exports) {
 
   module.exports = require("babel-runtime/core-js/object/assign");
 
 /***/ },
-/* 30 */
+/* 33 */
 /***/ function(module, exports) {
 
   module.exports = require("fs");
 
 /***/ },
-/* 31 */
+/* 34 */
 /***/ function(module, exports) {
 
   module.exports = require("bluebird");
 
 /***/ },
-/* 32 */
+/* 35 */
 /***/ function(module, exports) {
 
   module.exports = require("jade");
 
 /***/ },
-/* 33 */
+/* 36 */
 /***/ function(module, exports) {
 
   module.exports = require("front-matter");
 
 /***/ },
-/* 34 */
+/* 37 */
 /***/ function(module, exports) {
 
   module.exports = require("markdown-it");
 
 /***/ },
-/* 35 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -1317,7 +1504,7 @@ module.exports =
     value: true
   });
   
-  var _graphql = __webpack_require__(24);
+  var _graphql = __webpack_require__(27);
   
   var ContentType = new _graphql.GraphQLObjectType({
     name: 'Content',
@@ -1339,7 +1526,7 @@ module.exports =
   exports.default = ContentType;
 
 /***/ },
-/* 36 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -1348,13 +1535,13 @@ module.exports =
     value: true
   });
   
-  var _graphql = __webpack_require__(24);
+  var _graphql = __webpack_require__(27);
   
-  var _fetch = __webpack_require__(37);
+  var _fetch = __webpack_require__(40);
   
   var _fetch2 = _interopRequireDefault(_fetch);
   
-  var _NewsItemType = __webpack_require__(39);
+  var _NewsItemType = __webpack_require__(42);
   
   var _NewsItemType2 = _interopRequireDefault(_NewsItemType);
   
@@ -1409,7 +1596,7 @@ module.exports =
   exports.default = news;
 
 /***/ },
-/* 37 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -1419,15 +1606,15 @@ module.exports =
   });
   exports.Response = exports.Headers = exports.Request = exports.default = undefined;
   
-  var _bluebird = __webpack_require__(31);
+  var _bluebird = __webpack_require__(34);
   
   var _bluebird2 = _interopRequireDefault(_bluebird);
   
-  var _nodeFetch = __webpack_require__(38);
+  var _nodeFetch = __webpack_require__(41);
   
   var _nodeFetch2 = _interopRequireDefault(_nodeFetch);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -1464,13 +1651,13 @@ module.exports =
   exports.Response = _nodeFetch.Response;
 
 /***/ },
-/* 38 */
+/* 41 */
 /***/ function(module, exports) {
 
   module.exports = require("node-fetch");
 
 /***/ },
-/* 39 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -1479,7 +1666,7 @@ module.exports =
     value: true
   });
   
-  var _graphql = __webpack_require__(24);
+  var _graphql = __webpack_require__(27);
   
   var NewsItemType = new _graphql.GraphQLObjectType({
     name: 'NewsItem',
@@ -1502,7 +1689,7 @@ module.exports =
   exports.default = NewsItemType;
 
 /***/ },
-/* 40 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -1519,163 +1706,163 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _App = __webpack_require__(42);
+  var _App = __webpack_require__(45);
   
   var _App2 = _interopRequireDefault(_App);
   
-  var _home = __webpack_require__(79);
+  var _home = __webpack_require__(82);
   
   var _home2 = _interopRequireDefault(_home);
   
-  var _searchprovider = __webpack_require__(93);
+  var _searchprovider = __webpack_require__(96);
   
   var _searchprovider2 = _interopRequireDefault(_searchprovider);
   
-  var _contact = __webpack_require__(100);
+  var _contact = __webpack_require__(103);
   
   var _contact2 = _interopRequireDefault(_contact);
   
-  var _login = __webpack_require__(104);
+  var _login = __webpack_require__(107);
   
   var _login2 = _interopRequireDefault(_login);
   
-  var _register = __webpack_require__(105);
+  var _register = __webpack_require__(108);
   
   var _register2 = _interopRequireDefault(_register);
   
-  var _forgotpass = __webpack_require__(109);
+  var _forgotpass = __webpack_require__(112);
   
   var _forgotpass2 = _interopRequireDefault(_forgotpass);
   
-  var _savecustomer = __webpack_require__(113);
+  var _savecustomer = __webpack_require__(116);
   
   var _savecustomer2 = _interopRequireDefault(_savecustomer);
   
-  var _content = __webpack_require__(121);
+  var _content = __webpack_require__(124);
   
   var _content2 = _interopRequireDefault(_content);
   
-  var _error = __webpack_require__(125);
+  var _error = __webpack_require__(128);
   
   var _error2 = _interopRequireDefault(_error);
   
-  var _verifypass = __webpack_require__(129);
+  var _verifypass = __webpack_require__(132);
   
   var _verifypass2 = _interopRequireDefault(_verifypass);
   
-  var _changepassword = __webpack_require__(133);
+  var _changepassword = __webpack_require__(136);
   
   var _changepassword2 = _interopRequireDefault(_changepassword);
   
-  var _updatepass = __webpack_require__(137);
+  var _updatepass = __webpack_require__(140);
   
   var _updatepass2 = _interopRequireDefault(_updatepass);
   
-  var _serviceprovider = __webpack_require__(141);
+  var _serviceprovider = __webpack_require__(144);
   
   var _serviceprovider2 = _interopRequireDefault(_serviceprovider);
   
-  var _saveprovider = __webpack_require__(145);
+  var _saveprovider = __webpack_require__(148);
   
   var _saveprovider2 = _interopRequireDefault(_saveprovider);
   
-  var _booking = __webpack_require__(149);
+  var _booking = __webpack_require__(152);
   
   var _booking2 = _interopRequireDefault(_booking);
   
-  var _savebooking = __webpack_require__(153);
+  var _savebooking = __webpack_require__(156);
   
   var _savebooking2 = _interopRequireDefault(_savebooking);
   
-  var _providerlogin = __webpack_require__(157);
+  var _providerlogin = __webpack_require__(160);
   
   var _providerlogin2 = _interopRequireDefault(_providerlogin);
   
-  var _providerforgotpass = __webpack_require__(161);
+  var _providerforgotpass = __webpack_require__(164);
   
   var _providerforgotpass2 = _interopRequireDefault(_providerforgotpass);
   
-  var _providerchangepassword = __webpack_require__(166);
+  var _providerchangepassword = __webpack_require__(169);
   
   var _providerchangepassword2 = _interopRequireDefault(_providerchangepassword);
   
-  var _updateproviderpass = __webpack_require__(170);
+  var _updateproviderpass = __webpack_require__(173);
   
   var _updateproviderpass2 = _interopRequireDefault(_updateproviderpass);
   
-  var _linkprovider = __webpack_require__(174);
+  var _linkprovider = __webpack_require__(177);
   
   var _linkprovider2 = _interopRequireDefault(_linkprovider);
   
-  var _verifyproviderlogin = __webpack_require__(178);
+  var _verifyproviderlogin = __webpack_require__(181);
   
   var _verifyproviderlogin2 = _interopRequireDefault(_verifyproviderlogin);
   
-  var _providerlist = __webpack_require__(182);
+  var _providerlist = __webpack_require__(185);
   
   var _providerlist2 = _interopRequireDefault(_providerlist);
   
-  var _logout = __webpack_require__(183);
+  var _logout = __webpack_require__(186);
   
   var _logout2 = _interopRequireDefault(_logout);
   
-  var _bookinglist = __webpack_require__(187);
+  var _bookinglist = __webpack_require__(190);
   
   var _bookinglist2 = _interopRequireDefault(_bookinglist);
   
-  var _cancelbooking = __webpack_require__(191);
+  var _cancelbooking = __webpack_require__(194);
   
   var _cancelbooking2 = _interopRequireDefault(_cancelbooking);
   
-  var _changebookingdate = __webpack_require__(196);
+  var _changebookingdate = __webpack_require__(199);
   
   var _changebookingdate2 = _interopRequireDefault(_changebookingdate);
   
-  var _managebooking = __webpack_require__(200);
+  var _managebooking = __webpack_require__(203);
   
   var _managebooking2 = _interopRequireDefault(_managebooking);
   
-  var _providerhome = __webpack_require__(204);
+  var _providerhome = __webpack_require__(207);
   
   var _providerhome2 = _interopRequireDefault(_providerhome);
   
-  var _providerlogout = __webpack_require__(205);
+  var _providerlogout = __webpack_require__(208);
   
   var _providerlogout2 = _interopRequireDefault(_providerlogout);
   
-  var _changeprovideremail = __webpack_require__(209);
+  var _changeprovideremail = __webpack_require__(212);
   
   var _changeprovideremail2 = _interopRequireDefault(_changeprovideremail);
   
-  var _changeproviderphone = __webpack_require__(213);
+  var _changeproviderphone = __webpack_require__(216);
   
   var _changeproviderphone2 = _interopRequireDefault(_changeproviderphone);
   
-  var _updateprovideremail = __webpack_require__(217);
+  var _updateprovideremail = __webpack_require__(220);
   
   var _updateprovideremail2 = _interopRequireDefault(_updateprovideremail);
   
-  var _updateproviderphone = __webpack_require__(221);
+  var _updateproviderphone = __webpack_require__(224);
   
   var _updateproviderphone2 = _interopRequireDefault(_updateproviderphone);
   
-  var _confirmOTP = __webpack_require__(225);
+  var _confirmOTP = __webpack_require__(228);
   
   var _confirmOTP2 = _interopRequireDefault(_confirmOTP);
   
-  var _cateringbooking = __webpack_require__(229);
+  var _cateringbooking = __webpack_require__(232);
   
   var _cateringbooking2 = _interopRequireDefault(_cateringbooking);
   
-  var _astrologybooking = __webpack_require__(233);
+  var _astrologybooking = __webpack_require__(236);
   
   var _astrologybooking2 = _interopRequireDefault(_astrologybooking);
   
-  var _saveastrobooking = __webpack_require__(241);
+  var _saveastrobooking = __webpack_require__(244);
   
   var _saveastrobooking2 = _interopRequireDefault(_saveastrobooking);
   
@@ -1706,21 +1893,24 @@ module.exports =
               case 2:
                 component = _context.sent;
   
+                console.log("User: " + context.getUser('user'));
+                console.log("Context Object: " + context);
+  
                 if (!(component === undefined)) {
-                  _context.next = 5;
+                  _context.next = 7;
                   break;
                 }
   
                 return _context.abrupt('return', component);
   
-              case 5:
+              case 7:
                 return _context.abrupt('return', render(_react2.default.createElement(
                   _App2.default,
                   { context: context },
                   component
                 )));
   
-              case 6:
+              case 8:
               case 'end':
                 return _context.stop();
             }
@@ -1731,13 +1921,13 @@ module.exports =
   };
 
 /***/ },
-/* 41 */
+/* 44 */
 /***/ function(module, exports) {
 
   module.exports = require("react");
 
 /***/ },
-/* 42 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -1746,47 +1936,47 @@ module.exports =
     value: true
   });
   
-  var _getPrototypeOf = __webpack_require__(43);
+  var _getPrototypeOf = __webpack_require__(46);
   
   var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
   
-  var _classCallCheck2 = __webpack_require__(44);
+  var _classCallCheck2 = __webpack_require__(47);
   
   var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
   
-  var _createClass2 = __webpack_require__(45);
+  var _createClass2 = __webpack_require__(48);
   
   var _createClass3 = _interopRequireDefault(_createClass2);
   
-  var _possibleConstructorReturn2 = __webpack_require__(46);
+  var _possibleConstructorReturn2 = __webpack_require__(49);
   
   var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
   
-  var _inherits2 = __webpack_require__(47);
+  var _inherits2 = __webpack_require__(50);
   
   var _inherits3 = _interopRequireDefault(_inherits2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _emptyFunction = __webpack_require__(48);
+  var _emptyFunction = __webpack_require__(51);
   
   var _emptyFunction2 = _interopRequireDefault(_emptyFunction);
   
-  var _App = __webpack_require__(49);
+  var _App = __webpack_require__(52);
   
   var _App2 = _interopRequireDefault(_App);
   
-  var _Header = __webpack_require__(54);
+  var _Header = __webpack_require__(57);
   
   var _Header2 = _interopRequireDefault(_Header);
   
-  var _Feedback = __webpack_require__(70);
+  var _Feedback = __webpack_require__(73);
   
   var _Feedback2 = _interopRequireDefault(_Feedback);
   
-  var _Footer = __webpack_require__(73);
+  var _Footer = __webpack_require__(76);
   
   var _Footer2 = _interopRequireDefault(_Footer);
   
@@ -1864,48 +2054,48 @@ module.exports =
   exports.default = App;
 
 /***/ },
-/* 43 */
+/* 46 */
 /***/ function(module, exports) {
 
   module.exports = require("babel-runtime/core-js/object/get-prototype-of");
 
 /***/ },
-/* 44 */
+/* 47 */
 /***/ function(module, exports) {
 
   module.exports = require("babel-runtime/helpers/classCallCheck");
 
 /***/ },
-/* 45 */
+/* 48 */
 /***/ function(module, exports) {
 
   module.exports = require("babel-runtime/helpers/createClass");
 
 /***/ },
-/* 46 */
+/* 49 */
 /***/ function(module, exports) {
 
   module.exports = require("babel-runtime/helpers/possibleConstructorReturn");
 
 /***/ },
-/* 47 */
+/* 50 */
 /***/ function(module, exports) {
 
   module.exports = require("babel-runtime/helpers/inherits");
 
 /***/ },
-/* 48 */
+/* 51 */
 /***/ function(module, exports) {
 
   module.exports = require("fbjs/lib/emptyFunction");
 
 /***/ },
-/* 49 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(50);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(53);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -1920,8 +2110,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./App.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./App.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./App.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./App.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -1934,21 +2124,21 @@ module.exports =
     
 
 /***/ },
-/* 50 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
   // module
-  exports.push([module.id, "/*! normalize.css v4.1.1 | MIT License | github.com/necolas/normalize.css */\r\n\r\n/**\r\n * 1. Change the default font family in all browsers (opinionated).\r\n * 2. Prevent adjustments of font size after orientation changes in IE and iOS.\r\n */\r\n\r\nhtml {\r\n  font-family: sans-serif; /* 1 */\r\n  -ms-text-size-adjust: 100%; /* 2 */\r\n  -webkit-text-size-adjust: 100%; /* 2 */\r\n}\r\n\r\n/**\r\n * Remove the margin in all browsers (opinionated).\r\n */\r\n\r\nbody {\r\n  margin: 0;\r\n}\r\n\r\n/* HTML5 display definitions\r\n   ========================================================================== */\r\n\r\n/**\r\n * Add the correct display in IE 9-.\r\n * 1. Add the correct display in Edge, IE, and Firefox.\r\n * 2. Add the correct display in IE.\r\n */\r\n\r\narticle,\r\naside,\r\ndetails, /* 1 */\r\nfigcaption,\r\nfigure,\r\nfooter,\r\nheader,\r\nmain, /* 2 */\r\nmenu,\r\nnav,\r\nsection,\r\nsummary { /* 1 */\r\n  display: block;\r\n}\r\n\r\n/**\r\n * Add the correct display in IE 9-.\r\n */\r\n\r\naudio,\r\ncanvas,\r\nprogress,\r\nvideo {\r\n  display: inline-block;\r\n}\r\n\r\n/**\r\n * Add the correct display in iOS 4-7.\r\n */\r\n\r\naudio:not([controls]) {\r\n  display: none;\r\n  height: 0;\r\n}\r\n\r\n/**\r\n * Add the correct vertical alignment in Chrome, Firefox, and Opera.\r\n */\r\n\r\nprogress {\r\n  vertical-align: baseline;\r\n}\r\n\r\n/**\r\n * Add the correct display in IE 10-.\r\n * 1. Add the correct display in IE.\r\n */\r\n\r\ntemplate, /* 1 */\r\n[hidden] {\r\n  display: none;\r\n}\r\n\r\n/* Links\r\n   ========================================================================== */\r\n\r\n/**\r\n * 1. Remove the gray background on active links in IE 10.\r\n * 2. Remove gaps in links underline in iOS 8+ and Safari 8+.\r\n */\r\n\r\na {\r\n  background-color: transparent; /* 1 */\r\n  -webkit-text-decoration-skip: objects; /* 2 */\r\n}\r\n\r\n/**\r\n * Remove the outline on focused links when they are also active or hovered\r\n * in all browsers (opinionated).\r\n */\r\n\r\na:active,\r\na:hover {\r\n  outline-width: 0;\r\n}\r\n\r\n/* Text-level semantics\r\n   ========================================================================== */\r\n\r\n/**\r\n * 1. Remove the bottom border in Firefox 39-.\r\n * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.\r\n */\r\n\r\nabbr[title] {\r\n  border-bottom: none; /* 1 */\r\n  text-decoration: underline; /* 2 */\r\n  text-decoration: underline dotted; /* 2 */\r\n}\r\n\r\n/**\r\n * Prevent the duplicate application of `bolder` by the next rule in Safari 6.\r\n */\r\n\r\nb,\r\nstrong {\r\n  font-weight: inherit;\r\n}\r\n\r\n/**\r\n * Add the correct font weight in Chrome, Edge, and Safari.\r\n */\r\n\r\nb,\r\nstrong {\r\n  font-weight: bolder;\r\n}\r\n\r\n/**\r\n * Add the correct font style in Android 4.3-.\r\n */\r\n\r\ndfn {\r\n  font-style: italic;\r\n}\r\n\r\n/**\r\n * Correct the font size and margin on `h1` elements within `section` and\r\n * `article` contexts in Chrome, Firefox, and Safari.\r\n */\r\n\r\nh1 {\r\n  font-size: 2em;\r\n  margin: 0.67em 0;\r\n}\r\n\r\n/**\r\n * Add the correct background and color in IE 9-.\r\n */\r\n\r\nmark {\r\n  background-color: #ff0;\r\n  color: #000;\r\n}\r\n\r\n/**\r\n * Add the correct font size in all browsers.\r\n */\r\n\r\nsmall {\r\n  font-size: 80%;\r\n}\r\n\r\n/**\r\n * Prevent `sub` and `sup` elements from affecting the line height in\r\n * all browsers.\r\n */\r\n\r\nsub,\r\nsup {\r\n  font-size: 75%;\r\n  line-height: 0;\r\n  position: relative;\r\n  vertical-align: baseline;\r\n}\r\n\r\nsub {\r\n  bottom: -0.25em;\r\n}\r\n\r\nsup {\r\n  top: -0.5em;\r\n}\r\n\r\n/* Embedded content\r\n   ========================================================================== */\r\n\r\n/**\r\n * Remove the border on images inside links in IE 10-.\r\n */\r\n\r\nimg {\r\n  border-style: none;\r\n}\r\n\r\n/**\r\n * Hide the overflow in IE.\r\n */\r\n\r\nsvg:not(:root) {\r\n  overflow: hidden;\r\n}\r\n\r\n/* Grouping content\r\n   ========================================================================== */\r\n\r\n/**\r\n * 1. Correct the inheritance and scaling of font size in all browsers.\r\n * 2. Correct the odd `em` font sizing in all browsers.\r\n */\r\n\r\ncode,\r\nkbd,\r\npre,\r\nsamp {\r\n  font-family: monospace, monospace; /* 1 */\r\n  font-size: 1em; /* 2 */\r\n}\r\n\r\n/**\r\n * Add the correct margin in IE 8.\r\n */\r\n\r\nfigure {\r\n  margin: 1em 40px;\r\n}\r\n\r\n/**\r\n * 1. Add the correct box sizing in Firefox.\r\n * 2. Show the overflow in Edge and IE.\r\n */\r\n\r\nhr {\r\n  -webkit-box-sizing: content-box;\r\n          box-sizing: content-box; /* 1 */\r\n  height: 0; /* 1 */\r\n  overflow: visible; /* 2 */\r\n}\r\n\r\n/* Forms\r\n   ========================================================================== */\r\n\r\n/**\r\n * 1. Change font properties to `inherit` in all browsers (opinionated).\r\n * 2. Remove the margin in Firefox and Safari.\r\n */\r\n\r\nbutton,\r\ninput,\r\nselect,\r\ntextarea {\r\n  font: inherit; /* 1 */\r\n  margin: 0; /* 2 */\r\n}\r\n\r\n/**\r\n * Restore the font weight unset by the previous rule.\r\n */\r\n\r\noptgroup {\r\n  font-weight: bold;\r\n}\r\n\r\n/**\r\n * Show the overflow in IE.\r\n * 1. Show the overflow in Edge.\r\n */\r\n\r\nbutton,\r\ninput { /* 1 */\r\n  overflow: visible;\r\n}\r\n\r\n/**\r\n * Remove the inheritance of text transform in Edge, Firefox, and IE.\r\n * 1. Remove the inheritance of text transform in Firefox.\r\n */\r\n\r\nbutton,\r\nselect { /* 1 */\r\n  text-transform: none;\r\n}\r\n\r\n/**\r\n * 1. Prevent a WebKit bug where (2) destroys native `audio` and `video`\r\n *    controls in Android 4.\r\n * 2. Correct the inability to style clickable types in iOS and Safari.\r\n */\r\n\r\nbutton,\r\nhtml [type=\"button\"], /* 1 */\r\n[type=\"reset\"],\r\n[type=\"submit\"] {\r\n  -webkit-appearance: button; /* 2 */\r\n}\r\n\r\n/**\r\n * Remove the inner border and padding in Firefox.\r\n */\r\n\r\nbutton::-moz-focus-inner,\r\n[type=\"button\"]::-moz-focus-inner,\r\n[type=\"reset\"]::-moz-focus-inner,\r\n[type=\"submit\"]::-moz-focus-inner {\r\n  border-style: none;\r\n  padding: 0;\r\n}\r\n\r\n/**\r\n * Restore the focus styles unset by the previous rule.\r\n */\r\n\r\nbutton:-moz-focusring,\r\n[type=\"button\"]:-moz-focusring,\r\n[type=\"reset\"]:-moz-focusring,\r\n[type=\"submit\"]:-moz-focusring {\r\n  outline: 1px dotted ButtonText;\r\n}\r\n\r\n/**\r\n * Change the border, margin, and padding in all browsers (opinionated).\r\n */\r\n\r\nfieldset {\r\n  border: 1px solid #c0c0c0;\r\n  margin: 0 2px;\r\n  padding: 0.35em 0.625em 0.75em;\r\n}\r\n\r\n/**\r\n * 1. Correct the text wrapping in Edge and IE.\r\n * 2. Correct the color inheritance from `fieldset` elements in IE.\r\n * 3. Remove the padding so developers are not caught out when they zero out\r\n *    `fieldset` elements in all browsers.\r\n */\r\n\r\nlegend {\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box; /* 1 */\r\n  color: inherit; /* 2 */\r\n  display: table; /* 1 */\r\n  max-width: 100%; /* 1 */\r\n  padding: 0; /* 3 */\r\n  white-space: normal; /* 1 */\r\n}\r\n\r\n/**\r\n * Remove the default vertical scrollbar in IE.\r\n */\r\n\r\ntextarea {\r\n  overflow: auto;\r\n}\r\n\r\n/**\r\n * 1. Add the correct box sizing in IE 10-.\r\n * 2. Remove the padding in IE 10-.\r\n */\r\n\r\n[type=\"checkbox\"],\r\n[type=\"radio\"] {\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box; /* 1 */\r\n  padding: 0; /* 2 */\r\n}\r\n\r\n/**\r\n * Correct the cursor style of increment and decrement buttons in Chrome.\r\n */\r\n\r\n[type=\"number\"]::-webkit-inner-spin-button,\r\n[type=\"number\"]::-webkit-outer-spin-button {\r\n  height: auto;\r\n}\r\n\r\n/**\r\n * 1. Correct the odd appearance in Chrome and Safari.\r\n * 2. Correct the outline style in Safari.\r\n */\r\n\r\n[type=\"search\"] {\r\n  -webkit-appearance: textfield; /* 1 */\r\n  outline-offset: -2px; /* 2 */\r\n}\r\n\r\n/**\r\n * Remove the inner padding and cancel buttons in Chrome and Safari on OS X.\r\n */\r\n\r\n[type=\"search\"]::-webkit-search-cancel-button,\r\n[type=\"search\"]::-webkit-search-decoration {\r\n  -webkit-appearance: none;\r\n}\r\n\r\n/**\r\n * Correct the text style of placeholders in Chrome, Edge, and Safari.\r\n */\r\n\r\n::-webkit-input-placeholder {\r\n  color: inherit;\r\n  opacity: 0.54;\r\n}\r\n\r\n/**\r\n * 1. Correct the inability to style clickable types in iOS and Safari.\r\n * 2. Change font properties to `inherit` in Safari.\r\n */\r\n\r\n::-webkit-file-upload-button {\r\n  -webkit-appearance: button; /* 1 */\r\n  font: inherit; /* 2 */\r\n}\r\n\r\n:root {\r\n  /*\r\n   * Typography\r\n   * ======================================================================== */\r\n\r\n  /*\r\n   * Layout\r\n   * ======================================================================== */\r\n\r\n  /*\r\n   * Media queries breakpoints\r\n   * ======================================================================== */  /* Extra small screen / phone */  /* Small screen / tablet */  /* Medium screen / desktop */ /* Large screen / wide desktop */\r\n}\r\n\r\n/*\r\n * Base styles\r\n * ========================================================================== */\r\n\r\nhtml {\r\n  color: #222;\r\n  font-weight: 100;\r\n  font-size: 1em; /* ~16px; */\r\n  font-family: 'Segoe UI', 'HelveticaNeue-Light', sans-serif;\r\n  line-height: 1.375; /* ~22px */\r\n}\r\n\r\na {\r\n  color: #0074c2;\r\n}\r\n\r\n/*\r\n * Remove text-shadow in selection highlight:\r\n * https://twitter.com/miketaylr/status/12228805301\r\n *\r\n * These selection rule sets have to be separate.\r\n * Customize the background color to match your design.\r\n */\r\n\r\n::-moz-selection {\r\n  background: #b3d4fc;\r\n  text-shadow: none;\r\n}\r\n\r\n::selection {\r\n  background: #b3d4fc;\r\n  text-shadow: none;\r\n}\r\n\r\n/*\r\n * A better looking default horizontal rule\r\n */\r\n\r\nhr {\r\n  display: block;\r\n  height: 1px;\r\n  border: 0;\r\n  border-top: 1px solid #ccc;\r\n  margin: 1em 0;\r\n  padding: 0;\r\n}\r\n\r\n/*\r\n * Remove the gap between audio, canvas, iframes,\r\n * images, videos and the bottom of their containers:\r\n * https://github.com/h5bp/html5-boilerplate/issues/440\r\n */\r\n\r\naudio,\r\ncanvas,\r\niframe,\r\nimg,\r\nsvg,\r\nvideo {\r\n  vertical-align: middle;\r\n}\r\n\r\n/*\r\n * Remove default fieldset styles.\r\n */\r\n\r\nfieldset {\r\n  border: 0;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n\r\n/*\r\n * Allow only vertical resizing of textareas.\r\n */\r\n\r\ntextarea {\r\n  resize: vertical;\r\n}\r\n\r\n/*\r\n * Browser upgrade prompt\r\n * ========================================================================== */\r\n\r\n.browserupgrade {\r\n  margin: 0.2em 0;\r\n  background: #ccc;\r\n  color: #000;\r\n  padding: 0.2em 0;\r\n}\r\n\r\n/*\r\n * Print styles\r\n * Inlined to avoid the additional HTTP request:\r\n * http://www.phpied.com/delay-loading-your-print-css/\r\n * ========================================================================== */\r\n\r\n@media print {\r\n  *,\r\n  *::before,\r\n  *::after {\r\n    background: transparent !important;\r\n    color: #000 !important; /* Black prints faster: http://www.sanbeiji.com/archives/953 */\r\n    -webkit-box-shadow: none !important;\r\n            box-shadow: none !important;\r\n    text-shadow: none !important;\r\n  }\r\n\r\n  a,\r\n  a:visited {\r\n    text-decoration: underline;\r\n  }\r\n\r\n  a[href]::after {\r\n    content: ' (' attr(href) ')';\r\n  }\r\n\r\n  abbr[title]::after {\r\n    content: ' (' attr(title) ')';\r\n  }\r\n\r\n  /*\r\n   * Don't show links that are fragment identifiers,\r\n   * or use the `javascript:` pseudo protocol\r\n   */\r\n\r\n  a[href^='#']::after,\r\n  a[href^='javascript:']::after {\r\n    content: '';\r\n  }\r\n\r\n  pre,\r\n  blockquote {\r\n    border: 1px solid #999;\r\n    page-break-inside: avoid;\r\n  }\r\n\r\n  /*\r\n   * Printing Tables:\r\n   * http://css-discuss.incutio.com/wiki/Printing_Tables\r\n   */\r\n\r\n  thead {\r\n    display: table-header-group;\r\n  }\r\n\r\n  tr,\r\n  img {\r\n    page-break-inside: avoid;\r\n  }\r\n\r\n  img {\r\n    max-width: 100% !important;\r\n  }\r\n\r\n  p,\r\n  h2,\r\n  h3 {\r\n    orphans: 3;\r\n    widows: 3;\r\n  }\r\n\r\n  h2,\r\n  h3 {\r\n    page-break-after: avoid;\r\n  }\r\n}\r\n", "", {"version":3,"sources":["/../node_modules/normalize.css/normalize.css","/./components/variables.css","/./components/App/App.css"],"names":[],"mappings":"AAAA,4EAA4E;;AAE5E;;;GAGG;;AAEH;EACE,wBAAwB,CAAC,OAAO;EAChC,2BAA2B,CAAC,OAAO;EACnC,+BAA+B,CAAC,OAAO;CACxC;;AAED;;GAEG;;AAEH;EACE,UAAU;CACX;;AAED;gFACgF;;AAEhF;;;;GAIG;;AAEH;;;;;;;;;;;UAWU,OAAO;EACf,eAAe;CAChB;;AAED;;GAEG;;AAEH;;;;EAIE,sBAAsB;CACvB;;AAED;;GAEG;;AAEH;EACE,cAAc;EACd,UAAU;CACX;;AAED;;GAEG;;AAEH;EACE,yBAAyB;CAC1B;;AAED;;;GAGG;;AAEH;;EAEE,cAAc;CACf;;AAED;gFACgF;;AAEhF;;;GAGG;;AAEH;EACE,8BAA8B,CAAC,OAAO;EACtC,sCAAsC,CAAC,OAAO;CAC/C;;AAED;;;GAGG;;AAEH;;EAEE,iBAAiB;CAClB;;AAED;gFACgF;;AAEhF;;;GAGG;;AAEH;EACE,oBAAoB,CAAC,OAAO;EAC5B,2BAA2B,CAAC,OAAO;EACnC,kCAAkC,CAAC,OAAO;CAC3C;;AAED;;GAEG;;AAEH;;EAEE,qBAAqB;CACtB;;AAED;;GAEG;;AAEH;;EAEE,oBAAoB;CACrB;;AAED;;GAEG;;AAEH;EACE,mBAAmB;CACpB;;AAED;;;GAGG;;AAEH;EACE,eAAe;EACf,iBAAiB;CAClB;;AAED;;GAEG;;AAEH;EACE,uBAAuB;EACvB,YAAY;CACb;;AAED;;GAEG;;AAEH;EACE,eAAe;CAChB;;AAED;;;GAGG;;AAEH;;EAEE,eAAe;EACf,eAAe;EACf,mBAAmB;EACnB,yBAAyB;CAC1B;;AAED;EACE,gBAAgB;CACjB;;AAED;EACE,YAAY;CACb;;AAED;gFACgF;;AAEhF;;GAEG;;AAEH;EACE,mBAAmB;CACpB;;AAED;;GAEG;;AAEH;EACE,iBAAiB;CAClB;;AAED;gFACgF;;AAEhF;;;GAGG;;AAEH;;;;EAIE,kCAAkC,CAAC,OAAO;EAC1C,eAAe,CAAC,OAAO;CACxB;;AAED;;GAEG;;AAEH;EACE,iBAAiB;CAClB;;AAED;;;GAGG;;AAEH;EACE,gCAAwB;UAAxB,wBAAwB,CAAC,OAAO;EAChC,UAAU,CAAC,OAAO;EAClB,kBAAkB,CAAC,OAAO;CAC3B;;AAED;gFACgF;;AAEhF;;;GAGG;;AAEH;;;;EAIE,cAAc,CAAC,OAAO;EACtB,UAAU,CAAC,OAAO;CACnB;;AAED;;GAEG;;AAEH;EACE,kBAAkB;CACnB;;AAED;;;GAGG;;AAEH;QACQ,OAAO;EACb,kBAAkB;CACnB;;AAED;;;GAGG;;AAEH;SACS,OAAO;EACd,qBAAqB;CACtB;;AAED;;;;GAIG;;AAEH;;;;EAIE,2BAA2B,CAAC,OAAO;CACpC;;AAED;;GAEG;;AAEH;;;;EAIE,mBAAmB;EACnB,WAAW;CACZ;;AAED;;GAEG;;AAEH;;;;EAIE,+BAA+B;CAChC;;AAED;;GAEG;;AAEH;EACE,0BAA0B;EAC1B,cAAc;EACd,+BAA+B;CAChC;;AAED;;;;;GAKG;;AAEH;EACE,+BAAuB;UAAvB,uBAAuB,CAAC,OAAO;EAC/B,eAAe,CAAC,OAAO;EACvB,eAAe,CAAC,OAAO;EACvB,gBAAgB,CAAC,OAAO;EACxB,WAAW,CAAC,OAAO;EACnB,oBAAoB,CAAC,OAAO;CAC7B;;AAED;;GAEG;;AAEH;EACE,eAAe;CAChB;;AAED;;;GAGG;;AAEH;;EAEE,+BAAuB;UAAvB,uBAAuB,CAAC,OAAO;EAC/B,WAAW,CAAC,OAAO;CACpB;;AAED;;GAEG;;AAEH;;EAEE,aAAa;CACd;;AAED;;;GAGG;;AAEH;EACE,8BAA8B,CAAC,OAAO;EACtC,qBAAqB,CAAC,OAAO;CAC9B;;AAED;;GAEG;;AAEH;;EAEE,yBAAyB;CAC1B;;AAED;;GAEG;;AAEH;EACE,eAAe;EACf,cAAc;CACf;;AAED;;;GAGG;;AAEH;EACE,2BAA2B,CAAC,OAAO;EACnC,cAAc,CAAC,OAAO;CACvB;;AChaD;EACE;;gFAE8E;;EAI9E;;gFAE8E;;EAI9E;;gFAE8E,EAErD,gCAAgC,EAChC,2BAA2B,EAC3B,6BAA6B,CAC7B,iCAAiC;CAC3D;;AChBD;;gFAEgF;;AAEhF;EACE,YAAY;EACZ,iBAAiB;EACjB,eAAe,CAAC,YAAY;EAC5B,2DAAqC;EACrC,mBAAmB,CAAC,WAAW;CAChC;;AAED;EACE,eAAe;CAChB;;AAED;;;;;;GAMG;;AAEH;EACE,oBAAoB;EACpB,kBAAkB;CACnB;;AAED;EACE,oBAAoB;EACpB,kBAAkB;CACnB;;AAED;;GAEG;;AAEH;EACE,eAAe;EACf,YAAY;EACZ,UAAU;EACV,2BAA2B;EAC3B,cAAc;EACd,WAAW;CACZ;;AAED;;;;GAIG;;AAEH;;;;;;EAME,uBAAuB;CACxB;;AAED;;GAEG;;AAEH;EACE,UAAU;EACV,UAAU;EACV,WAAW;CACZ;;AAED;;GAEG;;AAEH;EACE,iBAAiB;CAClB;;AAED;;gFAEgF;;AAEhF;EACE,gBAAgB;EAChB,iBAAiB;EACjB,YAAY;EACZ,iBAAiB;CAClB;;AAED;;;;gFAIgF;;AAEhF;EACE;;;IAGE,mCAAmC;IACnC,uBAAuB,CAAC,+DAA+D;IACvF,oCAA4B;YAA5B,4BAA4B;IAC5B,6BAA6B;GAC9B;;EAED;;IAEE,2BAA2B;GAC5B;;EAED;IACE,6BAA6B;GAC9B;;EAED;IACE,8BAA8B;GAC/B;;EAED;;;KAGG;;EAEH;;IAEE,YAAY;GACb;;EAED;;IAEE,uBAAuB;IACvB,yBAAyB;GAC1B;;EAED;;;KAGG;;EAEH;IACE,4BAA4B;GAC7B;;EAED;;IAEE,yBAAyB;GAC1B;;EAED;IACE,2BAA2B;GAC5B;;EAED;;;IAGE,WAAW;IACX,UAAU;GACX;;EAED;;IAEE,wBAAwB;GACzB;CACF","file":"App.css","sourcesContent":["/*! normalize.css v4.1.1 | MIT License | github.com/necolas/normalize.css */\r\n\r\n/**\r\n * 1. Change the default font family in all browsers (opinionated).\r\n * 2. Prevent adjustments of font size after orientation changes in IE and iOS.\r\n */\r\n\r\nhtml {\r\n  font-family: sans-serif; /* 1 */\r\n  -ms-text-size-adjust: 100%; /* 2 */\r\n  -webkit-text-size-adjust: 100%; /* 2 */\r\n}\r\n\r\n/**\r\n * Remove the margin in all browsers (opinionated).\r\n */\r\n\r\nbody {\r\n  margin: 0;\r\n}\r\n\r\n/* HTML5 display definitions\r\n   ========================================================================== */\r\n\r\n/**\r\n * Add the correct display in IE 9-.\r\n * 1. Add the correct display in Edge, IE, and Firefox.\r\n * 2. Add the correct display in IE.\r\n */\r\n\r\narticle,\r\naside,\r\ndetails, /* 1 */\r\nfigcaption,\r\nfigure,\r\nfooter,\r\nheader,\r\nmain, /* 2 */\r\nmenu,\r\nnav,\r\nsection,\r\nsummary { /* 1 */\r\n  display: block;\r\n}\r\n\r\n/**\r\n * Add the correct display in IE 9-.\r\n */\r\n\r\naudio,\r\ncanvas,\r\nprogress,\r\nvideo {\r\n  display: inline-block;\r\n}\r\n\r\n/**\r\n * Add the correct display in iOS 4-7.\r\n */\r\n\r\naudio:not([controls]) {\r\n  display: none;\r\n  height: 0;\r\n}\r\n\r\n/**\r\n * Add the correct vertical alignment in Chrome, Firefox, and Opera.\r\n */\r\n\r\nprogress {\r\n  vertical-align: baseline;\r\n}\r\n\r\n/**\r\n * Add the correct display in IE 10-.\r\n * 1. Add the correct display in IE.\r\n */\r\n\r\ntemplate, /* 1 */\r\n[hidden] {\r\n  display: none;\r\n}\r\n\r\n/* Links\r\n   ========================================================================== */\r\n\r\n/**\r\n * 1. Remove the gray background on active links in IE 10.\r\n * 2. Remove gaps in links underline in iOS 8+ and Safari 8+.\r\n */\r\n\r\na {\r\n  background-color: transparent; /* 1 */\r\n  -webkit-text-decoration-skip: objects; /* 2 */\r\n}\r\n\r\n/**\r\n * Remove the outline on focused links when they are also active or hovered\r\n * in all browsers (opinionated).\r\n */\r\n\r\na:active,\r\na:hover {\r\n  outline-width: 0;\r\n}\r\n\r\n/* Text-level semantics\r\n   ========================================================================== */\r\n\r\n/**\r\n * 1. Remove the bottom border in Firefox 39-.\r\n * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.\r\n */\r\n\r\nabbr[title] {\r\n  border-bottom: none; /* 1 */\r\n  text-decoration: underline; /* 2 */\r\n  text-decoration: underline dotted; /* 2 */\r\n}\r\n\r\n/**\r\n * Prevent the duplicate application of `bolder` by the next rule in Safari 6.\r\n */\r\n\r\nb,\r\nstrong {\r\n  font-weight: inherit;\r\n}\r\n\r\n/**\r\n * Add the correct font weight in Chrome, Edge, and Safari.\r\n */\r\n\r\nb,\r\nstrong {\r\n  font-weight: bolder;\r\n}\r\n\r\n/**\r\n * Add the correct font style in Android 4.3-.\r\n */\r\n\r\ndfn {\r\n  font-style: italic;\r\n}\r\n\r\n/**\r\n * Correct the font size and margin on `h1` elements within `section` and\r\n * `article` contexts in Chrome, Firefox, and Safari.\r\n */\r\n\r\nh1 {\r\n  font-size: 2em;\r\n  margin: 0.67em 0;\r\n}\r\n\r\n/**\r\n * Add the correct background and color in IE 9-.\r\n */\r\n\r\nmark {\r\n  background-color: #ff0;\r\n  color: #000;\r\n}\r\n\r\n/**\r\n * Add the correct font size in all browsers.\r\n */\r\n\r\nsmall {\r\n  font-size: 80%;\r\n}\r\n\r\n/**\r\n * Prevent `sub` and `sup` elements from affecting the line height in\r\n * all browsers.\r\n */\r\n\r\nsub,\r\nsup {\r\n  font-size: 75%;\r\n  line-height: 0;\r\n  position: relative;\r\n  vertical-align: baseline;\r\n}\r\n\r\nsub {\r\n  bottom: -0.25em;\r\n}\r\n\r\nsup {\r\n  top: -0.5em;\r\n}\r\n\r\n/* Embedded content\r\n   ========================================================================== */\r\n\r\n/**\r\n * Remove the border on images inside links in IE 10-.\r\n */\r\n\r\nimg {\r\n  border-style: none;\r\n}\r\n\r\n/**\r\n * Hide the overflow in IE.\r\n */\r\n\r\nsvg:not(:root) {\r\n  overflow: hidden;\r\n}\r\n\r\n/* Grouping content\r\n   ========================================================================== */\r\n\r\n/**\r\n * 1. Correct the inheritance and scaling of font size in all browsers.\r\n * 2. Correct the odd `em` font sizing in all browsers.\r\n */\r\n\r\ncode,\r\nkbd,\r\npre,\r\nsamp {\r\n  font-family: monospace, monospace; /* 1 */\r\n  font-size: 1em; /* 2 */\r\n}\r\n\r\n/**\r\n * Add the correct margin in IE 8.\r\n */\r\n\r\nfigure {\r\n  margin: 1em 40px;\r\n}\r\n\r\n/**\r\n * 1. Add the correct box sizing in Firefox.\r\n * 2. Show the overflow in Edge and IE.\r\n */\r\n\r\nhr {\r\n  box-sizing: content-box; /* 1 */\r\n  height: 0; /* 1 */\r\n  overflow: visible; /* 2 */\r\n}\r\n\r\n/* Forms\r\n   ========================================================================== */\r\n\r\n/**\r\n * 1. Change font properties to `inherit` in all browsers (opinionated).\r\n * 2. Remove the margin in Firefox and Safari.\r\n */\r\n\r\nbutton,\r\ninput,\r\nselect,\r\ntextarea {\r\n  font: inherit; /* 1 */\r\n  margin: 0; /* 2 */\r\n}\r\n\r\n/**\r\n * Restore the font weight unset by the previous rule.\r\n */\r\n\r\noptgroup {\r\n  font-weight: bold;\r\n}\r\n\r\n/**\r\n * Show the overflow in IE.\r\n * 1. Show the overflow in Edge.\r\n */\r\n\r\nbutton,\r\ninput { /* 1 */\r\n  overflow: visible;\r\n}\r\n\r\n/**\r\n * Remove the inheritance of text transform in Edge, Firefox, and IE.\r\n * 1. Remove the inheritance of text transform in Firefox.\r\n */\r\n\r\nbutton,\r\nselect { /* 1 */\r\n  text-transform: none;\r\n}\r\n\r\n/**\r\n * 1. Prevent a WebKit bug where (2) destroys native `audio` and `video`\r\n *    controls in Android 4.\r\n * 2. Correct the inability to style clickable types in iOS and Safari.\r\n */\r\n\r\nbutton,\r\nhtml [type=\"button\"], /* 1 */\r\n[type=\"reset\"],\r\n[type=\"submit\"] {\r\n  -webkit-appearance: button; /* 2 */\r\n}\r\n\r\n/**\r\n * Remove the inner border and padding in Firefox.\r\n */\r\n\r\nbutton::-moz-focus-inner,\r\n[type=\"button\"]::-moz-focus-inner,\r\n[type=\"reset\"]::-moz-focus-inner,\r\n[type=\"submit\"]::-moz-focus-inner {\r\n  border-style: none;\r\n  padding: 0;\r\n}\r\n\r\n/**\r\n * Restore the focus styles unset by the previous rule.\r\n */\r\n\r\nbutton:-moz-focusring,\r\n[type=\"button\"]:-moz-focusring,\r\n[type=\"reset\"]:-moz-focusring,\r\n[type=\"submit\"]:-moz-focusring {\r\n  outline: 1px dotted ButtonText;\r\n}\r\n\r\n/**\r\n * Change the border, margin, and padding in all browsers (opinionated).\r\n */\r\n\r\nfieldset {\r\n  border: 1px solid #c0c0c0;\r\n  margin: 0 2px;\r\n  padding: 0.35em 0.625em 0.75em;\r\n}\r\n\r\n/**\r\n * 1. Correct the text wrapping in Edge and IE.\r\n * 2. Correct the color inheritance from `fieldset` elements in IE.\r\n * 3. Remove the padding so developers are not caught out when they zero out\r\n *    `fieldset` elements in all browsers.\r\n */\r\n\r\nlegend {\r\n  box-sizing: border-box; /* 1 */\r\n  color: inherit; /* 2 */\r\n  display: table; /* 1 */\r\n  max-width: 100%; /* 1 */\r\n  padding: 0; /* 3 */\r\n  white-space: normal; /* 1 */\r\n}\r\n\r\n/**\r\n * Remove the default vertical scrollbar in IE.\r\n */\r\n\r\ntextarea {\r\n  overflow: auto;\r\n}\r\n\r\n/**\r\n * 1. Add the correct box sizing in IE 10-.\r\n * 2. Remove the padding in IE 10-.\r\n */\r\n\r\n[type=\"checkbox\"],\r\n[type=\"radio\"] {\r\n  box-sizing: border-box; /* 1 */\r\n  padding: 0; /* 2 */\r\n}\r\n\r\n/**\r\n * Correct the cursor style of increment and decrement buttons in Chrome.\r\n */\r\n\r\n[type=\"number\"]::-webkit-inner-spin-button,\r\n[type=\"number\"]::-webkit-outer-spin-button {\r\n  height: auto;\r\n}\r\n\r\n/**\r\n * 1. Correct the odd appearance in Chrome and Safari.\r\n * 2. Correct the outline style in Safari.\r\n */\r\n\r\n[type=\"search\"] {\r\n  -webkit-appearance: textfield; /* 1 */\r\n  outline-offset: -2px; /* 2 */\r\n}\r\n\r\n/**\r\n * Remove the inner padding and cancel buttons in Chrome and Safari on OS X.\r\n */\r\n\r\n[type=\"search\"]::-webkit-search-cancel-button,\r\n[type=\"search\"]::-webkit-search-decoration {\r\n  -webkit-appearance: none;\r\n}\r\n\r\n/**\r\n * Correct the text style of placeholders in Chrome, Edge, and Safari.\r\n */\r\n\r\n::-webkit-input-placeholder {\r\n  color: inherit;\r\n  opacity: 0.54;\r\n}\r\n\r\n/**\r\n * 1. Correct the inability to style clickable types in iOS and Safari.\r\n * 2. Change font properties to `inherit` in Safari.\r\n */\r\n\r\n::-webkit-file-upload-button {\r\n  -webkit-appearance: button; /* 1 */\r\n  font: inherit; /* 2 */\r\n}\r\n","\r\n\r\n:root {\r\n  /*\r\n   * Typography\r\n   * ======================================================================== */\r\n\r\n  --font-family-base: 'Segoe UI', 'HelveticaNeue-Light', sans-serif;\r\n\r\n  /*\r\n   * Layout\r\n   * ======================================================================== */\r\n\r\n  --max-content-width: 1000px;\r\n\r\n  /*\r\n   * Media queries breakpoints\r\n   * ======================================================================== */\r\n\r\n  --screen-xs-min: 480px;  /* Extra small screen / phone */\r\n  --screen-sm-min: 768px;  /* Small screen / tablet */\r\n  --screen-md-min: 992px;  /* Medium screen / desktop */\r\n  --screen-lg-min: 1200px; /* Large screen / wide desktop */\r\n}\r\n","\r\n@import '../../../node_modules/normalize.css/normalize.css';\r\n\r\n\r\n\r\n@import '../variables.css';\r\n\r\n/*\r\n * Base styles\r\n * ========================================================================== */\r\n\r\nhtml {\r\n  color: #222;\r\n  font-weight: 100;\r\n  font-size: 1em; /* ~16px; */\r\n  font-family: var(--font-family-base);\r\n  line-height: 1.375; /* ~22px */\r\n}\r\n\r\na {\r\n  color: #0074c2;\r\n}\r\n\r\n/*\r\n * Remove text-shadow in selection highlight:\r\n * https://twitter.com/miketaylr/status/12228805301\r\n *\r\n * These selection rule sets have to be separate.\r\n * Customize the background color to match your design.\r\n */\r\n\r\n::-moz-selection {\r\n  background: #b3d4fc;\r\n  text-shadow: none;\r\n}\r\n\r\n::selection {\r\n  background: #b3d4fc;\r\n  text-shadow: none;\r\n}\r\n\r\n/*\r\n * A better looking default horizontal rule\r\n */\r\n\r\nhr {\r\n  display: block;\r\n  height: 1px;\r\n  border: 0;\r\n  border-top: 1px solid #ccc;\r\n  margin: 1em 0;\r\n  padding: 0;\r\n}\r\n\r\n/*\r\n * Remove the gap between audio, canvas, iframes,\r\n * images, videos and the bottom of their containers:\r\n * https://github.com/h5bp/html5-boilerplate/issues/440\r\n */\r\n\r\naudio,\r\ncanvas,\r\niframe,\r\nimg,\r\nsvg,\r\nvideo {\r\n  vertical-align: middle;\r\n}\r\n\r\n/*\r\n * Remove default fieldset styles.\r\n */\r\n\r\nfieldset {\r\n  border: 0;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n\r\n/*\r\n * Allow only vertical resizing of textareas.\r\n */\r\n\r\ntextarea {\r\n  resize: vertical;\r\n}\r\n\r\n/*\r\n * Browser upgrade prompt\r\n * ========================================================================== */\r\n\r\n:global(.browserupgrade) {\r\n  margin: 0.2em 0;\r\n  background: #ccc;\r\n  color: #000;\r\n  padding: 0.2em 0;\r\n}\r\n\r\n/*\r\n * Print styles\r\n * Inlined to avoid the additional HTTP request:\r\n * http://www.phpied.com/delay-loading-your-print-css/\r\n * ========================================================================== */\r\n\r\n@media print {\r\n  *,\r\n  *::before,\r\n  *::after {\r\n    background: transparent !important;\r\n    color: #000 !important; /* Black prints faster: http://www.sanbeiji.com/archives/953 */\r\n    box-shadow: none !important;\r\n    text-shadow: none !important;\r\n  }\r\n\r\n  a,\r\n  a:visited {\r\n    text-decoration: underline;\r\n  }\r\n\r\n  a[href]::after {\r\n    content: ' (' attr(href) ')';\r\n  }\r\n\r\n  abbr[title]::after {\r\n    content: ' (' attr(title) ')';\r\n  }\r\n\r\n  /*\r\n   * Don't show links that are fragment identifiers,\r\n   * or use the `javascript:` pseudo protocol\r\n   */\r\n\r\n  a[href^='#']::after,\r\n  a[href^='javascript:']::after {\r\n    content: '';\r\n  }\r\n\r\n  pre,\r\n  blockquote {\r\n    border: 1px solid #999;\r\n    page-break-inside: avoid;\r\n  }\r\n\r\n  /*\r\n   * Printing Tables:\r\n   * http://css-discuss.incutio.com/wiki/Printing_Tables\r\n   */\r\n\r\n  thead {\r\n    display: table-header-group;\r\n  }\r\n\r\n  tr,\r\n  img {\r\n    page-break-inside: avoid;\r\n  }\r\n\r\n  img {\r\n    max-width: 100% !important;\r\n  }\r\n\r\n  p,\r\n  h2,\r\n  h3 {\r\n    orphans: 3;\r\n    widows: 3;\r\n  }\r\n\r\n  h2,\r\n  h3 {\r\n    page-break-after: avoid;\r\n  }\r\n}\r\n"],"sourceRoot":"webpack://"}]);
+  exports.push([module.id, "/*! normalize.css v4.1.1 | MIT License | github.com/necolas/normalize.css */\n\n/**\n * 1. Change the default font family in all browsers (opinionated).\n * 2. Prevent adjustments of font size after orientation changes in IE and iOS.\n */\n\nhtml {\n  font-family: sans-serif; /* 1 */\n  -ms-text-size-adjust: 100%; /* 2 */\n  -webkit-text-size-adjust: 100%; /* 2 */\n}\n\n/**\n * Remove the margin in all browsers (opinionated).\n */\n\nbody {\n  margin: 0;\n}\n\n/* HTML5 display definitions\n   ========================================================================== */\n\n/**\n * Add the correct display in IE 9-.\n * 1. Add the correct display in Edge, IE, and Firefox.\n * 2. Add the correct display in IE.\n */\n\narticle,\naside,\ndetails, /* 1 */\nfigcaption,\nfigure,\nfooter,\nheader,\nmain, /* 2 */\nmenu,\nnav,\nsection,\nsummary { /* 1 */\n  display: block;\n}\n\n/**\n * Add the correct display in IE 9-.\n */\n\naudio,\ncanvas,\nprogress,\nvideo {\n  display: inline-block;\n}\n\n/**\n * Add the correct display in iOS 4-7.\n */\n\naudio:not([controls]) {\n  display: none;\n  height: 0;\n}\n\n/**\n * Add the correct vertical alignment in Chrome, Firefox, and Opera.\n */\n\nprogress {\n  vertical-align: baseline;\n}\n\n/**\n * Add the correct display in IE 10-.\n * 1. Add the correct display in IE.\n */\n\ntemplate, /* 1 */\n[hidden] {\n  display: none;\n}\n\n/* Links\n   ========================================================================== */\n\n/**\n * 1. Remove the gray background on active links in IE 10.\n * 2. Remove gaps in links underline in iOS 8+ and Safari 8+.\n */\n\na {\n  background-color: transparent; /* 1 */\n  -webkit-text-decoration-skip: objects; /* 2 */\n}\n\n/**\n * Remove the outline on focused links when they are also active or hovered\n * in all browsers (opinionated).\n */\n\na:active,\na:hover {\n  outline-width: 0;\n}\n\n/* Text-level semantics\n   ========================================================================== */\n\n/**\n * 1. Remove the bottom border in Firefox 39-.\n * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.\n */\n\nabbr[title] {\n  border-bottom: none; /* 1 */\n  text-decoration: underline; /* 2 */\n  text-decoration: underline dotted; /* 2 */\n}\n\n/**\n * Prevent the duplicate application of `bolder` by the next rule in Safari 6.\n */\n\nb,\nstrong {\n  font-weight: inherit;\n}\n\n/**\n * Add the correct font weight in Chrome, Edge, and Safari.\n */\n\nb,\nstrong {\n  font-weight: bolder;\n}\n\n/**\n * Add the correct font style in Android 4.3-.\n */\n\ndfn {\n  font-style: italic;\n}\n\n/**\n * Correct the font size and margin on `h1` elements within `section` and\n * `article` contexts in Chrome, Firefox, and Safari.\n */\n\nh1 {\n  font-size: 2em;\n  margin: 0.67em 0;\n}\n\n/**\n * Add the correct background and color in IE 9-.\n */\n\nmark {\n  background-color: #ff0;\n  color: #000;\n}\n\n/**\n * Add the correct font size in all browsers.\n */\n\nsmall {\n  font-size: 80%;\n}\n\n/**\n * Prevent `sub` and `sup` elements from affecting the line height in\n * all browsers.\n */\n\nsub,\nsup {\n  font-size: 75%;\n  line-height: 0;\n  position: relative;\n  vertical-align: baseline;\n}\n\nsub {\n  bottom: -0.25em;\n}\n\nsup {\n  top: -0.5em;\n}\n\n/* Embedded content\n   ========================================================================== */\n\n/**\n * Remove the border on images inside links in IE 10-.\n */\n\nimg {\n  border-style: none;\n}\n\n/**\n * Hide the overflow in IE.\n */\n\nsvg:not(:root) {\n  overflow: hidden;\n}\n\n/* Grouping content\n   ========================================================================== */\n\n/**\n * 1. Correct the inheritance and scaling of font size in all browsers.\n * 2. Correct the odd `em` font sizing in all browsers.\n */\n\ncode,\nkbd,\npre,\nsamp {\n  font-family: monospace, monospace; /* 1 */\n  font-size: 1em; /* 2 */\n}\n\n/**\n * Add the correct margin in IE 8.\n */\n\nfigure {\n  margin: 1em 40px;\n}\n\n/**\n * 1. Add the correct box sizing in Firefox.\n * 2. Show the overflow in Edge and IE.\n */\n\nhr {\n  -webkit-box-sizing: content-box;\n          box-sizing: content-box; /* 1 */\n  height: 0; /* 1 */\n  overflow: visible; /* 2 */\n}\n\n/* Forms\n   ========================================================================== */\n\n/**\n * 1. Change font properties to `inherit` in all browsers (opinionated).\n * 2. Remove the margin in Firefox and Safari.\n */\n\nbutton,\ninput,\nselect,\ntextarea {\n  font: inherit; /* 1 */\n  margin: 0; /* 2 */\n}\n\n/**\n * Restore the font weight unset by the previous rule.\n */\n\noptgroup {\n  font-weight: bold;\n}\n\n/**\n * Show the overflow in IE.\n * 1. Show the overflow in Edge.\n */\n\nbutton,\ninput { /* 1 */\n  overflow: visible;\n}\n\n/**\n * Remove the inheritance of text transform in Edge, Firefox, and IE.\n * 1. Remove the inheritance of text transform in Firefox.\n */\n\nbutton,\nselect { /* 1 */\n  text-transform: none;\n}\n\n/**\n * 1. Prevent a WebKit bug where (2) destroys native `audio` and `video`\n *    controls in Android 4.\n * 2. Correct the inability to style clickable types in iOS and Safari.\n */\n\nbutton,\nhtml [type=\"button\"], /* 1 */\n[type=\"reset\"],\n[type=\"submit\"] {\n  -webkit-appearance: button; /* 2 */\n}\n\n/**\n * Remove the inner border and padding in Firefox.\n */\n\nbutton::-moz-focus-inner,\n[type=\"button\"]::-moz-focus-inner,\n[type=\"reset\"]::-moz-focus-inner,\n[type=\"submit\"]::-moz-focus-inner {\n  border-style: none;\n  padding: 0;\n}\n\n/**\n * Restore the focus styles unset by the previous rule.\n */\n\nbutton:-moz-focusring,\n[type=\"button\"]:-moz-focusring,\n[type=\"reset\"]:-moz-focusring,\n[type=\"submit\"]:-moz-focusring {\n  outline: 1px dotted ButtonText;\n}\n\n/**\n * Change the border, margin, and padding in all browsers (opinionated).\n */\n\nfieldset {\n  border: 1px solid #c0c0c0;\n  margin: 0 2px;\n  padding: 0.35em 0.625em 0.75em;\n}\n\n/**\n * 1. Correct the text wrapping in Edge and IE.\n * 2. Correct the color inheritance from `fieldset` elements in IE.\n * 3. Remove the padding so developers are not caught out when they zero out\n *    `fieldset` elements in all browsers.\n */\n\nlegend {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box; /* 1 */\n  color: inherit; /* 2 */\n  display: table; /* 1 */\n  max-width: 100%; /* 1 */\n  padding: 0; /* 3 */\n  white-space: normal; /* 1 */\n}\n\n/**\n * Remove the default vertical scrollbar in IE.\n */\n\ntextarea {\n  overflow: auto;\n}\n\n/**\n * 1. Add the correct box sizing in IE 10-.\n * 2. Remove the padding in IE 10-.\n */\n\n[type=\"checkbox\"],\n[type=\"radio\"] {\n  -webkit-box-sizing: border-box;\n          box-sizing: border-box; /* 1 */\n  padding: 0; /* 2 */\n}\n\n/**\n * Correct the cursor style of increment and decrement buttons in Chrome.\n */\n\n[type=\"number\"]::-webkit-inner-spin-button,\n[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto;\n}\n\n/**\n * 1. Correct the odd appearance in Chrome and Safari.\n * 2. Correct the outline style in Safari.\n */\n\n[type=\"search\"] {\n  -webkit-appearance: textfield; /* 1 */\n  outline-offset: -2px; /* 2 */\n}\n\n/**\n * Remove the inner padding and cancel buttons in Chrome and Safari on OS X.\n */\n\n[type=\"search\"]::-webkit-search-cancel-button,\n[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none;\n}\n\n/**\n * Correct the text style of placeholders in Chrome, Edge, and Safari.\n */\n\n::-webkit-input-placeholder {\n  color: inherit;\n  opacity: 0.54;\n}\n\n/**\n * 1. Correct the inability to style clickable types in iOS and Safari.\n * 2. Change font properties to `inherit` in Safari.\n */\n\n::-webkit-file-upload-button {\n  -webkit-appearance: button; /* 1 */\n  font: inherit; /* 2 */\n}\n\n:root {\r\n  /*\r\n   * Typography\r\n   * ======================================================================== */\r\n\r\n  /*\r\n   * Layout\r\n   * ======================================================================== */\r\n\r\n  /*\r\n   * Media queries breakpoints\r\n   * ======================================================================== */  /* Extra small screen / phone */  /* Small screen / tablet */  /* Medium screen / desktop */ /* Large screen / wide desktop */\r\n}\n\n/*\r\n * Base styles\r\n * ========================================================================== */\n\nhtml {\r\n  color: #222;\r\n  font-weight: 100;\r\n  font-size: 1em; /* ~16px; */\r\n  font-family: 'Segoe UI', 'HelveticaNeue-Light', sans-serif;\r\n  line-height: 1.375; /* ~22px */\r\n}\n\na {\r\n  color: #0074c2;\r\n}\n\n/*\r\n * Remove text-shadow in selection highlight:\r\n * https://twitter.com/miketaylr/status/12228805301\r\n *\r\n * These selection rule sets have to be separate.\r\n * Customize the background color to match your design.\r\n */\n\n::-moz-selection {\r\n  background: #b3d4fc;\r\n  text-shadow: none;\r\n}\n\n::selection {\r\n  background: #b3d4fc;\r\n  text-shadow: none;\r\n}\n\n/*\r\n * A better looking default horizontal rule\r\n */\n\nhr {\r\n  display: block;\r\n  height: 1px;\r\n  border: 0;\r\n  border-top: 1px solid #ccc;\r\n  margin: 1em 0;\r\n  padding: 0;\r\n}\n\n/*\r\n * Remove the gap between audio, canvas, iframes,\r\n * images, videos and the bottom of their containers:\r\n * https://github.com/h5bp/html5-boilerplate/issues/440\r\n */\n\naudio,\r\ncanvas,\r\niframe,\r\nimg,\r\nsvg,\r\nvideo {\r\n  vertical-align: middle;\r\n}\n\n/*\r\n * Remove default fieldset styles.\r\n */\n\nfieldset {\r\n  border: 0;\r\n  margin: 0;\r\n  padding: 0;\r\n}\n\n/*\r\n * Allow only vertical resizing of textareas.\r\n */\n\ntextarea {\r\n  resize: vertical;\r\n}\n\n/*\r\n * Browser upgrade prompt\r\n * ========================================================================== */\n\n.browserupgrade {\r\n  margin: 0.2em 0;\r\n  background: #ccc;\r\n  color: #000;\r\n  padding: 0.2em 0;\r\n}\n\n/*\r\n * Print styles\r\n * Inlined to avoid the additional HTTP request:\r\n * http://www.phpied.com/delay-loading-your-print-css/\r\n * ========================================================================== */\n\n@media print {\r\n  *,\r\n  *::before,\r\n  *::after {\r\n    background: transparent !important;\r\n    color: #000 !important; /* Black prints faster: http://www.sanbeiji.com/archives/953 */\r\n    -webkit-box-shadow: none !important;\r\n            box-shadow: none !important;\r\n    text-shadow: none !important;\r\n  }\r\n\r\n  a,\r\n  a:visited {\r\n    text-decoration: underline;\r\n  }\r\n\r\n  a[href]::after {\r\n    content: ' (' attr(href) ')';\r\n  }\r\n\r\n  abbr[title]::after {\r\n    content: ' (' attr(title) ')';\r\n  }\r\n\r\n  /*\r\n   * Don't show links that are fragment identifiers,\r\n   * or use the `javascript:` pseudo protocol\r\n   */\r\n\r\n  a[href^='#']::after,\r\n  a[href^='javascript:']::after {\r\n    content: '';\r\n  }\r\n\r\n  pre,\r\n  blockquote {\r\n    border: 1px solid #999;\r\n    page-break-inside: avoid;\r\n  }\r\n\r\n  /*\r\n   * Printing Tables:\r\n   * http://css-discuss.incutio.com/wiki/Printing_Tables\r\n   */\r\n\r\n  thead {\r\n    display: table-header-group;\r\n  }\r\n\r\n  tr,\r\n  img {\r\n    page-break-inside: avoid;\r\n  }\r\n\r\n  img {\r\n    max-width: 100% !important;\r\n  }\r\n\r\n  p,\r\n  h2,\r\n  h3 {\r\n    orphans: 3;\r\n    widows: 3;\r\n  }\r\n\r\n  h2,\r\n  h3 {\r\n    page-break-after: avoid;\r\n  }\r\n}\r\n", "", {"version":3,"sources":["/../node_modules/normalize.css/normalize.css","/./components/variables.css","/./components/App/App.css"],"names":[],"mappings":"AAAA,4EAA4E;;AAE5E;;;GAGG;;AAEH;EACE,wBAAwB,CAAC,OAAO;EAChC,2BAA2B,CAAC,OAAO;EACnC,+BAA+B,CAAC,OAAO;CACxC;;AAED;;GAEG;;AAEH;EACE,UAAU;CACX;;AAED;gFACgF;;AAEhF;;;;GAIG;;AAEH;;;;;;;;;;;UAWU,OAAO;EACf,eAAe;CAChB;;AAED;;GAEG;;AAEH;;;;EAIE,sBAAsB;CACvB;;AAED;;GAEG;;AAEH;EACE,cAAc;EACd,UAAU;CACX;;AAED;;GAEG;;AAEH;EACE,yBAAyB;CAC1B;;AAED;;;GAGG;;AAEH;;EAEE,cAAc;CACf;;AAED;gFACgF;;AAEhF;;;GAGG;;AAEH;EACE,8BAA8B,CAAC,OAAO;EACtC,sCAAsC,CAAC,OAAO;CAC/C;;AAED;;;GAGG;;AAEH;;EAEE,iBAAiB;CAClB;;AAED;gFACgF;;AAEhF;;;GAGG;;AAEH;EACE,oBAAoB,CAAC,OAAO;EAC5B,2BAA2B,CAAC,OAAO;EACnC,kCAAkC,CAAC,OAAO;CAC3C;;AAED;;GAEG;;AAEH;;EAEE,qBAAqB;CACtB;;AAED;;GAEG;;AAEH;;EAEE,oBAAoB;CACrB;;AAED;;GAEG;;AAEH;EACE,mBAAmB;CACpB;;AAED;;;GAGG;;AAEH;EACE,eAAe;EACf,iBAAiB;CAClB;;AAED;;GAEG;;AAEH;EACE,uBAAuB;EACvB,YAAY;CACb;;AAED;;GAEG;;AAEH;EACE,eAAe;CAChB;;AAED;;;GAGG;;AAEH;;EAEE,eAAe;EACf,eAAe;EACf,mBAAmB;EACnB,yBAAyB;CAC1B;;AAED;EACE,gBAAgB;CACjB;;AAED;EACE,YAAY;CACb;;AAED;gFACgF;;AAEhF;;GAEG;;AAEH;EACE,mBAAmB;CACpB;;AAED;;GAEG;;AAEH;EACE,iBAAiB;CAClB;;AAED;gFACgF;;AAEhF;;;GAGG;;AAEH;;;;EAIE,kCAAkC,CAAC,OAAO;EAC1C,eAAe,CAAC,OAAO;CACxB;;AAED;;GAEG;;AAEH;EACE,iBAAiB;CAClB;;AAED;;;GAGG;;AAEH;EACE,gCAAwB;UAAxB,wBAAwB,CAAC,OAAO;EAChC,UAAU,CAAC,OAAO;EAClB,kBAAkB,CAAC,OAAO;CAC3B;;AAED;gFACgF;;AAEhF;;;GAGG;;AAEH;;;;EAIE,cAAc,CAAC,OAAO;EACtB,UAAU,CAAC,OAAO;CACnB;;AAED;;GAEG;;AAEH;EACE,kBAAkB;CACnB;;AAED;;;GAGG;;AAEH;QACQ,OAAO;EACb,kBAAkB;CACnB;;AAED;;;GAGG;;AAEH;SACS,OAAO;EACd,qBAAqB;CACtB;;AAED;;;;GAIG;;AAEH;;;;EAIE,2BAA2B,CAAC,OAAO;CACpC;;AAED;;GAEG;;AAEH;;;;EAIE,mBAAmB;EACnB,WAAW;CACZ;;AAED;;GAEG;;AAEH;;;;EAIE,+BAA+B;CAChC;;AAED;;GAEG;;AAEH;EACE,0BAA0B;EAC1B,cAAc;EACd,+BAA+B;CAChC;;AAED;;;;;GAKG;;AAEH;EACE,+BAAuB;UAAvB,uBAAuB,CAAC,OAAO;EAC/B,eAAe,CAAC,OAAO;EACvB,eAAe,CAAC,OAAO;EACvB,gBAAgB,CAAC,OAAO;EACxB,WAAW,CAAC,OAAO;EACnB,oBAAoB,CAAC,OAAO;CAC7B;;AAED;;GAEG;;AAEH;EACE,eAAe;CAChB;;AAED;;;GAGG;;AAEH;;EAEE,+BAAuB;UAAvB,uBAAuB,CAAC,OAAO;EAC/B,WAAW,CAAC,OAAO;CACpB;;AAED;;GAEG;;AAEH;;EAEE,aAAa;CACd;;AAED;;;GAGG;;AAEH;EACE,8BAA8B,CAAC,OAAO;EACtC,qBAAqB,CAAC,OAAO;CAC9B;;AAED;;GAEG;;AAEH;;EAEE,yBAAyB;CAC1B;;AAED;;GAEG;;AAEH;EACE,eAAe;EACf,cAAc;CACf;;AAED;;;GAGG;;AAEH;EACE,2BAA2B,CAAC,OAAO;EACnC,cAAc,CAAC,OAAO;CACvB;;AChaD;EACE;;gFAE8E;;EAI9E;;gFAE8E;;EAI9E;;gFAE8E,EAErD,gCAAgC,EAChC,2BAA2B,EAC3B,6BAA6B,CAC7B,iCAAiC;CAC3D;;AChBD;;gFAEgF;;AAEhF;EACE,YAAY;EACZ,iBAAiB;EACjB,eAAe,CAAC,YAAY;EAC5B,2DAAqC;EACrC,mBAAmB,CAAC,WAAW;CAChC;;AAED;EACE,eAAe;CAChB;;AAED;;;;;;GAMG;;AAEH;EACE,oBAAoB;EACpB,kBAAkB;CACnB;;AAED;EACE,oBAAoB;EACpB,kBAAkB;CACnB;;AAED;;GAEG;;AAEH;EACE,eAAe;EACf,YAAY;EACZ,UAAU;EACV,2BAA2B;EAC3B,cAAc;EACd,WAAW;CACZ;;AAED;;;;GAIG;;AAEH;;;;;;EAME,uBAAuB;CACxB;;AAED;;GAEG;;AAEH;EACE,UAAU;EACV,UAAU;EACV,WAAW;CACZ;;AAED;;GAEG;;AAEH;EACE,iBAAiB;CAClB;;AAED;;gFAEgF;;AAEhF;EACE,gBAAgB;EAChB,iBAAiB;EACjB,YAAY;EACZ,iBAAiB;CAClB;;AAED;;;;gFAIgF;;AAEhF;EACE;;;IAGE,mCAAmC;IACnC,uBAAuB,CAAC,+DAA+D;IACvF,oCAA4B;YAA5B,4BAA4B;IAC5B,6BAA6B;GAC9B;;EAED;;IAEE,2BAA2B;GAC5B;;EAED;IACE,6BAA6B;GAC9B;;EAED;IACE,8BAA8B;GAC/B;;EAED;;;KAGG;;EAEH;;IAEE,YAAY;GACb;;EAED;;IAEE,uBAAuB;IACvB,yBAAyB;GAC1B;;EAED;;;KAGG;;EAEH;IACE,4BAA4B;GAC7B;;EAED;;IAEE,yBAAyB;GAC1B;;EAED;IACE,2BAA2B;GAC5B;;EAED;;;IAGE,WAAW;IACX,UAAU;GACX;;EAED;;IAEE,wBAAwB;GACzB;CACF","file":"App.css","sourcesContent":["/*! normalize.css v4.1.1 | MIT License | github.com/necolas/normalize.css */\n\n/**\n * 1. Change the default font family in all browsers (opinionated).\n * 2. Prevent adjustments of font size after orientation changes in IE and iOS.\n */\n\nhtml {\n  font-family: sans-serif; /* 1 */\n  -ms-text-size-adjust: 100%; /* 2 */\n  -webkit-text-size-adjust: 100%; /* 2 */\n}\n\n/**\n * Remove the margin in all browsers (opinionated).\n */\n\nbody {\n  margin: 0;\n}\n\n/* HTML5 display definitions\n   ========================================================================== */\n\n/**\n * Add the correct display in IE 9-.\n * 1. Add the correct display in Edge, IE, and Firefox.\n * 2. Add the correct display in IE.\n */\n\narticle,\naside,\ndetails, /* 1 */\nfigcaption,\nfigure,\nfooter,\nheader,\nmain, /* 2 */\nmenu,\nnav,\nsection,\nsummary { /* 1 */\n  display: block;\n}\n\n/**\n * Add the correct display in IE 9-.\n */\n\naudio,\ncanvas,\nprogress,\nvideo {\n  display: inline-block;\n}\n\n/**\n * Add the correct display in iOS 4-7.\n */\n\naudio:not([controls]) {\n  display: none;\n  height: 0;\n}\n\n/**\n * Add the correct vertical alignment in Chrome, Firefox, and Opera.\n */\n\nprogress {\n  vertical-align: baseline;\n}\n\n/**\n * Add the correct display in IE 10-.\n * 1. Add the correct display in IE.\n */\n\ntemplate, /* 1 */\n[hidden] {\n  display: none;\n}\n\n/* Links\n   ========================================================================== */\n\n/**\n * 1. Remove the gray background on active links in IE 10.\n * 2. Remove gaps in links underline in iOS 8+ and Safari 8+.\n */\n\na {\n  background-color: transparent; /* 1 */\n  -webkit-text-decoration-skip: objects; /* 2 */\n}\n\n/**\n * Remove the outline on focused links when they are also active or hovered\n * in all browsers (opinionated).\n */\n\na:active,\na:hover {\n  outline-width: 0;\n}\n\n/* Text-level semantics\n   ========================================================================== */\n\n/**\n * 1. Remove the bottom border in Firefox 39-.\n * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.\n */\n\nabbr[title] {\n  border-bottom: none; /* 1 */\n  text-decoration: underline; /* 2 */\n  text-decoration: underline dotted; /* 2 */\n}\n\n/**\n * Prevent the duplicate application of `bolder` by the next rule in Safari 6.\n */\n\nb,\nstrong {\n  font-weight: inherit;\n}\n\n/**\n * Add the correct font weight in Chrome, Edge, and Safari.\n */\n\nb,\nstrong {\n  font-weight: bolder;\n}\n\n/**\n * Add the correct font style in Android 4.3-.\n */\n\ndfn {\n  font-style: italic;\n}\n\n/**\n * Correct the font size and margin on `h1` elements within `section` and\n * `article` contexts in Chrome, Firefox, and Safari.\n */\n\nh1 {\n  font-size: 2em;\n  margin: 0.67em 0;\n}\n\n/**\n * Add the correct background and color in IE 9-.\n */\n\nmark {\n  background-color: #ff0;\n  color: #000;\n}\n\n/**\n * Add the correct font size in all browsers.\n */\n\nsmall {\n  font-size: 80%;\n}\n\n/**\n * Prevent `sub` and `sup` elements from affecting the line height in\n * all browsers.\n */\n\nsub,\nsup {\n  font-size: 75%;\n  line-height: 0;\n  position: relative;\n  vertical-align: baseline;\n}\n\nsub {\n  bottom: -0.25em;\n}\n\nsup {\n  top: -0.5em;\n}\n\n/* Embedded content\n   ========================================================================== */\n\n/**\n * Remove the border on images inside links in IE 10-.\n */\n\nimg {\n  border-style: none;\n}\n\n/**\n * Hide the overflow in IE.\n */\n\nsvg:not(:root) {\n  overflow: hidden;\n}\n\n/* Grouping content\n   ========================================================================== */\n\n/**\n * 1. Correct the inheritance and scaling of font size in all browsers.\n * 2. Correct the odd `em` font sizing in all browsers.\n */\n\ncode,\nkbd,\npre,\nsamp {\n  font-family: monospace, monospace; /* 1 */\n  font-size: 1em; /* 2 */\n}\n\n/**\n * Add the correct margin in IE 8.\n */\n\nfigure {\n  margin: 1em 40px;\n}\n\n/**\n * 1. Add the correct box sizing in Firefox.\n * 2. Show the overflow in Edge and IE.\n */\n\nhr {\n  box-sizing: content-box; /* 1 */\n  height: 0; /* 1 */\n  overflow: visible; /* 2 */\n}\n\n/* Forms\n   ========================================================================== */\n\n/**\n * 1. Change font properties to `inherit` in all browsers (opinionated).\n * 2. Remove the margin in Firefox and Safari.\n */\n\nbutton,\ninput,\nselect,\ntextarea {\n  font: inherit; /* 1 */\n  margin: 0; /* 2 */\n}\n\n/**\n * Restore the font weight unset by the previous rule.\n */\n\noptgroup {\n  font-weight: bold;\n}\n\n/**\n * Show the overflow in IE.\n * 1. Show the overflow in Edge.\n */\n\nbutton,\ninput { /* 1 */\n  overflow: visible;\n}\n\n/**\n * Remove the inheritance of text transform in Edge, Firefox, and IE.\n * 1. Remove the inheritance of text transform in Firefox.\n */\n\nbutton,\nselect { /* 1 */\n  text-transform: none;\n}\n\n/**\n * 1. Prevent a WebKit bug where (2) destroys native `audio` and `video`\n *    controls in Android 4.\n * 2. Correct the inability to style clickable types in iOS and Safari.\n */\n\nbutton,\nhtml [type=\"button\"], /* 1 */\n[type=\"reset\"],\n[type=\"submit\"] {\n  -webkit-appearance: button; /* 2 */\n}\n\n/**\n * Remove the inner border and padding in Firefox.\n */\n\nbutton::-moz-focus-inner,\n[type=\"button\"]::-moz-focus-inner,\n[type=\"reset\"]::-moz-focus-inner,\n[type=\"submit\"]::-moz-focus-inner {\n  border-style: none;\n  padding: 0;\n}\n\n/**\n * Restore the focus styles unset by the previous rule.\n */\n\nbutton:-moz-focusring,\n[type=\"button\"]:-moz-focusring,\n[type=\"reset\"]:-moz-focusring,\n[type=\"submit\"]:-moz-focusring {\n  outline: 1px dotted ButtonText;\n}\n\n/**\n * Change the border, margin, and padding in all browsers (opinionated).\n */\n\nfieldset {\n  border: 1px solid #c0c0c0;\n  margin: 0 2px;\n  padding: 0.35em 0.625em 0.75em;\n}\n\n/**\n * 1. Correct the text wrapping in Edge and IE.\n * 2. Correct the color inheritance from `fieldset` elements in IE.\n * 3. Remove the padding so developers are not caught out when they zero out\n *    `fieldset` elements in all browsers.\n */\n\nlegend {\n  box-sizing: border-box; /* 1 */\n  color: inherit; /* 2 */\n  display: table; /* 1 */\n  max-width: 100%; /* 1 */\n  padding: 0; /* 3 */\n  white-space: normal; /* 1 */\n}\n\n/**\n * Remove the default vertical scrollbar in IE.\n */\n\ntextarea {\n  overflow: auto;\n}\n\n/**\n * 1. Add the correct box sizing in IE 10-.\n * 2. Remove the padding in IE 10-.\n */\n\n[type=\"checkbox\"],\n[type=\"radio\"] {\n  box-sizing: border-box; /* 1 */\n  padding: 0; /* 2 */\n}\n\n/**\n * Correct the cursor style of increment and decrement buttons in Chrome.\n */\n\n[type=\"number\"]::-webkit-inner-spin-button,\n[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto;\n}\n\n/**\n * 1. Correct the odd appearance in Chrome and Safari.\n * 2. Correct the outline style in Safari.\n */\n\n[type=\"search\"] {\n  -webkit-appearance: textfield; /* 1 */\n  outline-offset: -2px; /* 2 */\n}\n\n/**\n * Remove the inner padding and cancel buttons in Chrome and Safari on OS X.\n */\n\n[type=\"search\"]::-webkit-search-cancel-button,\n[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none;\n}\n\n/**\n * Correct the text style of placeholders in Chrome, Edge, and Safari.\n */\n\n::-webkit-input-placeholder {\n  color: inherit;\n  opacity: 0.54;\n}\n\n/**\n * 1. Correct the inability to style clickable types in iOS and Safari.\n * 2. Change font properties to `inherit` in Safari.\n */\n\n::-webkit-file-upload-button {\n  -webkit-appearance: button; /* 1 */\n  font: inherit; /* 2 */\n}\n","\r\n\r\n:root {\r\n  /*\r\n   * Typography\r\n   * ======================================================================== */\r\n\r\n  --font-family-base: 'Segoe UI', 'HelveticaNeue-Light', sans-serif;\r\n\r\n  /*\r\n   * Layout\r\n   * ======================================================================== */\r\n\r\n  --max-content-width: 1000px;\r\n\r\n  /*\r\n   * Media queries breakpoints\r\n   * ======================================================================== */\r\n\r\n  --screen-xs-min: 480px;  /* Extra small screen / phone */\r\n  --screen-sm-min: 768px;  /* Small screen / tablet */\r\n  --screen-md-min: 992px;  /* Medium screen / desktop */\r\n  --screen-lg-min: 1200px; /* Large screen / wide desktop */\r\n}\r\n","\r\n@import '../../../node_modules/normalize.css/normalize.css';\r\n\r\n\r\n\r\n@import '../variables.css';\r\n\r\n/*\r\n * Base styles\r\n * ========================================================================== */\r\n\r\nhtml {\r\n  color: #222;\r\n  font-weight: 100;\r\n  font-size: 1em; /* ~16px; */\r\n  font-family: var(--font-family-base);\r\n  line-height: 1.375; /* ~22px */\r\n}\r\n\r\na {\r\n  color: #0074c2;\r\n}\r\n\r\n/*\r\n * Remove text-shadow in selection highlight:\r\n * https://twitter.com/miketaylr/status/12228805301\r\n *\r\n * These selection rule sets have to be separate.\r\n * Customize the background color to match your design.\r\n */\r\n\r\n::-moz-selection {\r\n  background: #b3d4fc;\r\n  text-shadow: none;\r\n}\r\n\r\n::selection {\r\n  background: #b3d4fc;\r\n  text-shadow: none;\r\n}\r\n\r\n/*\r\n * A better looking default horizontal rule\r\n */\r\n\r\nhr {\r\n  display: block;\r\n  height: 1px;\r\n  border: 0;\r\n  border-top: 1px solid #ccc;\r\n  margin: 1em 0;\r\n  padding: 0;\r\n}\r\n\r\n/*\r\n * Remove the gap between audio, canvas, iframes,\r\n * images, videos and the bottom of their containers:\r\n * https://github.com/h5bp/html5-boilerplate/issues/440\r\n */\r\n\r\naudio,\r\ncanvas,\r\niframe,\r\nimg,\r\nsvg,\r\nvideo {\r\n  vertical-align: middle;\r\n}\r\n\r\n/*\r\n * Remove default fieldset styles.\r\n */\r\n\r\nfieldset {\r\n  border: 0;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n\r\n/*\r\n * Allow only vertical resizing of textareas.\r\n */\r\n\r\ntextarea {\r\n  resize: vertical;\r\n}\r\n\r\n/*\r\n * Browser upgrade prompt\r\n * ========================================================================== */\r\n\r\n:global(.browserupgrade) {\r\n  margin: 0.2em 0;\r\n  background: #ccc;\r\n  color: #000;\r\n  padding: 0.2em 0;\r\n}\r\n\r\n/*\r\n * Print styles\r\n * Inlined to avoid the additional HTTP request:\r\n * http://www.phpied.com/delay-loading-your-print-css/\r\n * ========================================================================== */\r\n\r\n@media print {\r\n  *,\r\n  *::before,\r\n  *::after {\r\n    background: transparent !important;\r\n    color: #000 !important; /* Black prints faster: http://www.sanbeiji.com/archives/953 */\r\n    box-shadow: none !important;\r\n    text-shadow: none !important;\r\n  }\r\n\r\n  a,\r\n  a:visited {\r\n    text-decoration: underline;\r\n  }\r\n\r\n  a[href]::after {\r\n    content: ' (' attr(href) ')';\r\n  }\r\n\r\n  abbr[title]::after {\r\n    content: ' (' attr(title) ')';\r\n  }\r\n\r\n  /*\r\n   * Don't show links that are fragment identifiers,\r\n   * or use the `javascript:` pseudo protocol\r\n   */\r\n\r\n  a[href^='#']::after,\r\n  a[href^='javascript:']::after {\r\n    content: '';\r\n  }\r\n\r\n  pre,\r\n  blockquote {\r\n    border: 1px solid #999;\r\n    page-break-inside: avoid;\r\n  }\r\n\r\n  /*\r\n   * Printing Tables:\r\n   * http://css-discuss.incutio.com/wiki/Printing_Tables\r\n   */\r\n\r\n  thead {\r\n    display: table-header-group;\r\n  }\r\n\r\n  tr,\r\n  img {\r\n    page-break-inside: avoid;\r\n  }\r\n\r\n  img {\r\n    max-width: 100% !important;\r\n  }\r\n\r\n  p,\r\n  h2,\r\n  h3 {\r\n    orphans: 3;\r\n    widows: 3;\r\n  }\r\n\r\n  h2,\r\n  h3 {\r\n    page-break-after: avoid;\r\n  }\r\n}\r\n"],"sourceRoot":"webpack://"}]);
   
   // exports
 
 
 /***/ },
-/* 51 */
+/* 54 */
 /***/ function(module, exports) {
 
   /*
@@ -2004,12 +2194,12 @@ module.exports =
 
 
 /***/ },
-/* 52 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
   
-  var _assign = __webpack_require__(29);
+  var _assign = __webpack_require__(32);
   
   var _assign2 = _interopRequireDefault(_assign);
   
@@ -2017,11 +2207,11 @@ module.exports =
   
   var _stringify2 = _interopRequireDefault(_stringify);
   
-  var _slicedToArray2 = __webpack_require__(53);
+  var _slicedToArray2 = __webpack_require__(56);
   
   var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
   
-  var _getIterator2 = __webpack_require__(28);
+  var _getIterator2 = __webpack_require__(31);
   
   var _getIterator3 = _interopRequireDefault(_getIterator2);
   
@@ -2165,13 +2355,13 @@ module.exports =
   module.exports = insertCss;
 
 /***/ },
-/* 53 */
+/* 56 */
 /***/ function(module, exports) {
 
   module.exports = require("babel-runtime/helpers/slicedToArray");
 
 /***/ },
-/* 54 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -2180,27 +2370,27 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Header = __webpack_require__(56);
+  var _Header = __webpack_require__(59);
   
   var _Header2 = _interopRequireDefault(_Header);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
-  var _Navigation = __webpack_require__(65);
+  var _Navigation = __webpack_require__(68);
   
   var _Navigation2 = _interopRequireDefault(_Navigation);
   
-  var _bmf = __webpack_require__(69);
+  var _bmf = __webpack_require__(72);
   
   var _bmf2 = _interopRequireDefault(_bmf);
   
@@ -2232,18 +2422,18 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Header2.default)(Header);
 
 /***/ },
-/* 55 */
+/* 58 */
 /***/ function(module, exports) {
 
   module.exports = require("isomorphic-style-loader/lib/withStyles");
 
 /***/ },
-/* 56 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(57);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(60);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -2258,8 +2448,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Header.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Header.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Header.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Header.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -2272,10 +2462,10 @@ module.exports =
     
 
 /***/ },
-/* 57 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -2295,7 +2485,7 @@ module.exports =
   };
 
 /***/ },
-/* 58 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -2304,39 +2494,39 @@ module.exports =
     value: true
   });
   
-  var _extends2 = __webpack_require__(59);
+  var _extends2 = __webpack_require__(62);
   
   var _extends3 = _interopRequireDefault(_extends2);
   
-  var _objectWithoutProperties2 = __webpack_require__(60);
+  var _objectWithoutProperties2 = __webpack_require__(63);
   
   var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
   
-  var _getPrototypeOf = __webpack_require__(43);
+  var _getPrototypeOf = __webpack_require__(46);
   
   var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
   
-  var _classCallCheck2 = __webpack_require__(44);
+  var _classCallCheck2 = __webpack_require__(47);
   
   var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
   
-  var _createClass2 = __webpack_require__(45);
+  var _createClass2 = __webpack_require__(48);
   
   var _createClass3 = _interopRequireDefault(_createClass2);
   
-  var _possibleConstructorReturn2 = __webpack_require__(46);
+  var _possibleConstructorReturn2 = __webpack_require__(49);
   
   var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
   
-  var _inherits2 = __webpack_require__(47);
+  var _inherits2 = __webpack_require__(50);
   
   var _inherits3 = _interopRequireDefault(_inherits2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _history = __webpack_require__(61);
+  var _history = __webpack_require__(64);
   
   var _history2 = _interopRequireDefault(_history);
   
@@ -2414,19 +2604,19 @@ module.exports =
   exports.default = Link;
 
 /***/ },
-/* 59 */
+/* 62 */
 /***/ function(module, exports) {
 
   module.exports = require("babel-runtime/helpers/extends");
 
 /***/ },
-/* 60 */
+/* 63 */
 /***/ function(module, exports) {
 
   module.exports = require("babel-runtime/helpers/objectWithoutProperties");
 
 /***/ },
-/* 61 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -2435,15 +2625,15 @@ module.exports =
     value: true
   });
   
-  var _createBrowserHistory = __webpack_require__(62);
+  var _createBrowserHistory = __webpack_require__(65);
   
   var _createBrowserHistory2 = _interopRequireDefault(_createBrowserHistory);
   
-  var _createMemoryHistory = __webpack_require__(63);
+  var _createMemoryHistory = __webpack_require__(66);
   
   var _createMemoryHistory2 = _interopRequireDefault(_createMemoryHistory);
   
-  var _useQueries = __webpack_require__(64);
+  var _useQueries = __webpack_require__(67);
   
   var _useQueries2 = _interopRequireDefault(_useQueries);
   
@@ -2461,25 +2651,25 @@ module.exports =
   exports.default = history;
 
 /***/ },
-/* 62 */
+/* 65 */
 /***/ function(module, exports) {
 
   module.exports = require("history/lib/createBrowserHistory");
 
 /***/ },
-/* 63 */
+/* 66 */
 /***/ function(module, exports) {
 
   module.exports = require("history/lib/createMemoryHistory");
 
 /***/ },
-/* 64 */
+/* 67 */
 /***/ function(module, exports) {
 
   module.exports = require("history/lib/useQueries");
 
 /***/ },
-/* 65 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -2488,23 +2678,23 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _classnames = __webpack_require__(66);
+  var _classnames = __webpack_require__(69);
   
   var _classnames2 = _interopRequireDefault(_classnames);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Navigation = __webpack_require__(67);
+  var _Navigation = __webpack_require__(70);
   
   var _Navigation2 = _interopRequireDefault(_Navigation);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
@@ -2581,18 +2771,18 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Navigation2.default)(Navigation);
 
 /***/ },
-/* 66 */
+/* 69 */
 /***/ function(module, exports) {
 
   module.exports = require("classnames");
 
 /***/ },
-/* 67 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(68);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(71);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -2607,8 +2797,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Navigation.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Navigation.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Navigation.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Navigation.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -2621,10 +2811,10 @@ module.exports =
     
 
 /***/ },
-/* 68 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -2640,13 +2830,13 @@ module.exports =
   };
 
 /***/ },
-/* 69 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
   module.exports = __webpack_require__.p + "components/Header/bmf.png?57f5265da114952432bfae3ba6c7da83";
 
 /***/ },
-/* 70 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -2655,15 +2845,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Feedback = __webpack_require__(71);
+  var _Feedback = __webpack_require__(74);
   
   var _Feedback2 = _interopRequireDefault(_Feedback);
   
@@ -2704,12 +2894,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Feedback2.default)(Feedback);
 
 /***/ },
-/* 71 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(72);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(75);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -2724,8 +2914,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Feedback.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Feedback.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Feedback.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Feedback.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -2738,10 +2928,10 @@ module.exports =
     
 
 /***/ },
-/* 72 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -2757,7 +2947,7 @@ module.exports =
   };
 
 /***/ },
-/* 73 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -2766,35 +2956,35 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Footer = __webpack_require__(74);
+  var _Footer = __webpack_require__(77);
   
   var _Footer2 = _interopRequireDefault(_Footer);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
-  var _fb = __webpack_require__(76);
+  var _fb = __webpack_require__(79);
   
   var _fb2 = _interopRequireDefault(_fb);
   
-  var _twitter = __webpack_require__(77);
+  var _twitter = __webpack_require__(80);
   
   var _twitter2 = _interopRequireDefault(_twitter);
   
-  var _linkedin = __webpack_require__(78);
+  var _linkedin = __webpack_require__(81);
   
   var _linkedin2 = _interopRequireDefault(_linkedin);
   
-  var _Navigation = __webpack_require__(65);
+  var _Navigation = __webpack_require__(68);
   
   var _Navigation2 = _interopRequireDefault(_Navigation);
   
@@ -2874,12 +3064,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Footer2.default)(Footer);
 
 /***/ },
-/* 74 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(75);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(78);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -2894,8 +3084,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Footer.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Footer.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Footer.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Footer.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -2908,10 +3098,10 @@ module.exports =
     
 
 /***/ },
-/* 75 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -2930,25 +3120,25 @@ module.exports =
   };
 
 /***/ },
-/* 76 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
   module.exports = __webpack_require__.p + "public/fb.png?637b9a59e490ef651505c74a03122958";
 
 /***/ },
-/* 77 */
+/* 80 */
 /***/ function(module, exports) {
 
   module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2hpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpGNzdGMTE3NDA3MjA2ODExOTk0Q0JDNjhBREQ3QkU0OSIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDpFODYxM0VGQUFGMkExMUUxOTBFOUZEM0JFQjVCNTNBRCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDpFODYxM0VGOUFGMkExMUUxOTBFOUZEM0JFQjVCNTNBRCIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1LjEgTWFjaW50b3NoIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MDM4MDExNzQwNzIwNjgxMThDMTRDQkRDMUUyOEQ1OEQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6Rjc3RjExNzQwNzIwNjgxMTk5NENCQzY4QUREN0JFNDkiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz5d82l2AAACE0lEQVR42mL8//8/AyWAiYFCwHLgwAEGx0OfBfbb8X7ApgAkB6TqgdgAiB8AcSNQ7QOonAIjQ+MmA0ZmlgX///5xQDcEpBkod+C/qJw+Awc3A8PvnwyMrx59/P/7x3ygtAM/D08bk7yYsOR/BV19oMILQA0GKM5jZU0CyTEISzEwcPMzMAiIMfxXNuBnkFAqYFYxVP7LxhXEpC/B/xRk+n9lQ3kgfR5oyHyQ00AGiEpIyYBtRgbMLAwgA1UEubZ/zjFvZBSbcMBNRMsw9dqnvyFgBR9eMTC8egR07o8HLOLyLH9EZGWwhc3/YEFVYPjdYVEQ4ft+6v7jELAzQQDoTDD+/VPhD46Q52NlvAPSDI7Gk9GG57UUZddgqGJlh2AsQPT/j9NwHzk4OPzi5Bd89ZWJjfH1z/8q/xgY2AjFfY7s/1zFX68fwhPSxQfPbly588D0z58/PIQ0K3Iz7WgyETsJjykQsTHE4C2Qivc5+iXk2ue/+ve//vPA5feJWsx1QP//QDEAKPAHGHV/xCRlWD6wcOsy8Ili1bzJgjPNXoz9/IF7SGkFqLEBSOcD41vg1R+gj3j5UNM6I8MXfQHmtb067AuBmg+DLEOWZwTmRoXjb39rTLn7y+Tml78qz7//V2ZnZvgixMb4Up2H+U6OMtsZS2HWG0C1T9A1wwyAeQWUaXigGKQQ5M8voKQF5WMFAAEGAPZkw8s7EntAAAAAAElFTkSuQmCC"
 
 /***/ },
-/* 78 */
+/* 81 */
 /***/ function(module, exports) {
 
   module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAIFSURBVEhLzZY9SCNREMcnkQQ9cn4gWiiC5AqPEwUjWKhgYadWWlkodpYHOTitTkUEc8WW19gIYquFiCCIHhIxigqCXgQbPdKchXAqfkSzzsxO4kvc1S184A/+vHkzs++/b78STywWMyOLUZjbPQIddIdqYKizBTzdPwyTTMLfh6X0thg/J9nMA12DJpkYO3+l9LaEG6vYzEsTY/sEIJXSIl4bYSNIPegVYhk93D9X4hhgb9USxXY9boU47mik9ROYs+Msiu16XAtx3NFoTzuXCI5telwLcTZai3OJ4Nimx7UQfryh4ensVSoDfh4Tl3c8wuGmNRLFZQD+AoB/p5JAqmsBPnyUicLeihjVt0lGIb4lAfK5iQdzopdHYmo5ComLm6xL/OVrBP4k8wFKyiUj7P8Wo9oWyTxhTvZJhNsenuFRzTnREZmGpfM8mQkHUblH98nnUrHLOfBroCt7HTnO+T1CbpLWo6nmVIzVfVYa6vfl+bLXkePECF1zpWKTG13ahm/z6yyKs1DXkePk0qFrrlSUHJ01aWxhI5OnOLN7It2fFvLqjniBnByj9rqovXiPMryUc1l7H0b5PnkflFwGtVeplRYFbGvWC1uInxOd/D+THaXQVacQMZLfDV1C5B7hRKcQb3NFEcDtFX4x8c+EDuHa5OHtDwWhLuABuLvWIlq7PxSER722NIzBJCouAAAAAElFTkSuQmCC"
 
 /***/ },
-/* 79 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -2957,7 +3147,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -2969,21 +3159,21 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Home = __webpack_require__(81);
+  var _Home = __webpack_require__(84);
   
   var _Home2 = _interopRequireDefault(_Home);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _util = __webpack_require__(91);
+  var _util = __webpack_require__(94);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -3065,7 +3255,7 @@ module.exports =
   }*/
   
   function getBookingData() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
   
     console.log('calling API');
     var url = 'http://' + _config.apihost + '/getBookingHistory?email=' + email;
@@ -3084,13 +3274,13 @@ module.exports =
   }
 
 /***/ },
-/* 80 */
+/* 83 */
 /***/ function(module, exports) {
 
   module.exports = require("babel-runtime/core-js/promise");
 
 /***/ },
-/* 81 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -3099,31 +3289,31 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Home = __webpack_require__(82);
+  var _Home = __webpack_require__(85);
   
   var _Home2 = _interopRequireDefault(_Home);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
-  var _classnames = __webpack_require__(66);
+  var _classnames = __webpack_require__(69);
   
   var _classnames2 = _interopRequireDefault(_classnames);
   
-  var _homefunction = __webpack_require__(84);
+  var _homefunction = __webpack_require__(87);
   
   var _homefunction2 = _interopRequireDefault(_homefunction);
   
-  var _astrology = __webpack_require__(85);
+  var _astrology = __webpack_require__(88);
   
   var _astrology2 = _interopRequireDefault(_astrology);
   
@@ -3143,7 +3333,8 @@ module.exports =
   function Home(_ref, context) {
     var sessionid = _ref.sessionid,
         email = _ref.email,
-        bookinglist = _ref.bookinglist;
+        bookinglist = _ref.bookinglist,
+        usertype = _ref.usertype;
   
     context.setTitle(title);
     context.setUser(user);
@@ -3206,6 +3397,12 @@ module.exports =
               type: 'hidden',
               name: 'email',
               value: email
+            }),
+            _react2.default.createElement('input', {
+              id: 'usertype',
+              type: 'hidden',
+              name: 'usertype',
+              value: usertype
             })
           )
         ),
@@ -3265,6 +3462,12 @@ module.exports =
             type: 'hidden',
             name: 'email',
             value: email
+          }),
+          _react2.default.createElement('input', {
+            id: 'usertype',
+            type: 'hidden',
+            name: 'usertype',
+            value: usertype
           })
         ),
         _react2.default.createElement(
@@ -3345,6 +3548,12 @@ module.exports =
                 type: 'hidden',
                 name: 'email',
                 value: email
+              }),
+              _react2.default.createElement('input', {
+                id: 'usertype',
+                type: 'hidden',
+                name: 'usertype',
+                value: usertype
               })
             )
           ),
@@ -3363,13 +3572,20 @@ module.exports =
             _react2.default.createElement(
               _Link2.default,
               { className: _Home2.default.link, to: bookinglink },
-              'Home Function'
+              _react2.default.createElement('img', { src: _homefunction2.default, width: '38', height: '38', align: 'left', alt: 'Home Function' }),
+              _react2.default.createElement(
+                'span',
+                null,
+                ' Home Function '
+              )
             ),
             _react2.default.createElement(
               _Link2.default,
               { className: _Home2.default.link, to: astrologybookinglink },
+              _react2.default.createElement('img', { src: _astrology2.default, width: '38', height: '38', align: 'left', alt: 'Home Function' }),
               'Astrology'
             ),
+            _react2.default.createElement('br', null),
             _react2.default.createElement('br', null),
             _react2.default.createElement(
               _Link2.default,
@@ -3398,6 +3614,12 @@ module.exports =
               type: 'hidden',
               name: 'email',
               value: email
+            }),
+            _react2.default.createElement('input', {
+              id: 'usertype',
+              type: 'hidden',
+              name: 'usertype',
+              value: usertype
             })
           ),
           _react2.default.createElement(
@@ -3544,6 +3766,12 @@ module.exports =
                 name: 'email',
                 value: email
               }),
+              _react2.default.createElement('input', {
+                id: 'usertype',
+                type: 'hidden',
+                name: 'usertype',
+                value: usertype
+              }),
               _react2.default.createElement('br', null),
               _react2.default.createElement('br', null),
               _react2.default.createElement('input', { type: 'radio', name: 'manage', value: 'cancel', defaultChecked: true }),
@@ -3569,12 +3797,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Home2.default)(Home);
 
 /***/ },
-/* 82 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(83);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(86);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -3589,8 +3817,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Home.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Home.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Home.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Home.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -3603,15 +3831,15 @@ module.exports =
     
 
 /***/ },
-/* 83 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
   // module
-  exports.push([module.id, "\r\n\r\n:root {\r\n  /*\r\n   * Typography\r\n   * ======================================================================== */\r\n\r\n  /*\r\n   * Layout\r\n   * ======================================================================== */\r\n\r\n  /*\r\n   * Media queries breakpoints\r\n   * ======================================================================== */  /* Extra small screen / phone */  /* Small screen / tablet */  /* Medium screen / desktop */ /* Large screen / wide desktop */\r\n}\r\n\r\n.Home_root_3mf {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Home_container_2ac {\r\n  margin: 2cm 4cm 3cm 4cm auto;\r\n  padding: 10 10 100px;\r\n  max-width: 1000px;\r\n  \r\n}\r\n\r\n.Home_link_1qG {\r\n  display: -webkit-inline-box;\r\n  display: -webkit-inline-flex;\r\n  display: -ms-inline-flexbox;\r\n  display: inline-flex;\r\n  padding: 13px 13px;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1.125em; /* ~18px */\r\n}\r\n\r\n.Home_link_1qG,\r\n.Home_link_1qG:active,\r\n.Home_link_1qG:visited {\r\n  color: rgba(0, 0, 255, 0.6);\r\n}\r\n\r\n.Home_link_1qG:hover {\r\n  color: rgba(0, 255, 0, 1);\r\n}\r\n\r\n.Home_highlight_30M {\r\n  margin-right: 8px;\r\n  margin-left: 8px;\r\n  border-radius: 3px;\r\n  background: rgba(0, 0, 0, 0.15);\r\n  color: #fff;\r\n}\r\n\r\n.Home_highlight_30M:hover {\r\n  background: rgba(0, 0, 0, 0.3);\r\n}\r\n\r\n.Home_spacer_3yS {\r\n  color: rgba(255, 255, 255, 0.3);\r\n}\r\n\r\n.Home_cards_2Jk {\r\n  display: -webkit-box;\r\n  display: -webkit-flex;\r\n  display: -ms-flexbox;\r\n  display: flex;\r\n  margin: 0 auto;\r\n  max-width: 1200px;\r\n\r\n}\r\n\r\n.Home_card_1uI {\r\n  margin: 0 5px;\r\n  -webkit-box-flex: 0;\r\n  -webkit-flex: 0 0 300px;\r\n      -ms-flex: 0 0 300px;\r\n          flex: 0 0 300px;\r\n}\r\n\r\nhtml {\r\n  -webkit-box-sizing: content-box;\r\n          box-sizing: content-box;\r\n}\r\n\r\n*, *:before, *:after {\r\n  -webkit-box-sizing: inherit;\r\n          box-sizing: inherit;\r\n}\r\n\r\nbody {\r\n  font: 1em/1.1 Roboto, \"Helvetica Neue\", Helvetica, Arial, sans-serif;\r\n  background-color: #fafafa;\r\n}\r\n\r\nimg {\r\n  max-width: 100%;\r\n}\r\n\r\n.Home_card_1uI {\r\n  background-color: #fff;\r\n  -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);\r\n          box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);\r\n}\r\n\r\n.Home_card_1uI header {\r\n  padding: 10px;\r\n  background-color: rgb(131,112,255);\r\n  color: #fff;\r\n}\r\n\r\n.Home_card_1uI header h2 {\r\n  font-size: 14.4px;\r\n  font-size: 0.9rem;\r\n  font-weight: normal;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n\r\n.Home_card_1uI .Home_body_14B {\r\n  padding: 5px;\r\n  font-size: 4.8px;\r\n  font-size: .3rem;\r\n  color: #757575;\r\n}\r\n\r\ntable, th, td {\r\n  border: 1px solid black;\r\n\r\n}\r\n\r\ntr:hover {background-color: #f5f5f5}\r\n\r\nth {\r\n  background-color: #4CAF50;\r\n  color: white;\r\n}\r\n\r\nth, td {\r\n    padding: 5px;\r\n    text-align: left;\r\n}\r\n\r\n.Home_p_1Zo {\r\n  color: red;\r\n}\r\n\r\nbutton {\r\n  \r\n  -webkit-box-sizing: border-box;\r\n  \r\n          box-sizing: border-box;\r\n  margin: 10px 6px;\r\n  padding: 5px 16px;\r\n  width: 30%;\r\n  outline: 10;\r\n  border: 4px solid #373277;\r\n\r\n  border-radius: 12px;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: inherit;\r\n  font-size: 12px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer; \r\n  float: inherit;\r\n  \r\n}\r\n\r\nbutton:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\nbutton:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n", "", {"version":3,"sources":["/./components/variables.css","/./routes/home/Home.css"],"names":[],"mappings":";;AAEA;EACE;;gFAE8E;;EAI9E;;gFAE8E;;EAI9E;;gFAE8E,EAErD,gCAAgC,EAChC,2BAA2B,EAC3B,6BAA6B,CAC7B,iCAAiC;CAC3D;;ACpBD;EACE,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,6BAA6B;EAC7B,qBAAqB;EACrB,kBAAoC;;CAErC;;AAID;EACE,4BAAqB;EAArB,6BAAqB;EAArB,4BAAqB;EAArB,qBAAqB;EACrB,mBAAmB;EACnB,sBAAsB;EACtB,mBAAmB;EACnB,mBAAmB,CAAC,WAAW;CAChC;;AAED;;;EAGE,4BAA4B;CAC7B;;AAED;EACE,0BAA0B;CAC3B;;AAED;EACE,kBAAkB;EAClB,iBAAiB;EACjB,mBAAmB;EACnB,gCAAgC;EAChC,YAAY;CACb;;AAED;EACE,+BAA+B;CAChC;;AAED;EACE,gCAAgC;CACjC;;AAED;EACE,qBAAc;EAAd,sBAAc;EAAd,qBAAc;EAAd,cAAc;EACd,eAAe;EACf,kBAAkB;;CAEnB;;AAED;EACE,cAAc;EACd,oBAAgB;EAAhB,wBAAgB;MAAhB,oBAAgB;UAAhB,gBAAgB;CACjB;;AAED;EACE,gCAAwB;UAAxB,wBAAwB;CACzB;;AACD;EACE,4BAAoB;UAApB,oBAAoB;CACrB;;AAED;EACE,qEAAqE;EACrE,0BAA0B;CAC3B;;AAED;EACE,gBAAgB;CACjB;;AAED;EACE,uBAAuB;EACvB,0GAAkG;UAAlG,kGAAkG;CACnG;;AAED;EACE,cAAc;EACd,mCAAmC;EACnC,YAAY;CACb;;AAED;EACE,kBAAkB;EAAlB,kBAAkB;EAClB,oBAAoB;EACpB,UAAU;EACV,WAAW;CACZ;;AAED;EACE,aAAa;EACb,iBAAiB;EAAjB,iBAAiB;EACjB,eAAe;CAChB;;AAED;EACE,wBAAwB;;CAEzB;;AACD,UAAU,yBAAyB,CAAC;;AACpC;EACE,0BAA0B;EAC1B,aAAa;CACd;;AACD;IACI,aAAa;IACb,iBAAiB;CACpB;;AAED;EACE,WAAW;CACZ;;AAED;;EAEE,+BAAuB;;UAAvB,uBAAuB;EACvB,iBAAiB;EACjB,kBAAkB;EAClB,WAAW;EACX,YAAY;EACZ,0BAA0B;;EAE1B,oBAAoB;EACpB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,yBAAyB;EACzB,gBAAgB;EAChB,uBAAuB;EACvB,gBAAgB;EAChB,eAAe;;CAEhB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C","file":"Home.css","sourcesContent":["\r\n\r\n:root {\r\n  /*\r\n   * Typography\r\n   * ======================================================================== */\r\n\r\n  --font-family-base: 'Segoe UI', 'HelveticaNeue-Light', sans-serif;\r\n\r\n  /*\r\n   * Layout\r\n   * ======================================================================== */\r\n\r\n  --max-content-width: 1000px;\r\n\r\n  /*\r\n   * Media queries breakpoints\r\n   * ======================================================================== */\r\n\r\n  --screen-xs-min: 480px;  /* Extra small screen / phone */\r\n  --screen-sm-min: 768px;  /* Small screen / tablet */\r\n  --screen-md-min: 992px;  /* Medium screen / desktop */\r\n  --screen-lg-min: 1200px; /* Large screen / wide desktop */\r\n}\r\n","\r\n@import '../../components/variables.css';\r\n\r\n.root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 2cm 4cm 3cm 4cm auto;\r\n  padding: 10 10 100px;\r\n  max-width: var(--max-content-width);\r\n  \r\n}\r\n\r\n\r\n\r\n.link {\r\n  display: inline-flex;\r\n  padding: 13px 13px;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1.125em; /* ~18px */\r\n}\r\n\r\n.link,\r\n.link:active,\r\n.link:visited {\r\n  color: rgba(0, 0, 255, 0.6);\r\n}\r\n\r\n.link:hover {\r\n  color: rgba(0, 255, 0, 1);\r\n}\r\n\r\n.highlight {\r\n  margin-right: 8px;\r\n  margin-left: 8px;\r\n  border-radius: 3px;\r\n  background: rgba(0, 0, 0, 0.15);\r\n  color: #fff;\r\n}\r\n\r\n.highlight:hover {\r\n  background: rgba(0, 0, 0, 0.3);\r\n}\r\n\r\n.spacer {\r\n  color: rgba(255, 255, 255, 0.3);\r\n}\r\n\r\n.cards {\r\n  display: flex;\r\n  margin: 0 auto;\r\n  max-width: 1200px;\r\n\r\n}\r\n\r\n.card {\r\n  margin: 0 5px;\r\n  flex: 0 0 300px;\r\n}\r\n\r\nhtml {\r\n  box-sizing: content-box;\r\n}\r\n*, *:before, *:after {\r\n  box-sizing: inherit;\r\n}\r\n\r\nbody {\r\n  font: 1em/1.1 Roboto, \"Helvetica Neue\", Helvetica, Arial, sans-serif;\r\n  background-color: #fafafa;\r\n}\r\n\r\nimg {\r\n  max-width: 100%;\r\n}\r\n\r\n.card {\r\n  background-color: #fff;\r\n  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);\r\n}\r\n\r\n.card header {\r\n  padding: 10px;\r\n  background-color: rgb(131,112,255);\r\n  color: #fff;\r\n}\r\n\r\n.card header h2 {\r\n  font-size: 0.9rem;\r\n  font-weight: normal;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n\r\n.card .body {\r\n  padding: 5px;\r\n  font-size: .3rem;\r\n  color: #757575;\r\n}\r\n\r\ntable, th, td {\r\n  border: 1px solid black;\r\n\r\n} \r\ntr:hover {background-color: #f5f5f5}\r\nth {\r\n  background-color: #4CAF50;\r\n  color: white;\r\n}\r\nth, td {\r\n    padding: 5px;\r\n    text-align: left;\r\n}\r\n\r\n.p {\r\n  color: red;\r\n}\r\n\r\nbutton {\r\n  \r\n  box-sizing: border-box;\r\n  margin: 10px 6px;\r\n  padding: 5px 16px;\r\n  width: 30%;\r\n  outline: 10;\r\n  border: 4px solid #373277;\r\n\r\n  border-radius: 12px;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: inherit;\r\n  font-size: 12px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer; \r\n  float: inherit;\r\n  \r\n}\r\n\r\nbutton:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\nbutton:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n"],"sourceRoot":"webpack://"}]);
+  exports.push([module.id, "\r\n\r\n:root {\r\n  /*\r\n   * Typography\r\n   * ======================================================================== */\r\n\r\n  /*\r\n   * Layout\r\n   * ======================================================================== */\r\n\r\n  /*\r\n   * Media queries breakpoints\r\n   * ======================================================================== */  /* Extra small screen / phone */  /* Small screen / tablet */  /* Medium screen / desktop */ /* Large screen / wide desktop */\r\n}\r\n\r\n.Home_root_3mf {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Home_container_2ac {\r\n  margin: 2cm 4cm 3cm 4cm auto;\r\n  padding: 10 10 100px;\r\n  max-width: 1000px;\r\n  \r\n}\r\n\r\n.Home_link_1qG {\r\n  display: -webkit-inline-box;\r\n  display: -webkit-inline-flex;\r\n  display: -ms-inline-flexbox;\r\n  display: inline-flex;\r\n  padding: 13px 13px;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1.125em; /* ~18px */\r\n}\r\n\r\n.Home_link_1qG,\r\n.Home_link_1qG:active,\r\n.Home_link_1qG:visited {\r\n  color: rgba(0, 0, 255, 0.6);\r\n}\r\n\r\n.Home_link_1qG:hover {\r\n  color: rgba(0, 255, 0, 1);\r\n}\r\n\r\n.Home_highlight_30M {\r\n  margin-right: 8px;\r\n  margin-left: 8px;\r\n  border-radius: 3px;\r\n  background: rgba(0, 0, 0, 0.15);\r\n  color: #fff;\r\n}\r\n\r\n.Home_highlight_30M:hover {\r\n  background: rgba(0, 0, 0, 0.3);\r\n}\r\n\r\n.Home_spacer_3yS {\r\n  color: rgba(255, 255, 255, 0.3);\r\n}\r\n\r\n.Home_cards_2Jk {\r\n  display: -webkit-box;\r\n  display: -webkit-flex;\r\n  display: -ms-flexbox;\r\n  display: flex;\r\n  margin: 0 auto;\r\n  max-width: 1600px;\r\n\r\n}\r\n\r\n.Home_card_1uI {\r\n  margin: 0 5px;\r\n  -webkit-box-flex: 0;\r\n  -webkit-flex: 0 0 300px;\r\n      -ms-flex: 0 0 300px;\r\n          flex: 0 0 300px;\r\n}\r\n\r\nhtml {\r\n  -webkit-box-sizing: content-box;\r\n          box-sizing: content-box;\r\n}\r\n\r\n*, *:before, *:after {\r\n  -webkit-box-sizing: inherit;\r\n          box-sizing: inherit;\r\n}\r\n\r\nbody {\r\n  font: 1em/1.1 Roboto, \"Helvetica Neue\", Helvetica, Arial, sans-serif;\r\n  background-color: #fafafa;\r\n}\r\n\r\nimg {\r\n  max-width: 100%;\r\n}\r\n\r\n.Home_card_1uI {\r\n  background-color: #fff;\r\n  -webkit-box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);\r\n          box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);\r\n}\r\n\r\n.Home_card_1uI header {\r\n  padding: 10px;\r\n  background-color: rgb(131,112,255);\r\n  color: #fff;\r\n}\r\n\r\n.Home_card_1uI header h2 {\r\n  font-size: 14.4px;\r\n  font-size: 0.9rem;\r\n  font-weight: normal;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n\r\n.Home_card_1uI .Home_body_14B {\r\n  padding: 5px;\r\n  font-size: 4.8px;\r\n  font-size: .3rem;\r\n  color: #757575;\r\n}\r\n\r\ntable, th, td {\r\n  border: 1px solid black;\r\n\r\n}\r\n\r\ntr:hover {background-color: #f5f5f5}\r\n\r\nth {\r\n  background-color: #4CAF50;\r\n  color: white;\r\n}\r\n\r\nth, td {\r\n    padding: 5px;\r\n    text-align: left;\r\n}\r\n\r\n.Home_p_1Zo {\r\n  color: red;\r\n}\r\n\r\nbutton {\r\n  \r\n  -webkit-box-sizing: border-box;\r\n  \r\n          box-sizing: border-box;\r\n  margin: 10px 6px;\r\n  padding: 5px 16px;\r\n  width: 30%;\r\n  outline: 10;\r\n  border: 4px solid #373277;\r\n\r\n  border-radius: 12px;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: inherit;\r\n  font-size: 12px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer; \r\n  float: inherit;\r\n  \r\n}\r\n\r\nbutton:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\nbutton:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n", "", {"version":3,"sources":["/./components/variables.css","/./routes/home/Home.css"],"names":[],"mappings":";;AAEA;EACE;;gFAE8E;;EAI9E;;gFAE8E;;EAI9E;;gFAE8E,EAErD,gCAAgC,EAChC,2BAA2B,EAC3B,6BAA6B,CAC7B,iCAAiC;CAC3D;;ACpBD;EACE,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,6BAA6B;EAC7B,qBAAqB;EACrB,kBAAoC;;CAErC;;AAID;EACE,4BAAqB;EAArB,6BAAqB;EAArB,4BAAqB;EAArB,qBAAqB;EACrB,mBAAmB;EACnB,sBAAsB;EACtB,mBAAmB;EACnB,mBAAmB,CAAC,WAAW;CAChC;;AAED;;;EAGE,4BAA4B;CAC7B;;AAED;EACE,0BAA0B;CAC3B;;AAED;EACE,kBAAkB;EAClB,iBAAiB;EACjB,mBAAmB;EACnB,gCAAgC;EAChC,YAAY;CACb;;AAED;EACE,+BAA+B;CAChC;;AAED;EACE,gCAAgC;CACjC;;AAED;EACE,qBAAc;EAAd,sBAAc;EAAd,qBAAc;EAAd,cAAc;EACd,eAAe;EACf,kBAAkB;;CAEnB;;AAED;EACE,cAAc;EACd,oBAAgB;EAAhB,wBAAgB;MAAhB,oBAAgB;UAAhB,gBAAgB;CACjB;;AAED;EACE,gCAAwB;UAAxB,wBAAwB;CACzB;;AACD;EACE,4BAAoB;UAApB,oBAAoB;CACrB;;AAED;EACE,qEAAqE;EACrE,0BAA0B;CAC3B;;AAED;EACE,gBAAgB;CACjB;;AAED;EACE,uBAAuB;EACvB,0GAAkG;UAAlG,kGAAkG;CACnG;;AAED;EACE,cAAc;EACd,mCAAmC;EACnC,YAAY;CACb;;AAED;EACE,kBAAkB;EAAlB,kBAAkB;EAClB,oBAAoB;EACpB,UAAU;EACV,WAAW;CACZ;;AAED;EACE,aAAa;EACb,iBAAiB;EAAjB,iBAAiB;EACjB,eAAe;CAChB;;AAED;EACE,wBAAwB;;CAEzB;;AACD,UAAU,yBAAyB,CAAC;;AACpC;EACE,0BAA0B;EAC1B,aAAa;CACd;;AACD;IACI,aAAa;IACb,iBAAiB;CACpB;;AAED;EACE,WAAW;CACZ;;AAED;;EAEE,+BAAuB;;UAAvB,uBAAuB;EACvB,iBAAiB;EACjB,kBAAkB;EAClB,WAAW;EACX,YAAY;EACZ,0BAA0B;;EAE1B,oBAAoB;EACpB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,yBAAyB;EACzB,gBAAgB;EAChB,uBAAuB;EACvB,gBAAgB;EAChB,eAAe;;CAEhB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C","file":"Home.css","sourcesContent":["\r\n\r\n:root {\r\n  /*\r\n   * Typography\r\n   * ======================================================================== */\r\n\r\n  --font-family-base: 'Segoe UI', 'HelveticaNeue-Light', sans-serif;\r\n\r\n  /*\r\n   * Layout\r\n   * ======================================================================== */\r\n\r\n  --max-content-width: 1000px;\r\n\r\n  /*\r\n   * Media queries breakpoints\r\n   * ======================================================================== */\r\n\r\n  --screen-xs-min: 480px;  /* Extra small screen / phone */\r\n  --screen-sm-min: 768px;  /* Small screen / tablet */\r\n  --screen-md-min: 992px;  /* Medium screen / desktop */\r\n  --screen-lg-min: 1200px; /* Large screen / wide desktop */\r\n}\r\n","\r\n@import '../../components/variables.css';\r\n\r\n.root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 2cm 4cm 3cm 4cm auto;\r\n  padding: 10 10 100px;\r\n  max-width: var(--max-content-width);\r\n  \r\n}\r\n\r\n\r\n\r\n.link {\r\n  display: inline-flex;\r\n  padding: 13px 13px;\r\n  text-decoration: none;\r\n  text-align: center;\r\n  font-size: 1.125em; /* ~18px */\r\n}\r\n\r\n.link,\r\n.link:active,\r\n.link:visited {\r\n  color: rgba(0, 0, 255, 0.6);\r\n}\r\n\r\n.link:hover {\r\n  color: rgba(0, 255, 0, 1);\r\n}\r\n\r\n.highlight {\r\n  margin-right: 8px;\r\n  margin-left: 8px;\r\n  border-radius: 3px;\r\n  background: rgba(0, 0, 0, 0.15);\r\n  color: #fff;\r\n}\r\n\r\n.highlight:hover {\r\n  background: rgba(0, 0, 0, 0.3);\r\n}\r\n\r\n.spacer {\r\n  color: rgba(255, 255, 255, 0.3);\r\n}\r\n\r\n.cards {\r\n  display: flex;\r\n  margin: 0 auto;\r\n  max-width: 1600px;\r\n\r\n}\r\n\r\n.card {\r\n  margin: 0 5px;\r\n  flex: 0 0 300px;\r\n}\r\n\r\nhtml {\r\n  box-sizing: content-box;\r\n}\r\n*, *:before, *:after {\r\n  box-sizing: inherit;\r\n}\r\n\r\nbody {\r\n  font: 1em/1.1 Roboto, \"Helvetica Neue\", Helvetica, Arial, sans-serif;\r\n  background-color: #fafafa;\r\n}\r\n\r\nimg {\r\n  max-width: 100%;\r\n}\r\n\r\n.card {\r\n  background-color: #fff;\r\n  box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);\r\n}\r\n\r\n.card header {\r\n  padding: 10px;\r\n  background-color: rgb(131,112,255);\r\n  color: #fff;\r\n}\r\n\r\n.card header h2 {\r\n  font-size: 0.9rem;\r\n  font-weight: normal;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n\r\n.card .body {\r\n  padding: 5px;\r\n  font-size: .3rem;\r\n  color: #757575;\r\n}\r\n\r\ntable, th, td {\r\n  border: 1px solid black;\r\n\r\n} \r\ntr:hover {background-color: #f5f5f5}\r\nth {\r\n  background-color: #4CAF50;\r\n  color: white;\r\n}\r\nth, td {\r\n    padding: 5px;\r\n    text-align: left;\r\n}\r\n\r\n.p {\r\n  color: red;\r\n}\r\n\r\nbutton {\r\n  \r\n  box-sizing: border-box;\r\n  margin: 10px 6px;\r\n  padding: 5px 16px;\r\n  width: 30%;\r\n  outline: 10;\r\n  border: 4px solid #373277;\r\n\r\n  border-radius: 12px;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: inherit;\r\n  font-size: 12px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer; \r\n  float: inherit;\r\n  \r\n}\r\n\r\nbutton:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\nbutton:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n"],"sourceRoot":"webpack://"}]);
   
   // exports
   exports.locals = {
@@ -3627,19 +3855,19 @@ module.exports =
   };
 
 /***/ },
-/* 84 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
   module.exports = __webpack_require__.p + "routes/home/homefunction.png?079d26dfc4893d1dc766271a207fa81a";
 
 /***/ },
-/* 85 */
+/* 88 */
 /***/ function(module, exports) {
 
   module.exports = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABXCAYAAACTFMIVAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAdsSURBVHhe7ZxtdhVFEIY74AdHxYQPgX/gCoAVgCsAVwCsILoCdAXqCqIr0B2gK4iuIPhDDkmI+YBwNAau/c50c99bmZ7unq+uH3nOuefO3Dl3plNTXW9VTd8szSxGK/tfG7P8ndvRyRn3ro/XPxpz+H39UoxOD5ztGfP88/p9acWYaxv1u0J0euDBN7XxAN73v6q3FaLPA//73Zjt226HuPzEmA/uuh096PNACEcToc8Lo8uAEI6jX92OhRUYnqlQUPRMYRYO8NEDY1asQRH/Dn+oP1MoKHo8kIVjadl6n/O2T+3n2AcKBUWHAavp6bwMVEZzXoZ3b0zw+qfFaV4YHVP4xRdzo7x305gr1qCSF1aBj36rt9+/Zcxn6/V2Ycp7oBSOlYBQsBcqEpSyHhgSjhAKBaWsB4aEI4QUFHy/MOUM2CYcIaSg4Ps4T0HKTeEU4QjBgoLyDmVeIcp44D+/pAlHCPZCnAdCVIjpDVglw1TXQjhymwRIYz5edTsWnM/H0omZ3oCvrPe8eVpvpwhHCCWCMo+BGMTOl9XmqPDUhSjAm7qCG+FvBpi63fXJqhCRvYd1qXRKnLPXjbn6VBgQd3PTJranxHEN3pNpzEsbS15+W29jil1Ys5GyZ7b/1oaH3UfzQH/unnX/AbsqUGGeORd/7j9mCcIbj/+izSQADLjA293Z7NnybPaXPYTXwWN3oAc4hz8fzo1rDIkc896qOzAQcvzHG+7AbHZSheF17B2vbLbfJ0VAWPAeDVIqjlzGrFAwftjAA9ucveF2LM6Qi+COPr8+t3ofL9y+Oz/P5k334Uhs35lfC9cdgp3783PCJoLmPBB39DzlVfAgThdS6Vtx5ALv9gxRoeAc+Bs8FxrO5wzZDHvh7gP3YSKVF9/o/v2u4Dr+ms9W+sVbHv/OPffhIu2VCMcVqFyOFw5VceSC6wxRoSAbSRh/uwHP3be5zh23Y0EqkgIuPLZwhMB1eCp3ERSMv004iHg7C3EArSdPygoBblW5jH1ytmyJePxHvZ3b8vrb5nw+9kXGH28m4OLshQfkWU1I4WgKvFPAgpUjKCnCwVSRMMbR+jyY4vXvE3dAIIUjEHgno4ugZI4/7oEAHRP07TyhWFhKOELkCkqicDBpBgScF+IickpI4WgJvJORIygZwrGA88Q0UGN694arM1xxNGTsRUEF5McWqlAiFUeIdA8EVTripkTlce7uahGOEDFBkcKREXryDIgpIRsNMCQ/40CrZ+rOcAyMh2M4Qg03SDimI+NA/ptIngEBDMiBGTkfjAg0CEcIFpQq3rlxsnCAzNmTb0B4IRuJL65BOEJIQYEXYuqycJx/nD3+eCUSYtNe6M2fbsdSquLIhSsUBuPHw30YOoN8D/RwLARap66kbfVXpvFAdwOy6wNWMc1IQQGZwsF0M6AMvEDZytFWZJz7sHvWkB8DYbit2/M0AMo226+3c7seJZDj91zd6CSA+R7I61AQeC/R1IUHavfC0Dqa1F6nIM+AMmNHziRjCifV2pDj5wVK8lgieQbku8QVBzcaUKz3fZgzFrLigPLKm9/knS2kG7Ct1YPYIUslbYQqjip9aahQEkkzYHXiSKtHDkTTz7LgVaGKo6lCYUPHgApHSW31LCyB6PlIcUi4M43xN40rpeXVQNwDm4QjhGw0ZE6HUcD4eeFRqOKQLa9EQYkbMCQcTWBgXOJh2mQG5cHhrKCt4mjKJhLG3m7ANuEIAUVGfggwgJK/5UAc5hZ+rFWFsWcKStiAKcIRgtMaPIfICcpDUd08ygZSWlU4zjMoRVBcLDxJx2cE78B3/PenWhfDpAhHCB57RFCaPVAG0ZSpK+HpgiA+1Hq9FFKFIwSPPSIozQbs8YzgHQjK+K5nyhIvVThCYOwQTE+LoJw0YM9nBAtwgoo7idfY5ApHCFkYBARl0YBSODo8I1hA3snYupq+dBGOEKmC4mJhjRSOISoJLMj258TrcM0dGIE+whEiIihzD2wSjg7PCE6AOzlFo6GvcISICYozpLU0rUrCYu0hgRfyzxDG8MKtW+ONH6u0/LlhJ/LsuqUP4dDYgtIKYqsrFpbgHY3PCE4Jg9BwZb0KT2dSi+ZTCNjL5ZrdVyZ0ARfGygC/ooGmQicQ1Hn99sqaFayHbmcapjUgwPOSPap0Oj5OrMC/yfNJMyqOyxMk6oLmUm5M4CG+3QUgYF2QFUeXen0Apjcg4D8WuVusZSSRFQceT/b55XsPyhgQxT03GnIfauM/GHnhQ73KNffElDEg6NpoGKvi6Eg5A8p2V2qjQbaqJlZdSTkDAllnxrxQiXAwZQ0oGw1tsVCRcDBlDQg4kYYah9bVKBIOprwB4YW8SqqpqaFMOJjyBgTwJm6fy+RamXAwOgwIbwqtaFAoHIwOAwIY0HshjIeHOEqFg5m+mdAGNxrglTCWT21g3Gt2eiuJfR5dBgTyBzyeAq2qFPRMYU9Tf1CZcDD6PBDw/0gF+KfbymKfR58HAk6SFQoHo9MDAbwQ6YtC4WD0GhDqe2yNpzT21RjzP5D60BtQY5uoAAAAAElFTkSuQmCC"
 
 /***/ },
-/* 86 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -3648,27 +3876,27 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _reactDom = __webpack_require__(87);
+  var _reactDom = __webpack_require__(90);
   
   var _reactDom2 = _interopRequireDefault(_reactDom);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Login = __webpack_require__(88);
+  var _Login = __webpack_require__(91);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
-  var _formsyReact = __webpack_require__(90);
+  var _formsyReact = __webpack_require__(93);
   
   var _formsyReact2 = _interopRequireDefault(_formsyReact);
   
@@ -3869,18 +4097,18 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Login2.default)(Login);
 
 /***/ },
-/* 87 */
+/* 90 */
 /***/ function(module, exports) {
 
   module.exports = require("react-dom");
 
 /***/ },
-/* 88 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(89);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(92);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -3895,8 +4123,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Login.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Login.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Login.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Login.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -3909,10 +4137,10 @@ module.exports =
     
 
 /***/ },
-/* 89 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -3938,13 +4166,13 @@ module.exports =
   };
 
 /***/ },
-/* 90 */
+/* 93 */
 /***/ function(module, exports) {
 
   module.exports = require("formsy-react");
 
 /***/ },
-/* 91 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
   "use strict";
@@ -3953,7 +4181,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -3962,7 +4190,7 @@ module.exports =
   exports.getSessionid = getSessionid;
   exports.checkSessionid = checkSessionid;
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -3991,7 +4219,7 @@ module.exports =
   }
   
   function getSessionid() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('genSessionid - calling API');
     var url = "http://" + _config.apihost + "/genSessionid";
     console.log("getSeesionid - URL: " + url);
@@ -4013,7 +4241,7 @@ module.exports =
   }
   
   function checkSessionid(sessionid) {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('genSessionid - calling API');
     var url = "http://" + _config.apihost + "/getSessionid?sessionid=" + sessionid;
     console.log("getSeesionid - URL: " + url);
@@ -4090,13 +4318,13 @@ module.exports =
   }
 
 /***/ },
-/* 92 */
+/* 95 */
 /***/ function(module, exports) {
 
   module.exports = require("request");
 
 /***/ },
-/* 93 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -4105,7 +4333,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -4117,25 +4345,25 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Searchprovider = __webpack_require__(94);
+  var _Searchprovider = __webpack_require__(97);
   
   var _Searchprovider2 = _interopRequireDefault(_Searchprovider);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _Providerlist = __webpack_require__(97);
+  var _Providerlist = __webpack_require__(100);
   
   var _Providerlist2 = _interopRequireDefault(_Providerlist);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _Home = __webpack_require__(81);
+  var _Home = __webpack_require__(84);
   
   var _Home2 = _interopRequireDefault(_Home);
   
@@ -4225,7 +4453,7 @@ module.exports =
   
   
   function getProviderDataByCity(searchterm) {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
   
     console.log('calling API');
     var url = 'http://' + _config.apihost + '/searchbycity?city=' + category;
@@ -4246,7 +4474,7 @@ module.exports =
   }
   
   function getProviderDataByPincode(searchterm) {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
   
     console.log('calling API - getProviderDataByPincode');
     var url = 'http://' + _config.apihost + '/searchbypincode?pincode=' + category;
@@ -4266,7 +4494,7 @@ module.exports =
     });
   }
   function getSessionid() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('genSessionid - calling API');
     var url = 'http://' + _config.apihost + '/genSessionid';
     console.log("getSeesionid - URL: " + url);
@@ -4288,7 +4516,7 @@ module.exports =
   }
 
 /***/ },
-/* 94 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -4297,15 +4525,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Searchprovider = __webpack_require__(95);
+  var _Searchprovider = __webpack_require__(98);
   
   var _Searchprovider2 = _interopRequireDefault(_Searchprovider);
   
@@ -4475,261 +4703,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Searchprovider2.default)(Searchprovider);
 
 /***/ },
-/* 95 */
-/***/ function(module, exports, __webpack_require__) {
-
-  
-      var content = __webpack_require__(96);
-      var insertCss = __webpack_require__(52);
-  
-      if (typeof content === 'string') {
-        content = [[module.id, content, '']];
-      }
-  
-      module.exports = content.locals || {};
-      module.exports._getCss = function() { return content.toString(); };
-      module.exports._insertCss = function(options) { return insertCss(content, options) };
-    
-      // Hot Module Replacement
-      // https://webpack.github.io/docs/hot-module-replacement
-      // Only activated in browser context
-      if (false) {
-        var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Searchprovider.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Searchprovider.css");
-  
-          if (typeof content === 'string') {
-            content = [[module.id, content, '']];
-          }
-  
-          removeCss = insertCss(content, { replace: true });
-        });
-        module.hot.dispose(function() { removeCss(); });
-      }
-    
-
-/***/ },
-/* 96 */
-/***/ function(module, exports, __webpack_require__) {
-
-  exports = module.exports = __webpack_require__(51)();
-  // imports
-  
-  
-  // module
-  exports.push([module.id, " .Searchprovider_root_3jF {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Searchprovider_container_2TS {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n  max-height:100x\r\n}\r\n\r\nhtml {\r\n  min-height: 100%;\r\n}\r\n\r\nbody {\r\n  min-height: 100vh;\r\n}\r\n\r\ntable, th, td {\r\n  border: 1px solid black;\r\n}\r\n\r\ntr:hover {background-color: #f5f5f5}\r\n\r\nth {\r\n  background-color: #4CAF50;\r\n  color: white;\r\n}\r\n\r\n.Searchprovider_button_2VI {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 60%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer;\r\n}\r\n\r\n.Searchprovider_button_2VI:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Searchprovider_button_2VI:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\ndiv {\r\n  overflow-x:visible;\r\n   \r\n}\r\n\r\n.Searchprovider_formGroup_2-g {\r\n  margin-bottom: 15px;\r\n}", "", {"version":3,"sources":["/./routes/searchprovider/Searchprovider.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,eAAe;CAChB;;AAID;EACE,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,wBAAwB;CACzB;;AACD,UAAU,yBAAyB,CAAC;;AACpC;EACE,0BAA0B;EAC1B,aAAa;CACd;;AACD;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,WAAW;EACX,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,gBAAgB;CACjB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAED;EACE,mBAAmB;;CAEpB;;AAGD;EACE,oBAAoB;CACrB","file":"Searchprovider.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n  max-height:100x\r\n}\r\n\r\n\r\n\r\nhtml {\r\n  min-height: 100%;\r\n}\r\n\r\nbody {\r\n  min-height: 100vh;\r\n}\r\n\r\ntable, th, td {\r\n  border: 1px solid black;\r\n} \r\ntr:hover {background-color: #f5f5f5}\r\nth {\r\n  background-color: #4CAF50;\r\n  color: white;\r\n}\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 60%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\ndiv {\r\n  overflow-x:visible;\r\n   \r\n}\r\n\r\n\r\n.formGroup {\r\n  margin-bottom: 15px;\r\n}"],"sourceRoot":"webpack://"}]);
-  
-  // exports
-  exports.locals = {
-  	"root": "Searchprovider_root_3jF",
-  	"container": "Searchprovider_container_2TS",
-  	"button": "Searchprovider_button_2VI",
-  	"formGroup": "Searchprovider_formGroup_2-g"
-  };
-
-/***/ },
-/* 97 */
-/***/ function(module, exports, __webpack_require__) {
-
-  'use strict';
-  
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  
-  var _react = __webpack_require__(41);
-  
-  var _react2 = _interopRequireDefault(_react);
-  
-  var _withStyles = __webpack_require__(55);
-  
-  var _withStyles2 = _interopRequireDefault(_withStyles);
-  
-  var _Providerlist = __webpack_require__(98);
-  
-  var _Providerlist2 = _interopRequireDefault(_Providerlist);
-  
-  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-  
-  var title = 'Service Provider Search'; /**
-                                          * React Starter Kit (https://www.reactstarterkit.com/)
-                                          *
-                                          * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
-                                          *
-                                          * This source code is licensed under the MIT license found in the
-                                          * LICENSE.txt file in the root directory of this source tree.
-                                          */
-  
-  function Providerlist(_ref, props, context) {
-    var providerlist = _ref.providerlist,
-        customeremail = _ref.customeremail,
-        sessionid = _ref.sessionid,
-        bookingid = _ref.bookingid;
-  
-    //context.setTitle(title);
-  
-    var providerdata = JSON.parse(providerlist);
-  
-    console.log("Provider Data: " + providerdata);
-    return _react2.default.createElement(
-      'div',
-      { className: _Providerlist2.default.root },
-      _react2.default.createElement(
-        'div',
-        { className: _Providerlist2.default.container },
-        _react2.default.createElement(
-          'h1',
-          null,
-          'Service Provider Search'
-        ),
-        _react2.default.createElement(
-          'p',
-          null,
-          'Select Provider near by you'
-        ),
-        _react2.default.createElement(
-          'div',
-          null,
-          _react2.default.createElement(
-            'form',
-            { name: 'form1', method: 'put', action: 'linkprovider' },
-            _react2.default.createElement(
-              'div',
-              { className: _Providerlist2.default.formGroup },
-              _react2.default.createElement(
-                'table',
-                null,
-                _react2.default.createElement(
-                  'caption',
-                  null,
-                  'Service Providers'
-                ),
-                _react2.default.createElement(
-                  'thead',
-                  null,
-                  _react2.default.createElement(
-                    'tr',
-                    null,
-                    _react2.default.createElement(
-                      'th',
-                      null,
-                      'Select'
-                    ),
-                    _react2.default.createElement(
-                      'th',
-                      null,
-                      'Email'
-                    ),
-                    _react2.default.createElement(
-                      'th',
-                      null,
-                      'First Name'
-                    ),
-                    _react2.default.createElement(
-                      'th',
-                      null,
-                      'Last Name'
-                    ),
-                    _react2.default.createElement(
-                      'th',
-                      null,
-                      'Address'
-                    ),
-                    _react2.default.createElement(
-                      'th',
-                      null,
-                      'City'
-                    ),
-                    _react2.default.createElement(
-                      'th',
-                      null,
-                      'Phone'
-                    )
-                  )
-                ),
-                _react2.default.createElement(
-                  'tbody',
-                  null,
-                  providerdata.map(function (obj, index) {
-                    return _react2.default.createElement(
-                      'tr',
-                      { key: index },
-                      _react2.default.createElement(
-                        'td',
-                        null,
-                        _react2.default.createElement('input', { type: 'radio', name: 'provideremail', value: obj.email }),
-                        ' '
-                      ),
-                      _react2.default.createElement(
-                        'td',
-                        null,
-                        obj.email
-                      ),
-                      _react2.default.createElement(
-                        'td',
-                        null,
-                        ' ',
-                        obj.firstname
-                      ),
-                      _react2.default.createElement(
-                        'td',
-                        null,
-                        ' ',
-                        obj.lname,
-                        ' '
-                      ),
-                      _react2.default.createElement(
-                        'td',
-                        null,
-                        ' ',
-                        obj.address
-                      ),
-                      _react2.default.createElement(
-                        'td',
-                        null,
-                        ' ',
-                        obj.city
-                      ),
-                      _react2.default.createElement(
-                        'td',
-                        null,
-                        obj.phone
-                      )
-                    );
-                  })
-                )
-              )
-            ),
-            _react2.default.createElement(
-              'div',
-              null,
-              _react2.default.createElement('br', null),
-              _react2.default.createElement('input', { type: 'hidden', name: 'customeremail', value: customeremail }),
-              _react2.default.createElement('input', { type: 'hidden', name: 'sessionid', value: sessionid }),
-              _react2.default.createElement('input', { type: 'hidden', name: 'bookingid', value: bookingid }),
-              _react2.default.createElement(
-                'button',
-                { className: _Providerlist2.default.button, type: 'submit' },
-                'Submit'
-              )
-            )
-          )
-        )
-      )
-    );
-  }
-  
-  Providerlist.contextTypes = { setTitle: _react.PropTypes.func.isRequired };
-  
-  exports.default = (0, _withStyles2.default)(_Providerlist2.default)(Providerlist);
-
-/***/ },
 /* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
   
       var content = __webpack_require__(99);
-      var insertCss = __webpack_require__(52);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -4744,8 +4723,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Providerlist.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Providerlist.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Searchprovider.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Searchprovider.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -4761,7 +4740,512 @@ module.exports =
 /* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
+  // imports
+  
+  
+  // module
+  exports.push([module.id, " .Searchprovider_root_3jF {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Searchprovider_container_2TS {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n  max-height:100x\r\n}\r\n\r\nhtml {\r\n  min-height: 100%;\r\n}\r\n\r\nbody {\r\n  min-height: 100vh;\r\n}\r\n\r\ntable, th, td {\r\n  border: 1px solid black;\r\n}\r\n\r\ntr:hover {background-color: #f5f5f5}\r\n\r\nth {\r\n  background-color: #4CAF50;\r\n  color: white;\r\n}\r\n\r\n.Searchprovider_button_2VI {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 60%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer;\r\n}\r\n\r\n.Searchprovider_button_2VI:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Searchprovider_button_2VI:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\ndiv {\r\n  overflow-x:visible;\r\n   \r\n}\r\n\r\n.Searchprovider_formGroup_2-g {\r\n  margin-bottom: 15px;\r\n}", "", {"version":3,"sources":["/./routes/searchprovider/Searchprovider.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,eAAe;CAChB;;AAID;EACE,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,wBAAwB;CACzB;;AACD,UAAU,yBAAyB,CAAC;;AACpC;EACE,0BAA0B;EAC1B,aAAa;CACd;;AACD;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,WAAW;EACX,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,gBAAgB;CACjB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAED;EACE,mBAAmB;;CAEpB;;AAGD;EACE,oBAAoB;CACrB","file":"Searchprovider.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n  max-height:100x\r\n}\r\n\r\n\r\n\r\nhtml {\r\n  min-height: 100%;\r\n}\r\n\r\nbody {\r\n  min-height: 100vh;\r\n}\r\n\r\ntable, th, td {\r\n  border: 1px solid black;\r\n} \r\ntr:hover {background-color: #f5f5f5}\r\nth {\r\n  background-color: #4CAF50;\r\n  color: white;\r\n}\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 60%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\ndiv {\r\n  overflow-x:visible;\r\n   \r\n}\r\n\r\n\r\n.formGroup {\r\n  margin-bottom: 15px;\r\n}"],"sourceRoot":"webpack://"}]);
+  
+  // exports
+  exports.locals = {
+  	"root": "Searchprovider_root_3jF",
+  	"container": "Searchprovider_container_2TS",
+  	"button": "Searchprovider_button_2VI",
+  	"formGroup": "Searchprovider_formGroup_2-g"
+  };
+
+/***/ },
+/* 100 */
+/***/ function(module, exports, __webpack_require__) {
+
+  'use strict';
+  
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  
+  var _react = __webpack_require__(44);
+  
+  var _react2 = _interopRequireDefault(_react);
+  
+  var _withStyles = __webpack_require__(58);
+  
+  var _withStyles2 = _interopRequireDefault(_withStyles);
+  
+  var _Providerlist = __webpack_require__(101);
+  
+  var _Providerlist2 = _interopRequireDefault(_Providerlist);
+  
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  
+  var title = 'Service Provider Search'; /**
+                                          * React Starter Kit (https://www.reactstarterkit.com/)
+                                          *
+                                          * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
+                                          *
+                                          * This source code is licensed under the MIT license found in the
+                                          * LICENSE.txt file in the root directory of this source tree.
+                                          */
+  
+  function Providerlist(_ref, context) {
+    var providerlist = _ref.providerlist,
+        cateringProviderlist = _ref.cateringProviderlist,
+        customeremail = _ref.customeremail,
+        sessionid = _ref.sessionid,
+        bookingid = _ref.bookingid;
+  
+    //context.setTitle(title);
+  
+    var providerdata = JSON.parse(providerlist);
+    console.log("catering Provider List: " + cateringProviderlist);
+    var cateringproviderdata;
+    if (cateringProviderlist != undefined) cateringproviderdata = JSON.parse(cateringProviderlist);
+  
+    console.log("Provider Data: " + providerlist);
+  
+    if (cateringProviderlist === undefined) {
+      return _react2.default.createElement(
+        'div',
+        { className: _Providerlist2.default.root },
+        _react2.default.createElement(
+          'div',
+          { className: _Providerlist2.default.container },
+          _react2.default.createElement(
+            'h1',
+            null,
+            'Select Provider near by you'
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(
+              'form',
+              { name: 'form1', method: 'post', action: 'linkprovider' },
+              _react2.default.createElement(
+                'div',
+                { className: _Providerlist2.default.formGroup },
+                _react2.default.createElement(
+                  'table',
+                  null,
+                  _react2.default.createElement(
+                    'caption',
+                    null,
+                    'Service Providers'
+                  ),
+                  _react2.default.createElement(
+                    'thead',
+                    null,
+                    _react2.default.createElement(
+                      'tr',
+                      null,
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Select'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Email'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'First Name'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Last Name'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Address'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'City'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Phone'
+                      )
+                    )
+                  ),
+                  _react2.default.createElement(
+                    'tbody',
+                    null,
+                    providerdata.map(function (obj, index) {
+                      return _react2.default.createElement(
+                        'tr',
+                        { key: index },
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          _react2.default.createElement('input', { type: 'radio', name: 'provideremail', value: obj.email }),
+                          ' '
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          obj.email
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          ' ',
+                          obj.firstname
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          ' ',
+                          obj.lname,
+                          ' '
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          ' ',
+                          obj.address
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          ' ',
+                          obj.city
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          obj.phone
+                        )
+                      );
+                    })
+                  )
+                )
+              ),
+              _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement('br', null),
+                _react2.default.createElement('input', { type: 'hidden', name: 'customeremail', value: customeremail }),
+                _react2.default.createElement('input', { type: 'hidden', name: 'sessionid', value: sessionid }),
+                _react2.default.createElement('input', { type: 'hidden', name: 'bookingid', value: bookingid }),
+                _react2.default.createElement(
+                  'button',
+                  { className: _Providerlist2.default.button, type: 'submit' },
+                  'Submit'
+                )
+              )
+            )
+          )
+        )
+      );
+    } else {
+      return _react2.default.createElement(
+        'div',
+        { className: _Providerlist2.default.root },
+        _react2.default.createElement(
+          'div',
+          { className: _Providerlist2.default.container },
+          _react2.default.createElement(
+            'h1',
+            null,
+            'Service Provider Search'
+          ),
+          _react2.default.createElement(
+            'p',
+            null,
+            'Select Provider near by you'
+          ),
+          _react2.default.createElement(
+            'div',
+            null,
+            _react2.default.createElement(
+              'form',
+              { name: 'form1', method: 'put', action: 'linkprovider' },
+              _react2.default.createElement(
+                'div',
+                { className: _Providerlist2.default.formGroup },
+                _react2.default.createElement(
+                  'table',
+                  null,
+                  _react2.default.createElement(
+                    'caption',
+                    null,
+                    'Service Providers'
+                  ),
+                  _react2.default.createElement(
+                    'thead',
+                    null,
+                    _react2.default.createElement(
+                      'tr',
+                      null,
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Select'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Email'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'First Name'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Last Name'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Address'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'City'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Phone'
+                      )
+                    )
+                  ),
+                  _react2.default.createElement(
+                    'tbody',
+                    null,
+                    providerdata.map(function (obj, index) {
+                      return _react2.default.createElement(
+                        'tr',
+                        { key: index },
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          _react2.default.createElement('input', { type: 'radio', name: 'provideremail', value: obj.email }),
+                          ' '
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          obj.email
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          ' ',
+                          obj.firstname
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          ' ',
+                          obj.lname,
+                          ' '
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          ' ',
+                          obj.address
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          ' ',
+                          obj.city
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          obj.phone
+                        )
+                      );
+                    })
+                  )
+                )
+              ),
+              _react2.default.createElement(
+                'div',
+                { className: _Providerlist2.default.formGroup },
+                _react2.default.createElement(
+                  'table',
+                  null,
+                  _react2.default.createElement(
+                    'caption',
+                    null,
+                    'Select Catering Provider'
+                  ),
+                  _react2.default.createElement(
+                    'thead',
+                    null,
+                    _react2.default.createElement(
+                      'tr',
+                      null,
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Select'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Email'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'First Name'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Last Name'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Address'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'City'
+                      ),
+                      _react2.default.createElement(
+                        'th',
+                        null,
+                        'Phone'
+                      )
+                    )
+                  ),
+                  _react2.default.createElement(
+                    'tbody',
+                    null,
+                    cateringproviderdata.map(function (obj, index) {
+                      return _react2.default.createElement(
+                        'tr',
+                        { key: index },
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          _react2.default.createElement('input', { type: 'radio', name: 'cateringprovideremail', value: obj.email }),
+                          ' '
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          obj.email
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          ' ',
+                          obj.firstname
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          ' ',
+                          obj.lname,
+                          ' '
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          ' ',
+                          obj.address
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          ' ',
+                          obj.city
+                        ),
+                        _react2.default.createElement(
+                          'td',
+                          null,
+                          obj.phone
+                        )
+                      );
+                    })
+                  )
+                )
+              ),
+              _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement('br', null),
+                _react2.default.createElement('input', { type: 'hidden', name: 'customeremail', value: customeremail }),
+                _react2.default.createElement('input', { type: 'hidden', name: 'sessionid', value: sessionid }),
+                _react2.default.createElement('input', { type: 'hidden', name: 'bookingid', value: bookingid }),
+                _react2.default.createElement(
+                  'button',
+                  { className: _Providerlist2.default.button, type: 'submit' },
+                  'Submit'
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+  }
+  
+  Providerlist.contextTypes = { setTitle: _react.PropTypes.func.isRequired };
+  
+  exports.default = (0, _withStyles2.default)(_Providerlist2.default)(Providerlist);
+
+/***/ },
+/* 101 */
+/***/ function(module, exports, __webpack_require__) {
+
+  
+      var content = __webpack_require__(102);
+      var insertCss = __webpack_require__(55);
+  
+      if (typeof content === 'string') {
+        content = [[module.id, content, '']];
+      }
+  
+      module.exports = content.locals || {};
+      module.exports._getCss = function() { return content.toString(); };
+      module.exports._insertCss = function(options) { return insertCss(content, options) };
+    
+      // Hot Module Replacement
+      // https://webpack.github.io/docs/hot-module-replacement
+      // Only activated in browser context
+      if (false) {
+        var removeCss = function() {};
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Providerlist.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Providerlist.css");
+  
+          if (typeof content === 'string') {
+            content = [[module.id, content, '']];
+          }
+  
+          removeCss = insertCss(content, { replace: true });
+        });
+        module.hot.dispose(function() { removeCss(); });
+      }
+    
+
+/***/ },
+/* 102 */
+/***/ function(module, exports, __webpack_require__) {
+
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -4777,7 +5261,7 @@ module.exports =
   };
 
 /***/ },
-/* 100 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -4786,11 +5270,11 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Contact = __webpack_require__(101);
+  var _Contact = __webpack_require__(104);
   
   var _Contact2 = _interopRequireDefault(_Contact);
   
@@ -4806,7 +5290,7 @@ module.exports =
   };
 
 /***/ },
-/* 101 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -4815,15 +5299,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Contact = __webpack_require__(102);
+  var _Contact = __webpack_require__(105);
   
   var _Contact2 = _interopRequireDefault(_Contact);
   
@@ -4858,12 +5342,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Contact2.default)(Contact);
 
 /***/ },
-/* 102 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(103);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(106);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -4878,8 +5362,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Contact.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Contact.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Contact.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Contact.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -4892,10 +5376,10 @@ module.exports =
     
 
 /***/ },
-/* 103 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -4909,7 +5393,7 @@ module.exports =
   };
 
 /***/ },
-/* 104 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -4926,17 +5410,17 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _util = __webpack_require__(91);
+  var _util = __webpack_require__(94);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -4976,7 +5460,7 @@ module.exports =
   };
 
 /***/ },
-/* 105 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -4985,11 +5469,11 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Register = __webpack_require__(106);
+  var _Register = __webpack_require__(109);
   
   var _Register2 = _interopRequireDefault(_Register);
   
@@ -5014,7 +5498,7 @@ module.exports =
   };
 
 /***/ },
-/* 106 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -5023,15 +5507,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Register = __webpack_require__(107);
+  var _Register = __webpack_require__(110);
   
   var _Register2 = _interopRequireDefault(_Register);
   
@@ -5068,7 +5552,7 @@ module.exports =
         ),
         _react2.default.createElement(
           'form',
-          { name: 'form1', method: 'put', action: 'savecustomer' },
+          { name: 'form1', method: 'post', action: 'savecustomer' },
           _react2.default.createElement(
             'div',
             { classname: _Register2.default.leftContainer },
@@ -5206,12 +5690,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Register2.default)(Register);
 
 /***/ },
-/* 107 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(108);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(111);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -5226,8 +5710,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Register.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Register.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Register.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Register.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -5240,10 +5724,10 @@ module.exports =
     
 
 /***/ },
-/* 108 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -5268,7 +5752,7 @@ module.exports =
   };
 
 /***/ },
-/* 109 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -5277,7 +5761,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -5289,23 +5773,23 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Forgotpass = __webpack_require__(110);
+  var _Forgotpass = __webpack_require__(113);
   
   var _Forgotpass2 = _interopRequireDefault(_Forgotpass);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
-  var request = __webpack_require__(92);
+  var request = __webpack_require__(95);
   //import Providerlogin from '../providerlogin/Providerlogin'
   
   
@@ -5492,7 +5976,7 @@ module.exports =
   }
 
 /***/ },
-/* 110 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -5501,19 +5985,19 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Forgotpass = __webpack_require__(111);
+  var _Forgotpass = __webpack_require__(114);
   
   var _Forgotpass2 = _interopRequireDefault(_Forgotpass);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
@@ -5573,12 +6057,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Forgotpass2.default)(Forgotpass);
 
 /***/ },
-/* 111 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(112);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(115);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -5593,8 +6077,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Forgotpass.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Forgotpass.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Forgotpass.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Forgotpass.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -5607,10 +6091,10 @@ module.exports =
     
 
 /***/ },
-/* 112 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -5634,7 +6118,7 @@ module.exports =
   };
 
 /***/ },
-/* 113 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -5643,7 +6127,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -5701,38 +6185,29 @@ module.exports =
     };
   }();
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Savecustomer = __webpack_require__(114);
+  var _Savecustomer = __webpack_require__(117);
   
   var _Savecustomer2 = _interopRequireDefault(_Savecustomer);
   
-  var _Login = __webpack_require__(117);
+  var _Login = __webpack_require__(120);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
-  /**
-   * React Starter Kit (https://www.reactstarterkit.com/)
-   *
-   * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
-   *
-   * This source code is licensed under the MIT license found in the
-   * LICENSE.txt file in the root directory of this source tree.
-   */
-  
-  var request = __webpack_require__(92);
-  var SMSmessage = 'Thanks for your Registration. Use your email id for login';
+  var request = __webpack_require__(95);
+  var SMSmessage = 'Thanks for your Registration. Use your email id for login and password sent to your e-mail';
   
   var message = 'Sucessfully Registered. ';
   var href = 'http://' + _config.host + '/login';
   var message1 = 'Click here to login';
-  var status = true;
+  var status = false;
   var fn;
   var ln;
   var address;
@@ -5774,7 +6249,7 @@ module.exports =
   
                 console.log("Response: " + body);
   
-                if (!(body == 'false')) {
+                if (!(status == 'true')) {
                   _context.next = 36;
                   break;
                 }
@@ -5788,7 +6263,7 @@ module.exports =
                 console.log("Customerdata: " + customerdata);
                 console.log("Status--saveCustomerData: " + status);
   
-                if (!(customerdata == 'true')) {
+                if (!(status == 'true')) {
                   _context.next = 36;
                   break;
                 }
@@ -5970,7 +6445,7 @@ module.exports =
   }
 
 /***/ },
-/* 114 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -5979,15 +6454,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Savecustomer = __webpack_require__(115);
+  var _Savecustomer = __webpack_require__(118);
   
   var _Savecustomer2 = _interopRequireDefault(_Savecustomer);
   
@@ -6039,12 +6514,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Savecustomer2.default)(Savecustomer);
 
 /***/ },
-/* 115 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(116);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(119);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -6059,8 +6534,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Savecustomer.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Savecustomer.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Savecustomer.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Savecustomer.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -6073,10 +6548,10 @@ module.exports =
     
 
 /***/ },
-/* 116 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -6101,7 +6576,7 @@ module.exports =
   };
 
 /***/ },
-/* 117 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -6118,17 +6593,17 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Login = __webpack_require__(118);
+  var _Login = __webpack_require__(121);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _util = __webpack_require__(91);
+  var _util = __webpack_require__(94);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -6168,7 +6643,7 @@ module.exports =
   };
 
 /***/ },
-/* 118 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -6177,27 +6652,27 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _reactDom = __webpack_require__(87);
+  var _reactDom = __webpack_require__(90);
   
   var _reactDom2 = _interopRequireDefault(_reactDom);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Login = __webpack_require__(119);
+  var _Login = __webpack_require__(122);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
-  var _formsyReact = __webpack_require__(90);
+  var _formsyReact = __webpack_require__(93);
   
   var _formsyReact2 = _interopRequireDefault(_formsyReact);
   
@@ -6398,12 +6873,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Login2.default)(Login);
 
 /***/ },
-/* 119 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(120);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(123);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -6418,8 +6893,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Login.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Login.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Login.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Login.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -6432,10 +6907,10 @@ module.exports =
     
 
 /***/ },
-/* 120 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -6461,7 +6936,7 @@ module.exports =
   };
 
 /***/ },
-/* 121 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -6482,15 +6957,15 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Content = __webpack_require__(122);
+  var _Content = __webpack_require__(125);
   
   var _Content2 = _interopRequireDefault(_Content);
   
-  var _fetch = __webpack_require__(37);
+  var _fetch = __webpack_require__(40);
   
   var _fetch2 = _interopRequireDefault(_fetch);
   
@@ -6563,7 +7038,7 @@ module.exports =
   };
 
 /***/ },
-/* 122 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -6572,35 +7047,35 @@ module.exports =
     value: true
   });
   
-  var _getPrototypeOf = __webpack_require__(43);
+  var _getPrototypeOf = __webpack_require__(46);
   
   var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
   
-  var _classCallCheck2 = __webpack_require__(44);
+  var _classCallCheck2 = __webpack_require__(47);
   
   var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
   
-  var _createClass2 = __webpack_require__(45);
+  var _createClass2 = __webpack_require__(48);
   
   var _createClass3 = _interopRequireDefault(_createClass2);
   
-  var _possibleConstructorReturn2 = __webpack_require__(46);
+  var _possibleConstructorReturn2 = __webpack_require__(49);
   
   var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
   
-  var _inherits2 = __webpack_require__(47);
+  var _inherits2 = __webpack_require__(50);
   
   var _inherits3 = _interopRequireDefault(_inherits2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Content = __webpack_require__(123);
+  var _Content = __webpack_require__(126);
   
   var _Content2 = _interopRequireDefault(_Content);
   
@@ -6652,12 +7127,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Content2.default)(Content);
 
 /***/ },
-/* 123 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(124);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(127);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -6672,8 +7147,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Content.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Content.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Content.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Content.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -6686,10 +7161,10 @@ module.exports =
     
 
 /***/ },
-/* 124 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -6703,7 +7178,7 @@ module.exports =
   };
 
 /***/ },
-/* 125 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -6712,15 +7187,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _App = __webpack_require__(42);
+  var _App = __webpack_require__(45);
   
   var _App2 = _interopRequireDefault(_App);
   
-  var _ErrorPage = __webpack_require__(126);
+  var _ErrorPage = __webpack_require__(129);
   
   var _ErrorPage2 = _interopRequireDefault(_ErrorPage);
   
@@ -6744,7 +7219,7 @@ module.exports =
   };
 
 /***/ },
-/* 126 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -6753,15 +7228,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _ErrorPage = __webpack_require__(127);
+  var _ErrorPage = __webpack_require__(130);
   
   var _ErrorPage2 = _interopRequireDefault(_ErrorPage);
   
@@ -6810,12 +7285,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_ErrorPage2.default)(ErrorPage);
 
 /***/ },
-/* 127 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(128);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(131);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -6830,8 +7305,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./ErrorPage.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./ErrorPage.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./ErrorPage.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./ErrorPage.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -6844,10 +7319,10 @@ module.exports =
     
 
 /***/ },
-/* 128 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -6858,7 +7333,7 @@ module.exports =
 
 
 /***/ },
-/* 129 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -6867,7 +7342,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -6879,33 +7354,33 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Verifypass = __webpack_require__(130);
+  var _Verifypass = __webpack_require__(133);
   
   var _Verifypass2 = _interopRequireDefault(_Verifypass);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _ErrorPage = __webpack_require__(126);
+  var _ErrorPage = __webpack_require__(129);
   
   var _ErrorPage2 = _interopRequireDefault(_ErrorPage);
   
-  var _Home = __webpack_require__(81);
+  var _Home = __webpack_require__(84);
   
   var _Home2 = _interopRequireDefault(_Home);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _util = __webpack_require__(91);
+  var _util = __webpack_require__(94);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
-  var request = __webpack_require__(92);
+  var request = __webpack_require__(95);
   
   var res;
   var userEmail;
@@ -6925,7 +7400,7 @@ module.exports =
       var query = _ref.query;
       var path = _ref2.path;
       return (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
-        var newsessionid, body, bookinglist, message;
+        var newsessionid, body, bookinglist, usertype, message;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -6969,7 +7444,7 @@ module.exports =
                 console.log("Result from API call: " + validLogin);
   
                 if (!(validLogin == 'true')) {
-                  _context.next = 29;
+                  _context.next = 30;
                   break;
                 }
   
@@ -6985,15 +7460,16 @@ module.exports =
   
               case 25:
                 bookinglist = _context.sent;
-                return _context.abrupt('return', _react2.default.createElement(_Home2.default, { sessionid: sessionid, email: userEmail, bookinglist: bookinglist }));
+                usertype = 'customer';
+                return _context.abrupt('return', _react2.default.createElement(_Home2.default, { sessionid: sessionid, email: userEmail, bookinglist: bookinglist, usertype: usertype }));
   
-              case 29:
+              case 30:
                 message = "Invalid username or passowrd";
   
                 console.log(" Invalid Credential return to Login Page");
                 return _context.abrupt('return', _react2.default.createElement(_Login2.default, { sessionid: sessionid, message: message }));
   
-              case 32:
+              case 33:
               case 'end':
                 return _context.stop();
             }
@@ -7055,7 +7531,7 @@ module.exports =
   }
   
   function getBookingData() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
   
     console.log('calling API');
     var url = 'http://' + _config.apihost + '/getBookingHistory?email=' + userEmail;
@@ -7074,7 +7550,7 @@ module.exports =
   }
 
 /***/ },
-/* 130 */
+/* 133 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -7083,15 +7559,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _VerifyPass = __webpack_require__(131);
+  var _VerifyPass = __webpack_require__(134);
   
   var _VerifyPass2 = _interopRequireDefault(_VerifyPass);
   
@@ -7140,12 +7616,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_VerifyPass2.default)(VerifyPass);
 
 /***/ },
-/* 131 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(132);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(135);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -7160,8 +7636,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./VerifyPass.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./VerifyPass.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./VerifyPass.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./VerifyPass.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -7174,10 +7650,10 @@ module.exports =
     
 
 /***/ },
-/* 132 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -7201,7 +7677,7 @@ module.exports =
   };
 
 /***/ },
-/* 133 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -7210,7 +7686,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -7222,19 +7698,19 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Changepassword = __webpack_require__(134);
+  var _Changepassword = __webpack_require__(137);
   
   var _Changepassword2 = _interopRequireDefault(_Changepassword);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -7292,7 +7768,7 @@ module.exports =
   
   
   function checkCode(code, email) {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('Check Code - calling API');
     var url = 'http://' + _config.apihost + '/getCode?code=' + code + '&userEmail=' + email;
     console.log("Checkcode - URL: " + url);
@@ -7315,7 +7791,7 @@ module.exports =
   }
 
 /***/ },
-/* 134 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -7324,19 +7800,19 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _changepassword = __webpack_require__(135);
+  var _changepassword = __webpack_require__(138);
   
   var _changepassword2 = _interopRequireDefault(_changepassword);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
@@ -7436,12 +7912,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_changepassword2.default)(Changepassword);
 
 /***/ },
-/* 135 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(136);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(139);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -7456,8 +7932,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./changepassword.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./changepassword.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./changepassword.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./changepassword.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -7470,10 +7946,10 @@ module.exports =
     
 
 /***/ },
-/* 136 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -7493,7 +7969,7 @@ module.exports =
   };
 
 /***/ },
-/* 137 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -7502,7 +7978,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -7514,19 +7990,19 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Updatepass = __webpack_require__(138);
+  var _Updatepass = __webpack_require__(141);
   
   var _Updatepass2 = _interopRequireDefault(_Updatepass);
   
-  var _Changepassword = __webpack_require__(134);
+  var _Changepassword = __webpack_require__(137);
   
   var _Changepassword2 = _interopRequireDefault(_Changepassword);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -7608,7 +8084,7 @@ module.exports =
   
   
   function updatePassword(newpass, email) {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log("Inside updatePassword method email: " + email);
     console.log("Inside updatePassword method Password: " + newpass);
     console.log('calling API');
@@ -7637,7 +8113,7 @@ module.exports =
   }
   
   function deletePassCode() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('Check Code - calling API');
     var url = 'http://' + _config.apihost + '/removeCode?code=' + passcode;
     console.log("deletePassCode - URL: " + url);
@@ -7660,7 +8136,7 @@ module.exports =
   }
 
 /***/ },
-/* 138 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -7669,19 +8145,19 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _updatepass = __webpack_require__(139);
+  var _updatepass = __webpack_require__(142);
   
   var _updatepass2 = _interopRequireDefault(_updatepass);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
@@ -7735,12 +8211,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_updatepass2.default)(Updatepass);
 
 /***/ },
-/* 139 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(140);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(143);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -7755,8 +8231,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./updatepass.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./updatepass.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./updatepass.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./updatepass.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -7769,10 +8245,10 @@ module.exports =
     
 
 /***/ },
-/* 140 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -7796,7 +8272,7 @@ module.exports =
   };
 
 /***/ },
-/* 141 */
+/* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -7805,11 +8281,11 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Serviceprovider = __webpack_require__(142);
+  var _Serviceprovider = __webpack_require__(145);
   
   var _Serviceprovider2 = _interopRequireDefault(_Serviceprovider);
   
@@ -7825,7 +8301,7 @@ module.exports =
   };
 
 /***/ },
-/* 142 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -7834,15 +8310,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Serviceprovider = __webpack_require__(143);
+  var _Serviceprovider = __webpack_require__(146);
   
   var _Serviceprovider2 = _interopRequireDefault(_Serviceprovider);
   
@@ -8051,12 +8527,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Serviceprovider2.default)(Serviceprovider);
 
 /***/ },
-/* 143 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(144);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(147);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -8071,8 +8547,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Serviceprovider.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Serviceprovider.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Serviceprovider.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Serviceprovider.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -8085,15 +8561,15 @@ module.exports =
     
 
 /***/ },
-/* 144 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
   // module
-  exports.push([module.id, " .Serviceprovider_root_3Ll {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Serviceprovider_container_c6Z {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n  max-height:100x\r\n}\r\n\r\n.Serviceprovider_lead_35E {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.Serviceprovider_formGroup_3-S {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.Serviceprovider_label_15b {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.Serviceprovider_input_354 {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 26px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n}\r\n\r\n.Serviceprovider_input_354:focus {\r\n  border-color: red;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Serviceprovider_button_vnx {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 50%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 14px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer;\r\n}\r\n\r\n.Serviceprovider_button_vnx:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Serviceprovider_button_vnx:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Serviceprovider_leftContainer_31v {\r\n   float:left;\r\n}\r\n\r\n.Serviceprovider_rightContainer_2M6 {\r\n   float:right;\r\n}\r\n\r\n.Serviceprovider_icon_1-O {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.Serviceprovider_lineThrough_2lM {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.Serviceprovider_lineThrough_2lM::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.Serviceprovider_lineThrough_2lM::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n.Serviceprovider_squaredOne_5rn {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: -webkit-gradient(linear, left top, left bottom, from(#fcfff4), color-stop(40%, #dfe5d7), to(#b3bead));\r\n  background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: -o-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n          box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0%, #222), to(#45484d));\r\n    background: -webkit-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: -o-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n            box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1)\r\n  }\r\n  label:after {\r\n    content: '';\r\n    width: 16px;\r\n    height: 16px;\r\n    position: absolute;\r\n    top: 2px;\r\n    left: 2px;\r\n    background: $activeColor;\r\n    background: -webkit-gradient(linear, left top, left bottom, from($activeColor), to($darkenColor));\r\n    background: -webkit-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: -o-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n            box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n    opacity: 0;\r\n  }\r\n  label:hover::after {\r\n    opacity: 0.3;\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden   \r\n  }\r\n  input[type=checkbox]:checked + label:after {\r\n    opacity: 1;\r\n  } \r\n}\r\n\r\nhtml {\r\n  min-height: 100%;\r\n}\r\n\r\nbody {\r\n  min-height: 100vh;\r\n}", "", {"version":3,"sources":["/./routes/serviceprovider/Serviceprovider.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,eAAe;CAChB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,oBAAoB;;CAErB;;AAED;;EAEE,mBAAmB;EACnB,gBAAgB;EAChB,iBAAiB;EACjB,YAAY;CACb;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,WAAW;EACX,uBAAuB;EACvB,kBAAkB;EAClB,iBAAiB;EACjB,yDAAiD;UAAjD,iDAAiD;EACjD,eAAe;EACf,gBAAgB;EAChB,uBAAuB;EACvB,yFAAyE;EAAzE,iFAAyE;EAAzE,4EAAyE;EAAzE,yEAAyE;EAAzE,+GAAyE;EACzE,SAAS;EACT,cAAc;CACf;;AAED;EACE,kBAAkB;EAClB,yFAAiF;UAAjF,iFAAiF;CAClF;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,WAAW;EACX,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,gBAAgB;CACjB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAED;GACG,WAAW;CACb;;AAED;GACG,YAAY;CACd;;AAED;EACE,sBAAsB;EACtB,yBAAyB;EACzB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,mBAAmB;CACpB;;AAED;EACE,mBAAmB;EACnB,WAAW;EACX,eAAe;EACf,oBAAoB;EACpB,YAAY;EACZ,eAAe;EACf,mBAAmB;EACnB,eAAe;CAChB;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,UAAU;EACV,YAAY;EACZ,iBAAiB;EACjB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,YAAY;CACb;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,YAAY;EACZ,eAAe;EACf,YAAY;EACZ,8BAA8B;EAC9B,YAAY;CACb;;AAED;EACE,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,kBAAkB;EAClB,oBAAoB;EACpB,kHAAwE;EAAxE,gFAAwE;EAAxE,2EAAwE;EAAxE,wEAAwE;EACxE,yEAAiE;UAAjE,iEAAiE;EACjE;IACE,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,gBAAgB;IAChB,0GAAwD;IAAxD,gEAAwD;IAAxD,2DAAwD;IAAxD,wDAAwD;IACxD,uFAA+E;YAA/E,8EAA+E;GAgBhF;EAfC;IACE,YAAY;IACZ,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,yBAAyB;IACzB,kGAAqE;IAArE,6EAAqE;IAArE,wEAAqE;IAArE,qEAAqE;IACrE,yEAAiE;YAAjE,iEAAiE;IACjE,WAAW;GACZ;EACD;IACE,aAAa;GACd;EAEH;IACE,kBAAmB;GAIpB;EAHC;IACE,WAAW;GACZ;CAEJ;;AAED;EACE,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB","file":"Serviceprovider.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n  max-height:100x\r\n}\r\n\r\n.lead {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.formGroup {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.label {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.input {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 26px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n}\r\n\r\n.input:focus {\r\n  border-color: red;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 50%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 14px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.leftContainer {\r\n   float:left;\r\n}\r\n\r\n.rightContainer {\r\n   float:right;\r\n}\r\n\r\n.icon {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.lineThrough {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.lineThrough::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.lineThrough::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n.squaredOne {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n    &:after {\r\n      content: '';\r\n      width: 16px;\r\n      height: 16px;\r\n      position: absolute;\r\n      top: 2px;\r\n      left: 2px;\r\n      background: $activeColor;\r\n      background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n      box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n      opacity: 0;\r\n    }\r\n    &:hover::after {\r\n      opacity: 0.3;\r\n    }\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden;\r\n    &:checked + label:after {\r\n      opacity: 1;\r\n    }   \r\n  } \r\n}\r\n\r\nhtml {\r\n  min-height: 100%;\r\n}\r\n\r\nbody {\r\n  min-height: 100vh;\r\n}"],"sourceRoot":"webpack://"}]);
+  exports.push([module.id, " .Serviceprovider_root_3Ll {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Serviceprovider_container_c6Z {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n  max-height:100x\r\n}\r\n\r\n.Serviceprovider_lead_35E {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.Serviceprovider_formGroup_3-S {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.Serviceprovider_label_15b {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.Serviceprovider_input_354 {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 26px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n}\r\n\r\n.Serviceprovider_input_354:focus {\r\n  border-color: red;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Serviceprovider_button_vnx {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 50%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 14px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer;\r\n}\r\n\r\n.Serviceprovider_button_vnx:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Serviceprovider_button_vnx:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Serviceprovider_leftContainer_31v {\r\n   float:left;\r\n}\r\n\r\n.Serviceprovider_rightContainer_2M6 {\r\n   float:right;\r\n}\r\n\r\n.Serviceprovider_icon_1-O {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.Serviceprovider_lineThrough_2lM {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.Serviceprovider_lineThrough_2lM::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.Serviceprovider_lineThrough_2lM::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n.Serviceprovider_squaredOne_5rn {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: -webkit-gradient(linear, right top, left top, from(#fcfff4), color-stop(40%, #dfe5d7), to(#b3bead));\r\n  background: -webkit-linear-gradient(right, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: -o-linear-gradient(right, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: linear-gradient(to left, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n          box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    to left: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: -webkit-gradient(linear, right top, left top, from(#222), to(#45484d));\r\n    background: -webkit-linear-gradient(right, #222 0%, #45484d 100%);\r\n    background: -o-linear-gradient(right, #222 0%, #45484d 100%);\r\n    background: linear-gradient(to left, #222 0%, #45484d 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n            box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1)\r\n  }\r\n  label:after {\r\n    content: '';\r\n    width: 16px;\r\n    height: 16px;\r\n    position: absolute;\r\n    to: 2px;\r\n    left: 2px;\r\n    background: $activeColor;\r\n    background: -webkit-gradient(linear, right top, left top, from($activeColor), to($darkenColor));\r\n    background: -webkit-linear-gradient(right, $activeColor 0%, $darkenColor 100%);\r\n    background: -o-linear-gradient(right, $activeColor 0%, $darkenColor 100%);\r\n    background: linear-gradient(to left, $activeColor 0%, $darkenColor 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n            box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n    opacity: 0;\r\n  }\r\n  label:hover::after {\r\n    opacity: 0.3;\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden   \r\n  }\r\n  input[type=checkbox]:checked + label:after {\r\n    opacity: 1;\r\n  } \r\n}\r\n\r\nhtml {\r\n  min-height: 100%;\r\n}\r\n\r\nbody {\r\n  min-height: 100vh;\r\n}", "", {"version":3,"sources":["/./routes/serviceprovider/Serviceprovider.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;EACjB,eAAe;CAChB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,oBAAoB;;CAErB;;AAED;;EAEE,mBAAmB;EACnB,gBAAgB;EAChB,iBAAiB;EACjB,YAAY;CACb;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,WAAW;EACX,uBAAuB;EACvB,kBAAkB;EAClB,iBAAiB;EACjB,yDAAiD;UAAjD,iDAAiD;EACjD,eAAe;EACf,gBAAgB;EAChB,uBAAuB;EACvB,yFAAyE;EAAzE,iFAAyE;EAAzE,4EAAyE;EAAzE,yEAAyE;EAAzE,+GAAyE;EACzE,SAAS;EACT,cAAc;CACf;;AAED;EACE,kBAAkB;EAClB,yFAAiF;UAAjF,iFAAiF;CAClF;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,WAAW;EACX,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,gBAAgB;CACjB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAED;GACG,WAAW;CACb;;AAED;GACG,YAAY;CACd;;AAED;EACE,sBAAsB;EACtB,yBAAyB;EACzB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,mBAAmB;CACpB;;AAED;EACE,mBAAmB;EACnB,WAAW;EACX,eAAe;EACf,oBAAoB;EACpB,YAAY;EACZ,eAAe;EACf,mBAAmB;EACnB,eAAe;CAChB;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,UAAU;EACV,YAAY;EACZ,iBAAiB;EACjB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,YAAY;CACb;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,YAAY;EACZ,eAAe;EACf,YAAY;EACZ,8BAA8B;EAC9B,YAAY;CACb;;AAED;EACE,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,kBAAkB;EAClB,oBAAoB;EACpB,gHAA4E;EAA5E,kFAA4E;EAA5E,6EAA4E;EAA5E,4EAA4E;EAC5E,yEAAiE;UAAjE,iEAAiE;EACjE;IACE,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,aAAa;IACb,UAAU;IACV,gBAAgB;IAChB,mFAA4D;IAA5D,kEAA4D;IAA5D,6DAA4D;IAA5D,4DAA4D;IAC5D,uFAA+E;YAA/E,8EAA+E;GAgBhF;EAfC;IACE,YAAY;IACZ,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,QAAa;IACb,UAAU;IACV,yBAAyB;IACzB,gGAAyE;IAAzE,+EAAyE;IAAzE,0EAAyE;IAAzE,yEAAyE;IACzE,yEAAiE;YAAjE,iEAAiE;IACjE,WAAW;GACZ;EACD;IACE,aAAa;GACd;EAEH;IACE,kBAAmB;GAIpB;EAHC;IACE,WAAW;GACZ;CAEJ;;AAED;EACE,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB","file":"Serviceprovider.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n  max-height:100x\r\n}\r\n\r\n.lead {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.formGroup {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.label {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.input {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 26px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n}\r\n\r\n.input:focus {\r\n  border-color: red;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 50%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #373277;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 14px;\r\n  line-height: 1.3333333;\r\n  cursor: pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.leftContainer {\r\n   float:left;\r\n}\r\n\r\n.rightContainer {\r\n   float:right;\r\n}\r\n\r\n.icon {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.lineThrough {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.lineThrough::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.lineThrough::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n.squaredOne {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: linear-gradient(to left, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    to left: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: linear-gradient(to left, #222 0%, #45484d 100%);\r\n    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n    &:after {\r\n      content: '';\r\n      width: 16px;\r\n      height: 16px;\r\n      position: absolute;\r\n      to left: 2px;\r\n      left: 2px;\r\n      background: $activeColor;\r\n      background: linear-gradient(to left, $activeColor 0%, $darkenColor 100%);\r\n      box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n      opacity: 0;\r\n    }\r\n    &:hover::after {\r\n      opacity: 0.3;\r\n    }\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden;\r\n    &:checked + label:after {\r\n      opacity: 1;\r\n    }   \r\n  } \r\n}\r\n\r\nhtml {\r\n  min-height: 100%;\r\n}\r\n\r\nbody {\r\n  min-height: 100vh;\r\n}"],"sourceRoot":"webpack://"}]);
   
   // exports
   exports.locals = {
@@ -8112,7 +8588,7 @@ module.exports =
   };
 
 /***/ },
-/* 145 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -8121,7 +8597,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -8137,19 +8613,19 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Saveprovider = __webpack_require__(146);
+  var _Saveprovider = __webpack_require__(149);
   
   var _Saveprovider2 = _interopRequireDefault(_Saveprovider);
   
-  var _Login = __webpack_require__(117);
+  var _Login = __webpack_require__(120);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -8162,7 +8638,7 @@ module.exports =
    * LICENSE.txt file in the root directory of this source tree.
    */
   
-  var request = __webpack_require__(92);
+  var request = __webpack_require__(95);
   
   var message = 'Sucessfully Registered. <a href="http://' + _config.apihost + '/login" >Click here to login</a>';
   var status = true;
@@ -8261,7 +8737,7 @@ module.exports =
   
   
   function SaveproviderData(data) {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     //console.log("Inside storePasscode method email: " + email);
     // console.log("Inside storePasscode method Code: " + code);
     console.log('calling API');
@@ -8357,7 +8833,7 @@ module.exports =
   }
 
 /***/ },
-/* 146 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -8366,15 +8842,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Saveprovider = __webpack_require__(147);
+  var _Saveprovider = __webpack_require__(150);
   
   var _Saveprovider2 = _interopRequireDefault(_Saveprovider);
   
@@ -8426,12 +8902,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Saveprovider2.default)(Saveprovider);
 
 /***/ },
-/* 147 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(148);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(151);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -8446,8 +8922,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Saveprovider.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Saveprovider.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Saveprovider.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Saveprovider.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -8460,10 +8936,10 @@ module.exports =
     
 
 /***/ },
-/* 148 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -8488,7 +8964,7 @@ module.exports =
   };
 
 /***/ },
-/* 149 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -8497,7 +8973,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -8513,21 +8989,21 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Booking = __webpack_require__(150);
+  var _Booking = __webpack_require__(153);
   
   var _Booking2 = _interopRequireDefault(_Booking);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _util = __webpack_require__(91);
+  var _util = __webpack_require__(94);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -8595,33 +9071,9 @@ module.exports =
     }
   };
   
-  /*function getSessionid() {
-    var request = require('request');
-    console.log('genSessionid - calling API');
-    var url = `http://${apihost}/genSessionid`;
-    console.log("getSeesionid - URL: " + url);
-    
-    return new Promise(function(resolve, reject) {
-    request(url, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        console.log('genSessionid - Response from API' + body);
-       // sessionid = body;
-        resolve(body);
-      }
-      else {
-        
-        console.log("genSessionid -API Server not running: "+error);
-        return reject(error);
-      }
-      console.log("getSessionid - Returning from API call")
-    });
-  
-   });
-   
-  }*/
   
   function getCustomerRecord(email) {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('getCustomerRecord - calling API');
     var url = 'http://' + _config.apihost + '/getCustomer?email=' + email;
     console.log("getCustomerRecord - URL: " + url);
@@ -8643,7 +9095,7 @@ module.exports =
   }
 
 /***/ },
-/* 150 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -8652,15 +9104,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Booking = __webpack_require__(151);
+  var _Booking = __webpack_require__(154);
   
   var _Booking2 = _interopRequireDefault(_Booking);
   
@@ -8780,8 +9232,8 @@ module.exports =
               className: _Booking2.default.squaredOne,
               id: 'catering',
               type: 'checkbox',
-              name: 'catering',
-              defaultValue: 'no'
+              name: 'catering'
+  
             }),
             _react2.default.createElement('br', null),
             _react2.default.createElement(
@@ -8871,12 +9323,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Booking2.default)(Booking);
 
 /***/ },
-/* 151 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(152);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(155);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -8891,8 +9343,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Booking.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Booking.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Booking.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Booking.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -8905,15 +9357,15 @@ module.exports =
     
 
 /***/ },
-/* 152 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
   // module
-  exports.push([module.id, " .Booking_root_16d {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Booking_container_3w7 {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.Booking_lead_oXi {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.Booking_formGroup_1Wc {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.Booking_label_yqN {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.Booking_input_b9l {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.Booking_input_b9l:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Booking_button_1QB {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.Booking_button_1QB:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Booking_button_1QB:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Booking_leftContainer_3QX {\r\n   float:left;\r\n}\r\n\r\n.Booking_rightContainer_35N {\r\n   float:right;\r\n}\r\n\r\n.Booking_icon_1b7 {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.Booking_lineThrough_SuZ {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.Booking_lineThrough_SuZ::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.Booking_lineThrough_SuZ::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n#Booking_lastname_1vn{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.Booking_squaredOne_2tF {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0%, #fcfff4), color-stop(40%, #dfe5d7), to(#b3bead));\r\n  background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: -o-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n          box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: -webkit-gradient(linear, left top, left bottom, from(#222), to(#45484d));\r\n    background: -webkit-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: -o-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n            box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1)\r\n  }\r\n  label:after {\r\n    content: '';\r\n    width: 16px;\r\n    height: 16px;\r\n    position: absolute;\r\n    top: 2px;\r\n    left: 2px;\r\n    background: $activeColor;\r\n    background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0%, $activeColor), to($darkenColor));\r\n    background: -webkit-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: -o-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n            box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n    opacity: 0;\r\n  }\r\n  label:hover::after {\r\n    opacity: 0.3;\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden   \r\n  }\r\n  input[type=checkbox]:checked + label:after {\r\n    opacity: 1;\r\n  } \r\n}", "", {"version":3,"sources":["/./routes/booking/Booking.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,oBAAoB;;CAErB;;AAED;;EAEE,mBAAmB;EACnB,gBAAgB;EAChB,iBAAiB;EACjB,YAAY;CACb;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,WAAW;EACX,uBAAuB;EACvB,kBAAkB;EAClB,iBAAiB;EACjB,yDAAiD;UAAjD,iDAAiD;EACjD,eAAe;EACf,gBAAgB;EAChB,uBAAuB;EACvB,yFAAyE;EAAzE,iFAAyE;EAAzE,4EAAyE;EAAzE,yEAAyE;EAAzE,+GAAyE;EACzE,SAAS;EACT,cAAc;;CAEf;;AAED;EACE,sBAAsB;EACtB,yFAAiF;UAAjF,iFAAiF;CAClF;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,YAAY;EACZ,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,iBAAiB;CAClB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAED;GACG,WAAW;CACb;;AAED;GACG,YAAY;CACd;;AAGD;EACE,sBAAsB;EACtB,yBAAyB;EACzB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,mBAAmB;CACpB;;AAED;EACE,mBAAmB;EACnB,WAAW;EACX,eAAe;EACf,oBAAoB;EACpB,YAAY;EACZ,eAAe;EACf,mBAAmB;EACnB,eAAe;CAChB;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,UAAU;EACV,YAAY;EACZ,iBAAiB;EACjB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,YAAY;CACb;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,YAAY;EACZ,eAAe;EACf,YAAY;EACZ,8BAA8B;EAC9B,YAAY;CACb;;AACD;IACI,gBAAgB;IAChB,WAAW;CACd;;AAED;EACE,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,kBAAkB;EAClB,oBAAoB;EACpB,uIAAwE;EAAxE,gFAAwE;EAAxE,2EAAwE;EAAxE,wEAAwE;EACxE,yEAAiE;UAAjE,iEAAiE;EACjE;IACE,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,gBAAgB;IAChB,qFAAwD;IAAxD,gEAAwD;IAAxD,2DAAwD;IAAxD,wDAAwD;IACxD,uFAA+E;YAA/E,8EAA+E;GAgBhF;EAfC;IACE,YAAY;IACZ,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,yBAAyB;IACzB,uHAAqE;IAArE,6EAAqE;IAArE,wEAAqE;IAArE,qEAAqE;IACrE,yEAAiE;YAAjE,iEAAiE;IACjE,WAAW;GACZ;EACD;IACE,aAAa;GACd;EAEH;IACE,kBAAmB;GAIpB;EAHC;IACE,WAAW;GACZ;CAEJ","file":"Booking.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.lead {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.formGroup {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.label {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.input {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.input:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.leftContainer {\r\n   float:left;\r\n}\r\n\r\n.rightContainer {\r\n   float:right;\r\n}\r\n\r\n\r\n.icon {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.lineThrough {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.lineThrough::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.lineThrough::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n#lastname{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.squaredOne {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n    &:after {\r\n      content: '';\r\n      width: 16px;\r\n      height: 16px;\r\n      position: absolute;\r\n      top: 2px;\r\n      left: 2px;\r\n      background: $activeColor;\r\n      background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n      box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n      opacity: 0;\r\n    }\r\n    &:hover::after {\r\n      opacity: 0.3;\r\n    }\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden;\r\n    &:checked + label:after {\r\n      opacity: 1;\r\n    }   \r\n  } \r\n}"],"sourceRoot":"webpack://"}]);
+  exports.push([module.id, " .Booking_root_16d {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Booking_container_3w7 {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.Booking_lead_oXi {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.Booking_formGroup_1Wc {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.Booking_label_yqN {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: to left;\r\n}\r\n\r\n.Booking_input_b9l {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.Booking_input_b9l:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Booking_button_1QB {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.Booking_button_1QB:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Booking_button_1QB:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Booking_leftContainer_3QX {\r\n   float:to left;\r\n}\r\n\r\n.Booking_rightContainer_35N {\r\n   float:to right;\r\n}\r\n\r\n.Booking_icon_1b7 {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.Booking_lineThrough_SuZ {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.Booking_lineThrough_SuZ::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.Booking_lineThrough_SuZ::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n#Booking_lastname_1vn{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.Booking_squaredOne_2tF {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: -webkit-gradient(linear, right top, left top, from(#fcfff4), color-stop(40%, #dfe5d7), to(#b3bead));\r\n  background: -webkit-linear-gradient(right, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: -o-linear-gradient(right, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: linear-gradient(to left, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n          box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: -webkit-gradient(linear, right top, left top, from(#222), to(#45484d));\r\n    background: -webkit-linear-gradient(right, #222 0%, #45484d 100%);\r\n    background: -o-linear-gradient(right, #222 0%, #45484d 100%);\r\n    background: linear-gradient(to left, #222 0%, #45484d 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n            box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1)\r\n  }\r\n  label:after {\r\n    content: '';\r\n    width: 16px;\r\n    height: 16px;\r\n    position: absolute;\r\n    top: 2px;\r\n    left: 2px;\r\n    background: $activeColor;\r\n    background: -webkit-gradient(linear, right top, left top, from($activeColor), to($darkenColor));\r\n    background: -webkit-linear-gradient(right, $activeColor 0%, $darkenColor 100%);\r\n    background: -o-linear-gradient(right, $activeColor 0%, $darkenColor 100%);\r\n    background: linear-gradient(to left, $activeColor 0%, $darkenColor 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n            box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n    opacity: 0;\r\n  }\r\n  label:hover::after {\r\n    opacity: 0.3;\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden   \r\n  }\r\n  input[type=checkbox]:checked + label:after {\r\n    opacity: 1;\r\n  } \r\n}", "", {"version":3,"sources":["/./routes/booking/Booking.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,oBAAoB;;CAErB;;AAED;;EAEE,mBAAmB;EACnB,gBAAgB;EAChB,iBAAiB;EACjB,eAAe;CAChB;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,WAAW;EACX,uBAAuB;EACvB,kBAAkB;EAClB,iBAAiB;EACjB,yDAAiD;UAAjD,iDAAiD;EACjD,eAAe;EACf,gBAAgB;EAChB,uBAAuB;EACvB,yFAAyE;EAAzE,iFAAyE;EAAzE,4EAAyE;EAAzE,yEAAyE;EAAzE,+GAAyE;EACzE,SAAS;EACT,cAAc;;CAEf;;AAED;EACE,sBAAsB;EACtB,yFAAiF;UAAjF,iFAAiF;CAClF;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,YAAY;EACZ,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,iBAAiB;CAClB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAED;GACG,cAAc;CAChB;;AAED;GACG,eAAe;CACjB;;AAGD;EACE,sBAAsB;EACtB,yBAAyB;EACzB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,mBAAmB;CACpB;;AAED;EACE,mBAAmB;EACnB,WAAW;EACX,eAAe;EACf,oBAAoB;EACpB,YAAY;EACZ,eAAe;EACf,mBAAmB;EACnB,eAAe;CAChB;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,UAAU;EACV,YAAY;EACZ,iBAAiB;EACjB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,YAAY;CACb;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,YAAY;EACZ,eAAe;EACf,YAAY;EACZ,8BAA8B;EAC9B,YAAY;CACb;;AACD;IACI,gBAAgB;IAChB,WAAW;CACd;;AAED;EACE,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,kBAAkB;EAClB,oBAAoB;EACpB,gHAA4E;EAA5E,kFAA4E;EAA5E,6EAA4E;EAA5E,4EAA4E;EAC5E,yEAAiE;UAAjE,iEAAiE;EACjE;IACE,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,gBAAgB;IAChB,mFAA4D;IAA5D,kEAA4D;IAA5D,6DAA4D;IAA5D,4DAA4D;IAC5D,uFAA+E;YAA/E,8EAA+E;GAgBhF;EAfC;IACE,YAAY;IACZ,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,yBAAyB;IACzB,gGAAyE;IAAzE,+EAAyE;IAAzE,0EAAyE;IAAzE,yEAAyE;IACzE,yEAAiE;YAAjE,iEAAiE;IACjE,WAAW;GACZ;EACD;IACE,aAAa;GACd;EAEH;IACE,kBAAmB;GAIpB;EAHC;IACE,WAAW;GACZ;CAEJ","file":"Booking.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.lead {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.formGroup {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.label {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: to left;\r\n}\r\n\r\n.input {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.input:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.leftContainer {\r\n   float:to left;\r\n}\r\n\r\n.rightContainer {\r\n   float:to right;\r\n}\r\n\r\n\r\n.icon {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.lineThrough {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.lineThrough::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.lineThrough::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n#lastname{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.squaredOne {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: linear-gradient(to left, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: linear-gradient(to left, #222 0%, #45484d 100%);\r\n    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n    &:after {\r\n      content: '';\r\n      width: 16px;\r\n      height: 16px;\r\n      position: absolute;\r\n      top: 2px;\r\n      left: 2px;\r\n      background: $activeColor;\r\n      background: linear-gradient(to left, $activeColor 0%, $darkenColor 100%);\r\n      box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n      opacity: 0;\r\n    }\r\n    &:hover::after {\r\n      opacity: 0.3;\r\n    }\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden;\r\n    &:checked + label:after {\r\n      opacity: 1;\r\n    }   \r\n  } \r\n}"],"sourceRoot":"webpack://"}]);
   
   // exports
   exports.locals = {
@@ -8933,7 +9385,7 @@ module.exports =
   };
 
 /***/ },
-/* 153 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -8942,7 +9394,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -8958,29 +9410,29 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Savebooking = __webpack_require__(154);
+  var _Savebooking = __webpack_require__(157);
   
   var _Savebooking2 = _interopRequireDefault(_Savebooking);
   
-  var _Providerlist = __webpack_require__(97);
+  var _Providerlist = __webpack_require__(100);
   
   var _Providerlist2 = _interopRequireDefault(_Providerlist);
   
-  var _Login = __webpack_require__(117);
+  var _Login = __webpack_require__(120);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _util = __webpack_require__(91);
+  var _util = __webpack_require__(94);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
-  var request = __webpack_require__(92);
+  var request = __webpack_require__(95);
   
   var message = 'Booking done Sucessfully  ';
   var href = 'http://' + _config.host + '/';
@@ -8992,6 +9444,8 @@ module.exports =
   var providerlist;
   var sessionid;
   var bookingtype;
+  var needCatering;
+  var cateringProviderlist;
   
   exports.default = {
   
@@ -9003,7 +9457,7 @@ module.exports =
       var query = _ref.query;
       var path = _ref2.path;
       return (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
-        var sessionbody, body, mail, sms;
+        var sessionbody, body;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -9012,10 +9466,12 @@ module.exports =
                 phone = query.mobile;
                 email = query.email;
                 bookingtype = query.bookingtype;
-                console.log("Bookingtype: " + bookingtype);
+                // console.log("Bookingtype: "+bookingtype);
                 console.log("Email: " + email);
                 sessionid = query.sessionid;
                 bookingid = query.bookingid;
+                needCatering = query.catering;
+  
                 console.log("Sessionid - index.js - Savebooking " + sessionid);
   
                 if (!(sessionid === undefined || sessionid == '')) {
@@ -9037,24 +9493,8 @@ module.exports =
               case 16:
                 body = _context.sent;
   
-                console.log("Calling SendEmail");
-                _context.next = 20;
-                return sendEmail();
-  
-              case 20:
-                mail = _context.sent;
-  
-                console.log("Calling sendSMS");
-                _context.next = 24;
-                return sendSMS();
-  
-              case 24:
-                sms = _context.sent;
-  
-                console.log("Body: " + body);
-  
                 if (status) {
-                  _context.next = 33;
+                  _context.next = 24;
                   break;
                 }
   
@@ -9063,17 +9503,32 @@ module.exports =
                 message1 = 'Click here to Register.';
                 return _context.abrupt('return', _react2.default.createElement(_Savebooking2.default, { message: message, redirectlink: href, message1: message1, sessionid: sessionid }));
   
-              case 33:
-                _context.next = 35;
+              case 24:
+                _context.next = 26;
                 return getProviderData();
   
-              case 35:
+              case 26:
                 providerlist = _context.sent;
   
-                console.log("Service Provider List: " + providerlist);
-                return _context.abrupt('return', _react2.default.createElement(_Providerlist2.default, { providerlist: providerlist, customeremail: email, sessionid: sessionid, bookingid: bookingid }));
+                if (!(needCatering != undefined)) {
+                  _context.next = 33;
+                  break;
+                }
   
-              case 38:
+                bookingtype = 'Catering';
+                _context.next = 31;
+                return getProviderData();
+  
+              case 31:
+                cateringProviderlist = _context.sent;
+  
+                console.log("Catering Service Providers: " + cateringProviderlist);
+  
+              case 33:
+                console.log("Service Provider List: " + providerlist);
+                return _context.abrupt('return', _react2.default.createElement(_Providerlist2.default, { providerlist: providerlist, cateringProviderlist: cateringProviderlist, customeremail: email, sessionid: sessionid, bookingid: bookingid }));
+  
+              case 35:
               case 'end':
                 return _context.stop();
             }
@@ -9167,16 +9622,16 @@ module.exports =
   }
   
   function getProviderData() {
-    var request = __webpack_require__(92);
-  
+    var request = __webpack_require__(95);
+    console.log("Booking Type: " + bookingtype);
     console.log('calling API');
     var url = 'http://' + _config.apihost + '/searchByType?servicetype=' + bookingtype;
     console.log("URL: " + url);
     return new _promise2.default(function (resolve, reject) {
       request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
-          //console.log('Inside getProviderData Response from API (body)' + body);
-          providerlist = body;
+          console.log('Inside getProviderData Response from API (body)' + body);
+          //providerlist = body;
           //console.log("Providerlist: "+providerlist);
           resolve(body);
         } else {
@@ -9212,7 +9667,7 @@ module.exports =
   }*/
 
 /***/ },
-/* 154 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -9221,15 +9676,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Savebooking = __webpack_require__(155);
+  var _Savebooking = __webpack_require__(158);
   
   var _Savebooking2 = _interopRequireDefault(_Savebooking);
   
@@ -9288,12 +9743,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Savebooking2.default)(Savebooking);
 
 /***/ },
-/* 155 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(156);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(159);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -9308,8 +9763,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Savebooking.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Savebooking.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Savebooking.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Savebooking.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -9322,10 +9777,10 @@ module.exports =
     
 
 /***/ },
-/* 156 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -9350,7 +9805,7 @@ module.exports =
   };
 
 /***/ },
-/* 157 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -9367,15 +9822,15 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _providerlogin = __webpack_require__(158);
+  var _providerlogin = __webpack_require__(161);
   
   var _providerlogin2 = _interopRequireDefault(_providerlogin);
   
-  var _util = __webpack_require__(91);
+  var _util = __webpack_require__(94);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -9415,7 +9870,7 @@ module.exports =
   };
 
 /***/ },
-/* 158 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -9424,23 +9879,23 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _reactDom = __webpack_require__(87);
+  var _reactDom = __webpack_require__(90);
   
   var _reactDom2 = _interopRequireDefault(_reactDom);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Providerlogin = __webpack_require__(159);
+  var _Providerlogin = __webpack_require__(162);
   
   var _Providerlogin2 = _interopRequireDefault(_Providerlogin);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
@@ -9562,12 +10017,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Providerlogin2.default)(Providerlogin);
 
 /***/ },
-/* 159 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(160);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(163);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -9582,8 +10037,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Providerlogin.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Providerlogin.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Providerlogin.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Providerlogin.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -9596,10 +10051,10 @@ module.exports =
     
 
 /***/ },
-/* 160 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -9625,7 +10080,7 @@ module.exports =
   };
 
 /***/ },
-/* 161 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -9634,7 +10089,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -9646,23 +10101,23 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Providerforgotpass = __webpack_require__(162);
+  var _Providerforgotpass = __webpack_require__(165);
   
   var _Providerforgotpass2 = _interopRequireDefault(_Providerforgotpass);
   
-  var _Providerlogin = __webpack_require__(165);
+  var _Providerlogin = __webpack_require__(168);
   
   var _Providerlogin2 = _interopRequireDefault(_Providerlogin);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
-  var request = __webpack_require__(92);
+  var request = __webpack_require__(95);
   
   var status = 'false';
   var errormessage = '';
@@ -9845,7 +10300,7 @@ module.exports =
   }
 
 /***/ },
-/* 162 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -9854,19 +10309,19 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Providerforgotpass = __webpack_require__(163);
+  var _Providerforgotpass = __webpack_require__(166);
   
   var _Providerforgotpass2 = _interopRequireDefault(_Providerforgotpass);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
@@ -9926,12 +10381,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Providerforgotpass2.default)(Providerforgotpass);
 
 /***/ },
-/* 163 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(164);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(167);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -9946,8 +10401,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Providerforgotpass.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Providerforgotpass.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Providerforgotpass.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Providerforgotpass.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -9960,10 +10415,10 @@ module.exports =
     
 
 /***/ },
-/* 164 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -9987,7 +10442,7 @@ module.exports =
   };
 
 /***/ },
-/* 165 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -9996,23 +10451,23 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _reactDom = __webpack_require__(87);
+  var _reactDom = __webpack_require__(90);
   
   var _reactDom2 = _interopRequireDefault(_reactDom);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Providerlogin = __webpack_require__(159);
+  var _Providerlogin = __webpack_require__(162);
   
   var _Providerlogin2 = _interopRequireDefault(_Providerlogin);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
@@ -10134,7 +10589,7 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Providerlogin2.default)(Providerlogin);
 
 /***/ },
-/* 166 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -10143,7 +10598,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -10155,19 +10610,19 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Providerchangepassword = __webpack_require__(167);
+  var _Providerchangepassword = __webpack_require__(170);
   
   var _Providerchangepassword2 = _interopRequireDefault(_Providerchangepassword);
   
-  var _Providerlogin = __webpack_require__(165);
+  var _Providerlogin = __webpack_require__(168);
   
   var _Providerlogin2 = _interopRequireDefault(_Providerlogin);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -10225,7 +10680,7 @@ module.exports =
   
   
   function checkCode(code, email) {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('Check Code - calling API');
     var url = 'http://' + _config.apihost + '/getCode?code=' + code + '&userEmail=' + email;
     console.log("Checkcode - URL: " + url);
@@ -10248,7 +10703,7 @@ module.exports =
   }
 
 /***/ },
-/* 167 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -10257,19 +10712,19 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _providerchangepassword = __webpack_require__(168);
+  var _providerchangepassword = __webpack_require__(171);
   
   var _providerchangepassword2 = _interopRequireDefault(_providerchangepassword);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
@@ -10369,12 +10824,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_providerchangepassword2.default)(Changepassword);
 
 /***/ },
-/* 168 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(169);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(172);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -10389,8 +10844,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./providerchangepassword.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./providerchangepassword.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./providerchangepassword.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./providerchangepassword.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -10403,10 +10858,10 @@ module.exports =
     
 
 /***/ },
-/* 169 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -10426,7 +10881,7 @@ module.exports =
   };
 
 /***/ },
-/* 170 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -10435,7 +10890,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -10447,19 +10902,19 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Updateproviderpass = __webpack_require__(171);
+  var _Updateproviderpass = __webpack_require__(174);
   
   var _Updateproviderpass2 = _interopRequireDefault(_Updateproviderpass);
   
-  var _Providerchangepassword = __webpack_require__(167);
+  var _Providerchangepassword = __webpack_require__(170);
   
   var _Providerchangepassword2 = _interopRequireDefault(_Providerchangepassword);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -10541,7 +10996,7 @@ module.exports =
   
   
   function updatePassword(newpass, email) {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log("Inside Updateproviderpassword method email: " + email);
     console.log("Inside Updateproviderpassword method Password: " + newpass);
     console.log('calling API');
@@ -10570,7 +11025,7 @@ module.exports =
   }
   
   function deletePassCode() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('Check Code - calling API');
     var url = 'http://' + _config.apihost + '/removeCode?code=' + passcode;
     console.log("deletePassCode - URL: " + url);
@@ -10593,7 +11048,7 @@ module.exports =
   }
 
 /***/ },
-/* 171 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -10602,15 +11057,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Updateproviderpass = __webpack_require__(172);
+  var _Updateproviderpass = __webpack_require__(175);
   
   var _Updateproviderpass2 = _interopRequireDefault(_Updateproviderpass);
   
@@ -10664,12 +11119,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Updateproviderpass2.default)(Updateproviderpass);
 
 /***/ },
-/* 172 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(173);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(176);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -10684,8 +11139,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Updateproviderpass.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Updateproviderpass.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Updateproviderpass.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Updateproviderpass.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -10698,10 +11153,10 @@ module.exports =
     
 
 /***/ },
-/* 173 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -10725,7 +11180,7 @@ module.exports =
   };
 
 /***/ },
-/* 174 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -10734,7 +11189,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -10750,30 +11205,25 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _LinkProvider = __webpack_require__(175);
+  var _LinkProvider = __webpack_require__(178);
   
   var _LinkProvider2 = _interopRequireDefault(_LinkProvider);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
+  var _util = __webpack_require__(94);
+  
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
-  /**
-   * React Starter Kit (https://www.reactstarterkit.com/)
-   *
-   * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
-   *
-   * This source code is licensed under the MIT license found in the
-   * LICENSE.txt file in the root directory of this source tree.
-   */
+  var request = __webpack_require__(95);
   
   var message = 'Booking done Sucessfully  ';
   var href = 'http://' + _config.host + '/';
@@ -10791,51 +11241,94 @@ module.exports =
       var query = _ref.query;
       var path = _ref2.path;
       return (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
-        var provideremail, customeremail, providerphone, bookingid, sessionid, providerrec, body, url, result, mail;
+        var sessionid, body, provideremail, customeremail, cateringprovideremail, providerphone, bookingid, providerrec, bookingrec, cateringproviderrec, cateringproviderphone, bookingresponse, url, result;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
+                sessionid = query.sessionid;
+  
+                console.log("Sessionid - index.js - Home " + sessionid);
+  
+                if (!(sessionid === undefined || sessionid == '')) {
+                  _context.next = 7;
+                  break;
+                }
+  
+                _context.next = 5;
+                return (0, _util.getSessionid)();
+  
+              case 5:
+                body = _context.sent;
+                return _context.abrupt('return', _react2.default.createElement(_Login2.default, { sessionid: body }));
+  
+              case 7:
+  
                 console.log("Query String - index.js - linkprovider: " + (0, _stringify2.default)(query));
                 provideremail = query.provideremail;
                 customeremail = query.customeremail;
+                cateringprovideremail = query.cateringprovideremail;
                 bookingid = query.bookingid;
-                sessionid = query.sessionid;
                 _context.t0 = JSON;
-                _context.next = 8;
+                _context.next = 15;
                 return getProviderRecord(provideremail);
   
-              case 8:
+              case 15:
                 _context.t1 = _context.sent;
                 providerrec = _context.t0.parse.call(_context.t0, _context.t1);
   
                 console.log("Provider Record: " + providerrec);
+  
                 providerphone = providerrec[0].phone;
                 console.log("Provider Phone: " + providerphone);
-                console.log("Sessionid - index.js - Home " + sessionid);
   
-                if (!(sessionid === undefined || sessionid == '')) {
-                  _context.next = 19;
+                if (!(cateringprovideremail != undefined)) {
+                  _context.next = 42;
                   break;
                 }
   
-                _context.next = 17;
-                return getSessionid();
+                _context.t2 = JSON;
+                _context.next = 24;
+                return getBookingRecord(bookingid);
   
-              case 17:
-                body = _context.sent;
-                return _context.abrupt('return', _react2.default.createElement(_Login2.default, { sessionid: body }));
+              case 24:
+                _context.t3 = _context.sent;
+                bookingrec = _context.t2.parse.call(_context.t2, _context.t3);
   
-              case 19:
+                console.log("Booking Record: " + bookingrec);
+                _context.t4 = JSON;
+                _context.next = 30;
+                return getProviderRecord(cateringprovideremail);
+  
+              case 30:
+                _context.t5 = _context.sent;
+                cateringproviderrec = _context.t4.parse.call(_context.t4, _context.t5);
+  
+                console.log("cateringprovider record: " + cateringproviderrec);
+                console.log(" Catering Provider Phone: " + cateringproviderrec[0].phone);
+                cateringproviderphone = cateringproviderrec[0].phone;
+  
+                bookingrec[0].provideremail = cateringprovideremail;
+                bookingrec[0].providerphone = cateringproviderphone;
+                delete bookingrec[0]._id;
+                console.log(" Booking Record after adding fields: " + (0, _stringify2.default)(bookingrec[0]));
+  
+                _context.next = 41;
+                return SavebookingData(bookingrec[0]);
+  
+              case 41:
+                bookingresponse = _context.sent;
+  
+              case 42:
                 url = 'http://' + _config.apihost + '/updateProviderLink?provideremail=' + provideremail + '&email=' + customeremail + '&phone=' + providerphone + '&bookingid=' + bookingid;
   
                 console.log("Link Provider - Provider Email: " + provideremail);
                 console.log("Link Provider - Customer Email: " + customeremail);
                 console.log("URL: " + url);
-                _context.next = 25;
+                _context.next = 48;
                 return LinkProviderData(url);
   
-              case 25:
+              case 48:
                 result = _context.sent;
   
                 console.log("Return from LinkProviderData");
@@ -10844,13 +11337,12 @@ module.exports =
                   href = 'http://' + _config.host + '/booking';
                   message1 = 'Click here to Re-booking';
                 } else {
-                  mail = sendEmail(customeremail, provideremail, bookingid);
-  
+                  // var mail =  sendEmail(customeremail, provideremail, bookingid);
                   href = 'http://' + _config.host + '/home?sessionid=' + sessionid + '&email=' + customeremail;
                 }
                 return _context.abrupt('return', _react2.default.createElement(_LinkProvider2.default, { message: message, redirectlink: href, message1: message1, sessionid: sessionid }));
   
-              case 29:
+              case 52:
               case 'end':
                 return _context.stop();
             }
@@ -10862,7 +11354,7 @@ module.exports =
   
   
   function LinkProviderData(url) {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     // console.log("APIHOST: "+apihost);
     console.log('calling API - LinkProviderData method');
     //console.log("URL: " + url);
@@ -10884,33 +11376,11 @@ module.exports =
     });
   }
   
-  function getSessionid(email) {
-    var request = __webpack_require__(92);
-    console.log('genSessionid - calling API');
-    var url = 'http://' + _config.apihost + '/genSessionid';
-    console.log("getSeesionid - URL: " + url);
-  
-    return new _promise2.default(function (resolve, reject) {
-      request(url, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-          console.log('genSessionid - Response from API' + body);
-          //sessionid = body;
-          resolve(body);
-        } else {
-  
-          console.log("genSessionid -API Server not running: " + error);
-          return reject(error);
-        }
-        console.log("getSessionid - Returning from API call");
-      });
-    });
-  }
-  
   function getProviderRecord(email) {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('getProviderRecord - linkProvider - calling API');
     var url = 'http://' + _config.apihost + '/getProvider?email=' + email;
-    console.log("getSeesionid - URL: " + url);
+    console.log("getProviderRecord Method - URL: " + url);
   
     return new _promise2.default(function (resolve, reject) {
       request(url, function (error, response, body) {
@@ -10923,13 +11393,13 @@ module.exports =
           console.log("getProviderRecord - linkProvider -API Server not running: " + error);
           return reject(error);
         }
-        console.log("getSessionid - Returning from API call");
+        console.log("getProviderRecord - Returning from API call");
       });
     });
   }
   
   function sendEmail(email, provideremail, bookingid) {
-    var request = __webpack_require__(92);-console.log('calling API - sendEmail');
+    var request = __webpack_require__(95);-console.log('calling API - sendEmail');
     var url = 'http://' + _config.apihost + '/sendmail';
     console.log("URL: " + url);
   
@@ -10959,9 +11429,58 @@ module.exports =
       });
     });
   }
+  
+  function SavebookingData(data) {
+  
+    console.log('calling API - SavebookingData method');
+    var url = 'http://' + _config.apihost + '/newcateringbooking';
+    console.log("URL: " + url);
+    console.log("Booking Record in SavebookingData " + data);
+    return new _promise2.default(function (resolve, reject) {
+      request.post(url, { form: data }, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          console.log('Inside SavebookingData Response from API (body)' + body);
+  
+          if (body == 'true') status = true;
+          resolve(body);
+          //sendSMS();
+          //var result = await sendEmail();
+        }
+        if (error) {
+          console.log("Error in storing customer data");
+          status = false;
+          return reject(error);
+        }
+  
+        console.log('returning');
+      });
+    });
+  }
+  
+  function getBookingRecord(bookingid) {
+    var request = __webpack_require__(95);
+    console.log('getProviderRecord - linkProvider - calling API');
+    var url = 'http://' + _config.apihost + '/getbookingrec?bookingid=' + bookingid;
+    console.log("getBookingRecord Method - URL: " + url);
+  
+    return new _promise2.default(function (resolve, reject) {
+      request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          console.log('getProviderRecord - linkProvider - Response from API' + body);
+          //sessionid = body;
+          resolve(body);
+        } else {
+  
+          console.log("getProviderRecord - linkProvider -API Server not running: " + error);
+          return reject(error);
+        }
+        console.log("getBookingRecord - Returning from API call");
+      });
+    });
+  }
 
 /***/ },
-/* 175 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -10970,15 +11489,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _LinkProvider = __webpack_require__(176);
+  var _LinkProvider = __webpack_require__(179);
   
   var _LinkProvider2 = _interopRequireDefault(_LinkProvider);
   
@@ -11025,12 +11544,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_LinkProvider2.default)(LinkProvider);
 
 /***/ },
-/* 176 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(177);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(180);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -11045,8 +11564,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./LinkProvider.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./LinkProvider.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./LinkProvider.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./LinkProvider.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -11059,10 +11578,10 @@ module.exports =
     
 
 /***/ },
-/* 177 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -11087,7 +11606,7 @@ module.exports =
   };
 
 /***/ },
-/* 178 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -11096,7 +11615,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -11112,28 +11631,28 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Providerlogin = __webpack_require__(165);
+  var _Providerlogin = __webpack_require__(168);
   
   var _Providerlogin2 = _interopRequireDefault(_Providerlogin);
   
-  var _Providerhome = __webpack_require__(179);
+  var _Providerhome = __webpack_require__(182);
   
   var _Providerhome2 = _interopRequireDefault(_Providerhome);
   
-  var _ErrorPage = __webpack_require__(126);
+  var _ErrorPage = __webpack_require__(129);
   
   var _ErrorPage2 = _interopRequireDefault(_ErrorPage);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
   //import Verifyproviderlogn from './Verifyproviderlogin';
-  var request = __webpack_require__(92);
+  var request = __webpack_require__(95);
   
   var res;
   var userEmail;
@@ -11265,7 +11784,7 @@ module.exports =
   }
   
   function getBookingData() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
   
     console.log('calling API');
     var url = 'http://' + _config.apihost + '/getbookingrecbyprovider?email=' + userEmail;
@@ -11284,7 +11803,7 @@ module.exports =
   }
 
 /***/ },
-/* 179 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -11293,23 +11812,23 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Providerhome = __webpack_require__(180);
+  var _Providerhome = __webpack_require__(183);
   
   var _Providerhome2 = _interopRequireDefault(_Providerhome);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
-  var _classnames = __webpack_require__(66);
+  var _classnames = __webpack_require__(69);
   
   var _classnames2 = _interopRequireDefault(_classnames);
   
@@ -11732,12 +12251,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Providerhome2.default)(Providerhome);
 
 /***/ },
-/* 180 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(181);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(184);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -11752,8 +12271,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Providerhome.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Providerhome.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Providerhome.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Providerhome.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -11766,10 +12285,10 @@ module.exports =
     
 
 /***/ },
-/* 181 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -11789,7 +12308,7 @@ module.exports =
   };
 
 /***/ },
-/* 182 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -11798,7 +12317,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -11810,19 +12329,21 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Providerlist = __webpack_require__(97);
+  var _Providerlist = __webpack_require__(100);
   
   var _Providerlist2 = _interopRequireDefault(_Providerlist);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
+  
+  var _util = __webpack_require__(94);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -11854,7 +12375,7 @@ module.exports =
                 }
   
                 _context.next = 5;
-                return getSessionid();
+                return (0, _util.getSessionid)();
   
               case 5:
                 body = _context.sent;
@@ -11885,7 +12406,7 @@ module.exports =
   
   
   function getProviderData() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
   
     console.log('calling API');
     var url = 'http://' + _config.apihost + '/searchByType?servicetype=Pooja';
@@ -11905,30 +12426,33 @@ module.exports =
     });
   }
   
-  function getSessionid() {
-    var request = __webpack_require__(92);
+  /*function getSessionid() {
+    var request = require('request');
     console.log('genSessionid - calling API');
-    var url = 'http://' + _config.apihost + '/genSessionid';
+    var url = `http://${apihost}/genSessionid`;
     console.log("getSeesionid - URL: " + url);
-  
-    return new _promise2.default(function (resolve, reject) {
-      request(url, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-          console.log('genSessionid - Response from API' + body);
-          //sessionid = body;
-          resolve(body);
-        } else {
-  
-          console.log("genSessionid -API Server not running: " + error);
-          return reject(error);
-        }
-        console.log("getSessionid - Returning from API call");
-      });
+    
+    return new Promise(function(resolve, reject) {
+    request(url, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        console.log('genSessionid - Response from API' + body);
+        //sessionid = body;
+        resolve(body);
+      }
+      else {
+        
+        console.log("genSessionid -API Server not running: "+error);
+        return reject(error);
+      }
+      console.log("getSessionid - Returning from API call")
     });
-  }
+
+   });
+   
+  }*/
 
 /***/ },
-/* 183 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -11937,7 +12461,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -11949,19 +12473,19 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Logout = __webpack_require__(184);
+  var _Logout = __webpack_require__(187);
   
   var _Logout2 = _interopRequireDefault(_Logout);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -12009,7 +12533,7 @@ module.exports =
   
   
   function deleteSession() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('calling API - DeleteSession method');
     var url = 'http://' + _config.apihost + '/deleteSession?sessionid=' + sessionid;
     console.log("URL: " + url);
@@ -12033,7 +12557,7 @@ module.exports =
   }
 
 /***/ },
-/* 184 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -12042,15 +12566,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Logout = __webpack_require__(185);
+  var _Logout = __webpack_require__(188);
   
   var _Logout2 = _interopRequireDefault(_Logout);
   
@@ -12094,12 +12618,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Logout2.default)(Logout);
 
 /***/ },
-/* 185 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(186);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(189);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -12114,8 +12638,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Logout.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Logout.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Logout.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Logout.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -12128,10 +12652,10 @@ module.exports =
     
 
 /***/ },
-/* 186 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -12148,7 +12672,7 @@ module.exports =
   };
 
 /***/ },
-/* 187 */
+/* 190 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -12157,7 +12681,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -12169,19 +12693,21 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Bookinglist = __webpack_require__(188);
+  var _Bookinglist = __webpack_require__(191);
   
   var _Bookinglist2 = _interopRequireDefault(_Bookinglist);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
+  
+  var _util = __webpack_require__(94);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -12216,7 +12742,7 @@ module.exports =
                 }
   
                 _context.next = 7;
-                return getSessionid();
+                return (0, _util.getSessionid)();
   
               case 7:
                 body = _context.sent;
@@ -12242,7 +12768,7 @@ module.exports =
   
   
   function getBookingData() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
   
     console.log('calling API');
     var url = 'http://' + _config.apihost + '/getBookingHistory?email=' + email;
@@ -12262,30 +12788,33 @@ module.exports =
     });
   }
   
-  function getSessionid() {
-    var request = __webpack_require__(92);
+  /*function getSessionid() {
+    var request = require('request');
     console.log('genSessionid - calling API');
-    var url = 'http://' + _config.apihost + '/genSessionid';
+    var url = `http://${apihost}/genSessionid`;
     console.log("getSeesionid - URL: " + url);
-  
-    return new _promise2.default(function (resolve, reject) {
-      request(url, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-          console.log('genSessionid - Response from API' + body);
-          //sessionid = body;
-          resolve(body);
-        } else {
-  
-          console.log("genSessionid -API Server not running: " + error);
-          return reject(error);
-        }
-        console.log("getSessionid - Returning from API call");
-      });
+    
+    return new Promise(function(resolve, reject) {
+    request(url, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        console.log('genSessionid - Response from API' + body);
+        //sessionid = body;
+        resolve(body);
+      }
+      else {
+        
+        console.log("genSessionid -API Server not running: "+error);
+        return reject(error);
+      }
+      console.log("getSessionid - Returning from API call")
     });
-  }
+
+   });
+   
+  }*/
 
 /***/ },
-/* 188 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -12294,15 +12823,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Bookinglist = __webpack_require__(189);
+  var _Bookinglist = __webpack_require__(192);
   
   var _Bookinglist2 = _interopRequireDefault(_Bookinglist);
   
@@ -12462,12 +12991,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Bookinglist2.default)(Bookinglist);
 
 /***/ },
-/* 189 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(190);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(193);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -12482,8 +13011,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Bookinglist.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Bookinglist.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Bookinglist.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Bookinglist.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -12496,10 +13025,10 @@ module.exports =
     
 
 /***/ },
-/* 190 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -12515,7 +13044,7 @@ module.exports =
   };
 
 /***/ },
-/* 191 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -12536,21 +13065,21 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Cancelbooking = __webpack_require__(192);
+  var _Cancelbooking = __webpack_require__(195);
   
   var _Cancelbooking2 = _interopRequireDefault(_Cancelbooking);
   
-  var _bookinglist = __webpack_require__(195);
+  var _bookinglist = __webpack_require__(198);
   
   var _bookinglist2 = _interopRequireDefault(_bookinglist);
   
-  var _util = __webpack_require__(91);
+  var _util = __webpack_require__(94);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -12599,7 +13128,7 @@ module.exports =
   };
 
 /***/ },
-/* 192 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -12608,15 +13137,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Cancelbooking = __webpack_require__(193);
+  var _Cancelbooking = __webpack_require__(196);
   
   var _Cancelbooking2 = _interopRequireDefault(_Cancelbooking);
   
@@ -12676,12 +13205,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Cancelbooking2.default)(Cancelbooking);
 
 /***/ },
-/* 193 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(194);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(197);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -12696,8 +13225,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Cancelbooking.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Cancelbooking.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Cancelbooking.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Cancelbooking.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -12710,10 +13239,10 @@ module.exports =
     
 
 /***/ },
-/* 194 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -12738,7 +13267,7 @@ module.exports =
   };
 
 /***/ },
-/* 195 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -12747,15 +13276,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Bookinglist = __webpack_require__(189);
+  var _Bookinglist = __webpack_require__(192);
   
   var _Bookinglist2 = _interopRequireDefault(_Bookinglist);
   
@@ -12915,7 +13444,7 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Bookinglist2.default)(Bookinglist);
 
 /***/ },
-/* 196 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -12924,7 +13453,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -12982,23 +13511,23 @@ module.exports =
     };
   }();
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Changebookingdate = __webpack_require__(197);
+  var _Changebookingdate = __webpack_require__(200);
   
   var _Changebookingdate2 = _interopRequireDefault(_Changebookingdate);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
-  var request = __webpack_require__(92);
+  var request = __webpack_require__(95);
   
   var message = 'Booking done Sucessfully  ';
   var href = 'http://' + _config.host + '/';
@@ -13139,7 +13668,7 @@ module.exports =
   }
   
   function getSessionid() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('genSessionid - calling API');
     var url = 'http://' + _config.apihost + '/genSessionid';
     console.log("getSeesionid - URL: " + url);
@@ -13161,7 +13690,7 @@ module.exports =
   }
   
   function getBookingRecord() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('getBookingRecord - linkbooking - calling API');
     var url = 'http://' + _config.apihost + '/getbookingrec?email=' + email + '&bookingid=' + id;
     console.log("getSeesionid - URL: " + url);
@@ -13183,7 +13712,7 @@ module.exports =
   }
 
 /***/ },
-/* 197 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -13192,15 +13721,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Changebookingdate = __webpack_require__(198);
+  var _Changebookingdate = __webpack_require__(201);
   
   var _Changebookingdate2 = _interopRequireDefault(_Changebookingdate);
   
@@ -13259,12 +13788,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Changebookingdate2.default)(Changebookingdate);
 
 /***/ },
-/* 198 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(199);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(202);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -13279,8 +13808,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Changebookingdate.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Changebookingdate.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Changebookingdate.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Changebookingdate.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -13293,10 +13822,10 @@ module.exports =
     
 
 /***/ },
-/* 199 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -13321,7 +13850,7 @@ module.exports =
   };
 
 /***/ },
-/* 200 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -13330,7 +13859,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -13391,29 +13920,29 @@ module.exports =
     };
   }();
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Managebooking = __webpack_require__(201);
+  var _Managebooking = __webpack_require__(204);
   
   var _Managebooking2 = _interopRequireDefault(_Managebooking);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _Cancelbooking = __webpack_require__(192);
+  var _Cancelbooking = __webpack_require__(195);
   
   var _Cancelbooking2 = _interopRequireDefault(_Cancelbooking);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _util = __webpack_require__(91);
+  var _util = __webpack_require__(94);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
-  var request = __webpack_require__(92);
+  var request = __webpack_require__(95);
   
   var message = 'Booking done Sucessfully  ';
   var href = 'http://' + _config.host + '/';
@@ -13624,7 +14153,7 @@ module.exports =
   }*/
   
   function getBookingRecord() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('getBookingRecord - linkbooking - calling API');
     var url = 'http://' + _config.apihost + '/getbookingrec?bookingid=' + id;
     console.log("getSeesionid - URL: " + url);
@@ -13646,7 +14175,7 @@ module.exports =
   }
 
 /***/ },
-/* 201 */
+/* 204 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -13655,15 +14184,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Managebooking = __webpack_require__(202);
+  var _Managebooking = __webpack_require__(205);
   
   var _Managebooking2 = _interopRequireDefault(_Managebooking);
   
@@ -13750,12 +14279,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Managebooking2.default)(Managebooking);
 
 /***/ },
-/* 202 */
+/* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(203);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(206);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -13770,8 +14299,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Managebooking.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Managebooking.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Managebooking.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Managebooking.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -13784,10 +14313,10 @@ module.exports =
     
 
 /***/ },
-/* 203 */
+/* 206 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -13812,7 +14341,7 @@ module.exports =
   };
 
 /***/ },
-/* 204 */
+/* 207 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -13821,7 +14350,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -13833,19 +14362,19 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Providerhome = __webpack_require__(179);
+  var _Providerhome = __webpack_require__(182);
   
   var _Providerhome2 = _interopRequireDefault(_Providerhome);
   
-  var _Providerlogin = __webpack_require__(165);
+  var _Providerlogin = __webpack_require__(168);
   
   var _Providerlogin2 = _interopRequireDefault(_Providerlogin);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -13905,7 +14434,7 @@ module.exports =
   
   
   function getSessionid() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('Home - genSessionid - calling API');
     var url = 'http://' + _config.apihost + '/genSessionid';
     console.log("getSeesionid - URL: " + url);
@@ -13927,7 +14456,7 @@ module.exports =
   }
   
   function getBookingData() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
   
     console.log('calling API');
     var url = 'http://' + _config.apihost + '/getbookingrecbyprovider?email=' + email;
@@ -13946,7 +14475,7 @@ module.exports =
   }
 
 /***/ },
-/* 205 */
+/* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -13955,7 +14484,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -13967,19 +14496,19 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Providerlogout = __webpack_require__(206);
+  var _Providerlogout = __webpack_require__(209);
   
   var _Providerlogout2 = _interopRequireDefault(_Providerlogout);
   
-  var _Providerlogin = __webpack_require__(165);
+  var _Providerlogin = __webpack_require__(168);
   
   var _Providerlogin2 = _interopRequireDefault(_Providerlogin);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -14027,7 +14556,7 @@ module.exports =
   
   
   function deleteSession() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('calling API - DeleteSession method');
     var url = 'http://' + _config.apihost + '/deleteSession?sessionid=' + sessionid;
     console.log("URL: " + url);
@@ -14051,7 +14580,7 @@ module.exports =
   }
 
 /***/ },
-/* 206 */
+/* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -14060,15 +14589,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Providerlogout = __webpack_require__(207);
+  var _Providerlogout = __webpack_require__(210);
   
   var _Providerlogout2 = _interopRequireDefault(_Providerlogout);
   
@@ -14112,12 +14641,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Providerlogout2.default)(Logout);
 
 /***/ },
-/* 207 */
+/* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(208);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(211);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -14132,8 +14661,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Providerlogout.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Providerlogout.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Providerlogout.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Providerlogout.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -14146,10 +14675,10 @@ module.exports =
     
 
 /***/ },
-/* 208 */
+/* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -14166,7 +14695,7 @@ module.exports =
   };
 
 /***/ },
-/* 209 */
+/* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -14183,19 +14712,19 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Changeprovideremail = __webpack_require__(210);
+  var _Changeprovideremail = __webpack_require__(213);
   
   var _Changeprovideremail2 = _interopRequireDefault(_Changeprovideremail);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -14237,7 +14766,7 @@ module.exports =
   };
 
 /***/ },
-/* 210 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -14246,19 +14775,19 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Changeprovideremail = __webpack_require__(211);
+  var _Changeprovideremail = __webpack_require__(214);
   
   var _Changeprovideremail2 = _interopRequireDefault(_Changeprovideremail);
   
-  var _Link = __webpack_require__(58);
+  var _Link = __webpack_require__(61);
   
   var _Link2 = _interopRequireDefault(_Link);
   
@@ -14345,12 +14874,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Changeprovideremail2.default)(Changeprovideremail);
 
 /***/ },
-/* 211 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(212);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(215);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -14365,8 +14894,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Changeprovideremail.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Changeprovideremail.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Changeprovideremail.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Changeprovideremail.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -14379,10 +14908,10 @@ module.exports =
     
 
 /***/ },
-/* 212 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -14402,7 +14931,7 @@ module.exports =
   };
 
 /***/ },
-/* 213 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -14411,7 +14940,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -14427,19 +14956,19 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Changeproviderphone = __webpack_require__(214);
+  var _Changeproviderphone = __webpack_require__(217);
   
   var _Changeproviderphone2 = _interopRequireDefault(_Changeproviderphone);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -14494,7 +15023,7 @@ module.exports =
   
   
   function getProvider() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('genSessionid - calling API');
     var url = 'http://' + _config.apihost + '/getProvider?email=' + email;
     console.log("getProvider - URL: " + url);
@@ -14516,7 +15045,7 @@ module.exports =
   }
 
 /***/ },
-/* 214 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -14525,15 +15054,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _changeproviderphone = __webpack_require__(215);
+  var _changeproviderphone = __webpack_require__(218);
   
   var _changeproviderphone2 = _interopRequireDefault(_changeproviderphone);
   
@@ -14615,12 +15144,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_changeproviderphone2.default)(Changeproviderphone);
 
 /***/ },
-/* 215 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(216);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(219);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -14635,8 +15164,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./changeproviderphone.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./changeproviderphone.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./changeproviderphone.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./changeproviderphone.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -14649,10 +15178,10 @@ module.exports =
     
 
 /***/ },
-/* 216 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -14672,7 +15201,7 @@ module.exports =
   };
 
 /***/ },
-/* 217 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -14681,7 +15210,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -14693,15 +15222,15 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Updateprovideremail = __webpack_require__(218);
+  var _Updateprovideremail = __webpack_require__(221);
   
   var _Updateprovideremail2 = _interopRequireDefault(_Updateprovideremail);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -14710,7 +15239,7 @@ module.exports =
   var href;
   var message1 = 'Click here to login';
   var passcode;
-  var request = __webpack_require__(92);
+  var request = __webpack_require__(95);
   
   exports.default = {
   
@@ -14879,7 +15408,7 @@ module.exports =
   }
 
 /***/ },
-/* 218 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -14888,15 +15417,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Updateprovideremail = __webpack_require__(219);
+  var _Updateprovideremail = __webpack_require__(222);
   
   var _Updateprovideremail2 = _interopRequireDefault(_Updateprovideremail);
   
@@ -14943,12 +15472,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Updateprovideremail2.default)(Updateprovideremail);
 
 /***/ },
-/* 219 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(220);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(223);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -14963,8 +15492,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Updateprovideremail.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Updateprovideremail.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Updateprovideremail.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Updateprovideremail.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -14977,10 +15506,10 @@ module.exports =
     
 
 /***/ },
-/* 220 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -15004,7 +15533,7 @@ module.exports =
   };
 
 /***/ },
-/* 221 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -15013,7 +15542,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -15029,15 +15558,15 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Updateproviderphone = __webpack_require__(222);
+  var _Updateproviderphone = __webpack_require__(225);
   
   var _Updateproviderphone2 = _interopRequireDefault(_Updateproviderphone);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -15046,7 +15575,7 @@ module.exports =
   var href = 'http://' + _config.host + '/providerlogin';
   var message1 = '';
   var code;
-  var request = __webpack_require__(92);
+  var request = __webpack_require__(95);
   var phone;
   var newphone;
   var email;
@@ -15207,7 +15736,7 @@ module.exports =
   }
 
 /***/ },
-/* 222 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -15216,15 +15745,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Updateproviderphone = __webpack_require__(223);
+  var _Updateproviderphone = __webpack_require__(226);
   
   var _Updateproviderphone2 = _interopRequireDefault(_Updateproviderphone);
   
@@ -15271,12 +15800,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Updateproviderphone2.default)(Updateproviderphone);
 
 /***/ },
-/* 223 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(224);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(227);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -15291,8 +15820,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Updateproviderphone.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Updateproviderphone.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Updateproviderphone.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Updateproviderphone.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -15305,10 +15834,10 @@ module.exports =
     
 
 /***/ },
-/* 224 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -15332,7 +15861,7 @@ module.exports =
   };
 
 /***/ },
-/* 225 */
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -15341,7 +15870,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -15353,19 +15882,19 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _ConfirmOTP = __webpack_require__(226);
+  var _ConfirmOTP = __webpack_require__(229);
   
   var _ConfirmOTP2 = _interopRequireDefault(_ConfirmOTP);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
-  var request = __webpack_require__(92);
+  var request = __webpack_require__(95);
   var status = true;
   var message = 'Password Sucessfully Updated';
   var href = 'http://' + _config.host + '/providerlogin';
@@ -15475,7 +16004,7 @@ module.exports =
   }
 
 /***/ },
-/* 226 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -15484,15 +16013,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _ConfirmOTP = __webpack_require__(227);
+  var _ConfirmOTP = __webpack_require__(230);
   
   var _ConfirmOTP2 = _interopRequireDefault(_ConfirmOTP);
   
@@ -15570,12 +16099,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_ConfirmOTP2.default)(ConfirmOTP);
 
 /***/ },
-/* 227 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(228);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(231);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -15590,8 +16119,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./ConfirmOTP.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./ConfirmOTP.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./ConfirmOTP.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./ConfirmOTP.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -15604,10 +16133,10 @@ module.exports =
     
 
 /***/ },
-/* 228 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -15626,7 +16155,7 @@ module.exports =
   };
 
 /***/ },
-/* 229 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -15635,7 +16164,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -15647,21 +16176,21 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Cateringbooking = __webpack_require__(230);
+  var _Cateringbooking = __webpack_require__(233);
   
   var _Cateringbooking2 = _interopRequireDefault(_Cateringbooking);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _util = __webpack_require__(91);
+  var _util = __webpack_require__(94);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -15752,7 +16281,7 @@ module.exports =
   }*/
   
   function getCustomerRecord(email) {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('getCustomerRecord - calling API');
     var url = 'http://' + _config.apihost + '/getCustomer?email=' + email;
     console.log("getCustomerRecord - URL: " + url);
@@ -15774,7 +16303,7 @@ module.exports =
   }
 
 /***/ },
-/* 230 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -15783,15 +16312,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Cateringbooking = __webpack_require__(231);
+  var _Cateringbooking = __webpack_require__(234);
   
   var _Cateringbooking2 = _interopRequireDefault(_Cateringbooking);
   
@@ -15825,7 +16354,7 @@ module.exports =
         ),
         _react2.default.createElement(
           'form',
-          { name: 'form1', method: 'put', action: 'savebooking' },
+          { name: 'form1', method: 'post', action: 'savebooking' },
           _react2.default.createElement(
             'div',
             { className: _Cateringbooking2.default.leftContainer },
@@ -15958,12 +16487,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Cateringbooking2.default)(Cateringbooking);
 
 /***/ },
-/* 231 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(232);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(235);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -15978,8 +16507,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Cateringbooking.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Cateringbooking.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Cateringbooking.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Cateringbooking.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -15992,15 +16521,15 @@ module.exports =
     
 
 /***/ },
-/* 232 */
+/* 235 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
   // module
-  exports.push([module.id, " .Cateringbooking_root_1Q_ {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Cateringbooking_container_23u {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.Cateringbooking_lead_1Z7 {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.Cateringbooking_formGroup_1r6 {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.Cateringbooking_label_3Y1 {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.Cateringbooking_input_3_y {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.Cateringbooking_input_3_y:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Cateringbooking_button_tVd {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.Cateringbooking_button_tVd:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Cateringbooking_button_tVd:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Cateringbooking_leftContainer_L21 {\r\n   float:left;\r\n}\r\n\r\n.Cateringbooking_rightContainer_1uZ {\r\n   float:right;\r\n}\r\n\r\n.Cateringbooking_icon_22O {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.Cateringbooking_lineThrough_1jF {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.Cateringbooking_lineThrough_1jF::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.Cateringbooking_lineThrough_1jF::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n#Cateringbooking_lastname_167{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.Cateringbooking_squaredOne_2bf {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: -webkit-gradient(linear, left top, left bottom, from(#fcfff4), color-stop(40%, #dfe5d7), to(#b3bead));\r\n  background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: -o-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n          box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0%, #222), to(#45484d));\r\n    background: -webkit-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: -o-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n            box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1)\r\n  }\r\n  label:after {\r\n    content: '';\r\n    width: 16px;\r\n    height: 16px;\r\n    position: absolute;\r\n    top: 2px;\r\n    left: 2px;\r\n    background: $activeColor;\r\n    background: -webkit-gradient(linear, left top, left bottom, from($activeColor), to($darkenColor));\r\n    background: -webkit-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: -o-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n            box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n    opacity: 0;\r\n  }\r\n  label:hover::after {\r\n    opacity: 0.3;\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden   \r\n  }\r\n  input[type=checkbox]:checked + label:after {\r\n    opacity: 1;\r\n  } \r\n}", "", {"version":3,"sources":["/./routes/cateringbooking/Cateringbooking.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,oBAAoB;;CAErB;;AAED;;EAEE,mBAAmB;EACnB,gBAAgB;EAChB,iBAAiB;EACjB,YAAY;CACb;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,WAAW;EACX,uBAAuB;EACvB,kBAAkB;EAClB,iBAAiB;EACjB,yDAAiD;UAAjD,iDAAiD;EACjD,eAAe;EACf,gBAAgB;EAChB,uBAAuB;EACvB,yFAAyE;EAAzE,iFAAyE;EAAzE,4EAAyE;EAAzE,yEAAyE;EAAzE,+GAAyE;EACzE,SAAS;EACT,cAAc;;CAEf;;AAED;EACE,sBAAsB;EACtB,yFAAiF;UAAjF,iFAAiF;CAClF;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,YAAY;EACZ,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,iBAAiB;CAClB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAED;GACG,WAAW;CACb;;AAED;GACG,YAAY;CACd;;AAGD;EACE,sBAAsB;EACtB,yBAAyB;EACzB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,mBAAmB;CACpB;;AAED;EACE,mBAAmB;EACnB,WAAW;EACX,eAAe;EACf,oBAAoB;EACpB,YAAY;EACZ,eAAe;EACf,mBAAmB;EACnB,eAAe;CAChB;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,UAAU;EACV,YAAY;EACZ,iBAAiB;EACjB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,YAAY;CACb;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,YAAY;EACZ,eAAe;EACf,YAAY;EACZ,8BAA8B;EAC9B,YAAY;CACb;;AACD;IACI,gBAAgB;IAChB,WAAW;CACd;;AAED;EACE,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,kBAAkB;EAClB,oBAAoB;EACpB,kHAAwE;EAAxE,gFAAwE;EAAxE,2EAAwE;EAAxE,wEAAwE;EACxE,yEAAiE;UAAjE,iEAAiE;EACjE;IACE,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,gBAAgB;IAChB,0GAAwD;IAAxD,gEAAwD;IAAxD,2DAAwD;IAAxD,wDAAwD;IACxD,uFAA+E;YAA/E,8EAA+E;GAgBhF;EAfC;IACE,YAAY;IACZ,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,yBAAyB;IACzB,kGAAqE;IAArE,6EAAqE;IAArE,wEAAqE;IAArE,qEAAqE;IACrE,yEAAiE;YAAjE,iEAAiE;IACjE,WAAW;GACZ;EACD;IACE,aAAa;GACd;EAEH;IACE,kBAAmB;GAIpB;EAHC;IACE,WAAW;GACZ;CAEJ","file":"Cateringbooking.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.lead {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.formGroup {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.label {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.input {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.input:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.leftContainer {\r\n   float:left;\r\n}\r\n\r\n.rightContainer {\r\n   float:right;\r\n}\r\n\r\n\r\n.icon {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.lineThrough {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.lineThrough::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.lineThrough::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n#lastname{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.squaredOne {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n    &:after {\r\n      content: '';\r\n      width: 16px;\r\n      height: 16px;\r\n      position: absolute;\r\n      top: 2px;\r\n      left: 2px;\r\n      background: $activeColor;\r\n      background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n      box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n      opacity: 0;\r\n    }\r\n    &:hover::after {\r\n      opacity: 0.3;\r\n    }\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden;\r\n    &:checked + label:after {\r\n      opacity: 1;\r\n    }   \r\n  } \r\n}"],"sourceRoot":"webpack://"}]);
+  exports.push([module.id, " .Cateringbooking_root_1Q_ {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Cateringbooking_container_23u {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.Cateringbooking_lead_1Z7 {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.Cateringbooking_formGroup_1r6 {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.Cateringbooking_label_3Y1 {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.Cateringbooking_input_3_y {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.Cateringbooking_input_3_y:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Cateringbooking_button_tVd {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.Cateringbooking_button_tVd:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Cateringbooking_button_tVd:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Cateringbooking_leftContainer_L21 {\r\n   float:left;\r\n}\r\n\r\n.Cateringbooking_rightContainer_1uZ {\r\n   float:right;\r\n}\r\n\r\n.Cateringbooking_icon_22O {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.Cateringbooking_lineThrough_1jF {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.Cateringbooking_lineThrough_1jF::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.Cateringbooking_lineThrough_1jF::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n#Cateringbooking_lastname_167{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.Cateringbooking_squaredOne_2bf {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: -webkit-gradient(linear, right top, left top, from(#fcfff4), color-stop(40%, #dfe5d7), to(#b3bead));\r\n  background: -webkit-linear-gradient(right, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: -o-linear-gradient(right, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: linear-gradient(to left, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n          box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: -webkit-gradient(linear, right top, left top, from(#222), to(#45484d));\r\n    background: -webkit-linear-gradient(right, #222 0%, #45484d 100%);\r\n    background: -o-linear-gradient(right, #222 0%, #45484d 100%);\r\n    background: linear-gradient(to left, #222 0%, #45484d 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n            box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1)\r\n  }\r\n  label:after {\r\n    content: '';\r\n    width: 16px;\r\n    height: 16px;\r\n    position: absolute;\r\n    to: 2px;\r\n    left: 2px;\r\n    background: $activeColor;\r\n    background: -webkit-gradient(linear, right top, left top, from($activeColor), to($darkenColor));\r\n    background: -webkit-linear-gradient(right, $activeColor 0%, $darkenColor 100%);\r\n    background: -o-linear-gradient(right, $activeColor 0%, $darkenColor 100%);\r\n    background: linear-gradient(to left, $activeColor 0%, $darkenColor 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n            box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n    opacity: 0;\r\n  }\r\n  label:hover::after {\r\n    opacity: 0.3;\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden   \r\n  }\r\n  input[type=checkbox]:checked + label:after {\r\n    opacity: 1;\r\n  } \r\n}", "", {"version":3,"sources":["/./routes/cateringbooking/Cateringbooking.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,oBAAoB;;CAErB;;AAED;;EAEE,mBAAmB;EACnB,gBAAgB;EAChB,iBAAiB;EACjB,YAAY;CACb;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,WAAW;EACX,uBAAuB;EACvB,kBAAkB;EAClB,iBAAiB;EACjB,yDAAiD;UAAjD,iDAAiD;EACjD,eAAe;EACf,gBAAgB;EAChB,uBAAuB;EACvB,yFAAyE;EAAzE,iFAAyE;EAAzE,4EAAyE;EAAzE,yEAAyE;EAAzE,+GAAyE;EACzE,SAAS;EACT,cAAc;;CAEf;;AAED;EACE,sBAAsB;EACtB,yFAAiF;UAAjF,iFAAiF;CAClF;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,YAAY;EACZ,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,iBAAiB;CAClB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAED;GACG,WAAW;CACb;;AAED;GACG,YAAY;CACd;;AAGD;EACE,sBAAsB;EACtB,yBAAyB;EACzB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,mBAAmB;CACpB;;AAED;EACE,mBAAmB;EACnB,WAAW;EACX,eAAe;EACf,oBAAoB;EACpB,YAAY;EACZ,eAAe;EACf,mBAAmB;EACnB,eAAe;CAChB;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,UAAU;EACV,YAAY;EACZ,iBAAiB;EACjB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,YAAY;CACb;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,YAAY;EACZ,eAAe;EACf,YAAY;EACZ,8BAA8B;EAC9B,YAAY;CACb;;AACD;IACI,gBAAgB;IAChB,WAAW;CACd;;AAED;EACE,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,kBAAkB;EAClB,oBAAoB;EACpB,gHAA4E;EAA5E,kFAA4E;EAA5E,6EAA4E;EAA5E,4EAA4E;EAC5E,yEAAiE;UAAjE,iEAAiE;EACjE;IACE,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,gBAAgB;IAChB,mFAA4D;IAA5D,kEAA4D;IAA5D,6DAA4D;IAA5D,4DAA4D;IAC5D,uFAA+E;YAA/E,8EAA+E;GAgBhF;EAfC;IACE,YAAY;IACZ,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,QAAa;IACb,UAAU;IACV,yBAAyB;IACzB,gGAAyE;IAAzE,+EAAyE;IAAzE,0EAAyE;IAAzE,yEAAyE;IACzE,yEAAiE;YAAjE,iEAAiE;IACjE,WAAW;GACZ;EACD;IACE,aAAa;GACd;EAEH;IACE,kBAAmB;GAIpB;EAHC;IACE,WAAW;GACZ;CAEJ","file":"Cateringbooking.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.lead {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.formGroup {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.label {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.input {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.input:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.leftContainer {\r\n   float:left;\r\n}\r\n\r\n.rightContainer {\r\n   float:right;\r\n}\r\n\r\n\r\n.icon {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.lineThrough {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.lineThrough::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.lineThrough::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n#lastname{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.squaredOne {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: linear-gradient(to left, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: linear-gradient(to left, #222 0%, #45484d 100%);\r\n    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n    &:after {\r\n      content: '';\r\n      width: 16px;\r\n      height: 16px;\r\n      position: absolute;\r\n      to left: 2px;\r\n      left: 2px;\r\n      background: $activeColor;\r\n      background: linear-gradient(to left, $activeColor 0%, $darkenColor 100%);\r\n      box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n      opacity: 0;\r\n    }\r\n    &:hover::after {\r\n      opacity: 0.3;\r\n    }\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden;\r\n    &:checked + label:after {\r\n      opacity: 1;\r\n    }   \r\n  } \r\n}"],"sourceRoot":"webpack://"}]);
   
   // exports
   exports.locals = {
@@ -16020,7 +16549,7 @@ module.exports =
   };
 
 /***/ },
-/* 233 */
+/* 236 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -16029,7 +16558,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -16041,21 +16570,21 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Astrologybooking = __webpack_require__(234);
+  var _Astrologybooking = __webpack_require__(237);
   
   var _Astrologybooking2 = _interopRequireDefault(_Astrologybooking);
   
-  var _Login = __webpack_require__(86);
+  var _Login = __webpack_require__(89);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _util = __webpack_require__(91);
+  var _util = __webpack_require__(94);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
@@ -16146,7 +16675,7 @@ module.exports =
   }*/
   
   function getCustomerRecord(email) {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
     console.log('getCustomerRecord - calling API');
     var url = 'http://' + _config.apihost + '/getCustomer?email=' + email;
     console.log("getCustomerRecord - URL: " + url);
@@ -16168,7 +16697,7 @@ module.exports =
   }
 
 /***/ },
-/* 234 */
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -16177,33 +16706,33 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Astrologybooking = __webpack_require__(235);
+  var _Astrologybooking = __webpack_require__(238);
   
   var _Astrologybooking2 = _interopRequireDefault(_Astrologybooking);
   
-  var _FormGroup = __webpack_require__(237);
+  var _FormGroup = __webpack_require__(240);
   
   var _FormGroup2 = _interopRequireDefault(_FormGroup);
   
-  var _ControlLabel = __webpack_require__(238);
+  var _ControlLabel = __webpack_require__(241);
   
   var _ControlLabel2 = _interopRequireDefault(_ControlLabel);
   
-  var _HelpBlock = __webpack_require__(239);
+  var _HelpBlock = __webpack_require__(242);
   
   var _HelpBlock2 = _interopRequireDefault(_HelpBlock);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
-  var DatePicker = __webpack_require__(240);
+  var DatePicker = __webpack_require__(243);
   
   
   //import { DateField, Calendar } from 'react-date-picker'
@@ -16355,12 +16884,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Astrologybooking2.default)(Astrologybooking);
 
 /***/ },
-/* 235 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(236);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(239);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -16375,8 +16904,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Astrologybooking.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Astrologybooking.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Astrologybooking.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Astrologybooking.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -16389,15 +16918,15 @@ module.exports =
     
 
 /***/ },
-/* 236 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
   // module
-  exports.push([module.id, " .Astrologybooking_root_1Zg {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Astrologybooking_container_1Ub {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.Astrologybooking_lead__ke {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.Astrologybooking_formGroup_lrJ {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.Astrologybooking_label_1Np {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.Astrologybooking_input_dvp {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.Astrologybooking_input_dvp:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Astrologybooking_button_24W {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.Astrologybooking_button_24W:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Astrologybooking_button_24W:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Astrologybooking_leftContainer_aeQ {\r\n   float:left;\r\n}\r\n\r\n.Astrologybooking_rightContainer_waS {\r\n   float:right;\r\n}\r\n\r\n.Astrologybooking_icon_1aP {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.Astrologybooking_lineThrough_1CJ {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.Astrologybooking_lineThrough_1CJ::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.Astrologybooking_lineThrough_1CJ::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n#Astrologybooking_lastname_3Af{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.Astrologybooking_squaredOne_3Uq {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0%, #fcfff4), color-stop(40%, #dfe5d7), to(#b3bead));\r\n  background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: -o-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n          box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: -webkit-gradient(linear, left top, left bottom, from(#222), to(#45484d));\r\n    background: -webkit-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: -o-linear-gradient(top, #222 0%, #45484d 100%);\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n            box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1)\r\n  }\r\n  label:after {\r\n    content: '';\r\n    width: 16px;\r\n    height: 16px;\r\n    position: absolute;\r\n    top: 2px;\r\n    left: 2px;\r\n    background: $activeColor;\r\n    background: -webkit-gradient(linear, left top, left bottom, from(top), color-stop(0%, $activeColor), to($darkenColor));\r\n    background: -webkit-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: -o-linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n            box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n    opacity: 0;\r\n  }\r\n  label:hover::after {\r\n    opacity: 0.3;\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden   \r\n  }\r\n  input[type=checkbox]:checked + label:after {\r\n    opacity: 1;\r\n  } \r\n}", "", {"version":3,"sources":["/./routes/astrologybooking/Astrologybooking.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,oBAAoB;;CAErB;;AAED;;EAEE,mBAAmB;EACnB,gBAAgB;EAChB,iBAAiB;EACjB,YAAY;CACb;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,WAAW;EACX,uBAAuB;EACvB,kBAAkB;EAClB,iBAAiB;EACjB,yDAAiD;UAAjD,iDAAiD;EACjD,eAAe;EACf,gBAAgB;EAChB,uBAAuB;EACvB,yFAAyE;EAAzE,iFAAyE;EAAzE,4EAAyE;EAAzE,yEAAyE;EAAzE,+GAAyE;EACzE,SAAS;EACT,cAAc;;CAEf;;AAED;EACE,sBAAsB;EACtB,yFAAiF;UAAjF,iFAAiF;CAClF;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,YAAY;EACZ,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,iBAAiB;CAClB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAED;GACG,WAAW;CACb;;AAED;GACG,YAAY;CACd;;AAGD;EACE,sBAAsB;EACtB,yBAAyB;EACzB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,mBAAmB;CACpB;;AAED;EACE,mBAAmB;EACnB,WAAW;EACX,eAAe;EACf,oBAAoB;EACpB,YAAY;EACZ,eAAe;EACf,mBAAmB;EACnB,eAAe;CAChB;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,UAAU;EACV,YAAY;EACZ,iBAAiB;EACjB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,YAAY;CACb;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,YAAY;EACZ,eAAe;EACf,YAAY;EACZ,8BAA8B;EAC9B,YAAY;CACb;;AACD;IACI,gBAAgB;IAChB,WAAW;CACd;;AAED;EACE,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,kBAAkB;EAClB,oBAAoB;EACpB,uIAAwE;EAAxE,gFAAwE;EAAxE,2EAAwE;EAAxE,wEAAwE;EACxE,yEAAiE;UAAjE,iEAAiE;EACjE;IACE,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,gBAAgB;IAChB,qFAAwD;IAAxD,gEAAwD;IAAxD,2DAAwD;IAAxD,wDAAwD;IACxD,uFAA+E;YAA/E,8EAA+E;GAgBhF;EAfC;IACE,YAAY;IACZ,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,SAAS;IACT,UAAU;IACV,yBAAyB;IACzB,uHAAqE;IAArE,6EAAqE;IAArE,wEAAqE;IAArE,qEAAqE;IACrE,yEAAiE;YAAjE,iEAAiE;IACjE,WAAW;GACZ;EACD;IACE,aAAa;GACd;EAEH;IACE,kBAAmB;GAIpB;EAHC;IACE,WAAW;GACZ;CAEJ","file":"Astrologybooking.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.lead {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.formGroup {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.label {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.input {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.input:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.leftContainer {\r\n   float:left;\r\n}\r\n\r\n.rightContainer {\r\n   float:right;\r\n}\r\n\r\n\r\n.icon {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.lineThrough {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.lineThrough::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.lineThrough::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n#lastname{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.squaredOne {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    top: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: linear-gradient(top, #222 0%, #45484d 100%);\r\n    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n    &:after {\r\n      content: '';\r\n      width: 16px;\r\n      height: 16px;\r\n      position: absolute;\r\n      top: 2px;\r\n      left: 2px;\r\n      background: $activeColor;\r\n      background: linear-gradient(top, $activeColor 0%, $darkenColor 100%);\r\n      box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n      opacity: 0;\r\n    }\r\n    &:hover::after {\r\n      opacity: 0.3;\r\n    }\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden;\r\n    &:checked + label:after {\r\n      opacity: 1;\r\n    }   \r\n  } \r\n}"],"sourceRoot":"webpack://"}]);
+  exports.push([module.id, " .Astrologybooking_root_1Zg {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.Astrologybooking_container_1Ub {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.Astrologybooking_lead__ke {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.Astrologybooking_formGroup_lrJ {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.Astrologybooking_label_1Np {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.Astrologybooking_input_dvp {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  -webkit-transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  -o-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s, -webkit-box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.Astrologybooking_input_dvp:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Astrologybooking_button_24W {\r\n  display: block;\r\n  -webkit-box-sizing: border-box;\r\n          box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.Astrologybooking_button_24W:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.Astrologybooking_button_24W:focus {\r\n  border-color: #0074c2;\r\n  -webkit-box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n          box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.Astrologybooking_leftContainer_aeQ {\r\n   float:left;\r\n}\r\n\r\n.Astrologybooking_rightContainer_waS {\r\n   float:right;\r\n}\r\n\r\n.Astrologybooking_icon_1aP {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.Astrologybooking_lineThrough_1CJ {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.Astrologybooking_lineThrough_1CJ::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.Astrologybooking_lineThrough_1CJ::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n\r\n#Astrologybooking_lastname_3Af{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.Astrologybooking_squaredOne_3Uq {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: -webkit-gradient(linear, right top, left top, from(#fcfff4), color-stop(40%, #dfe5d7), to(#b3bead));\r\n  background: -webkit-linear-gradient(right, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: -o-linear-gradient(right, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  background: linear-gradient(to left, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n          box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    to left: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: -webkit-gradient(linear, right top, left top, from(#222), to(#45484d));\r\n    background: -webkit-linear-gradient(right, #222 0%, #45484d 100%);\r\n    background: -o-linear-gradient(right, #222 0%, #45484d 100%);\r\n    background: linear-gradient(to left, #222 0%, #45484d 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n            box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1)\r\n  }\r\n  label:after {\r\n    content: '';\r\n    width: 16px;\r\n    height: 16px;\r\n    position: absolute;\r\n    to: 2px;\r\n    left: 2px;\r\n    background: $activeColor;\r\n    background: -webkit-gradient(linear, right top, left top, from($activeColor), to($darkenColor));\r\n    background: -webkit-linear-gradient(right, $activeColor 0%, $darkenColor 100%);\r\n    background: -o-linear-gradient(right, $activeColor 0%, $darkenColor 100%);\r\n    background: linear-gradient(to left, $activeColor 0%, $darkenColor 100%);\r\n    -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n            box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n    opacity: 0;\r\n  }\r\n  label:hover::after {\r\n    opacity: 0.3;\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden   \r\n  }\r\n  input[type=checkbox]:checked + label:after {\r\n    opacity: 1;\r\n  } \r\n}", "", {"version":3,"sources":["/./routes/astrologybooking/Astrologybooking.css"],"names":[],"mappings":"CAAC;EACC,mBAAmB;EACnB,oBAAoB;CACrB;;AAED;EACE,eAAe;EACf,kBAAkB;EAClB,iBAAiB;CAClB;;AAED;EACE,kBAAkB;CACnB;;AAED;EACE,oBAAoB;;CAErB;;AAED;;EAEE,mBAAmB;EACnB,gBAAgB;EAChB,iBAAiB;EACjB,YAAY;CACb;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,WAAW;EACX,uBAAuB;EACvB,kBAAkB;EAClB,iBAAiB;EACjB,yDAAiD;UAAjD,iDAAiD;EACjD,eAAe;EACf,gBAAgB;EAChB,uBAAuB;EACvB,yFAAyE;EAAzE,iFAAyE;EAAzE,4EAAyE;EAAzE,yEAAyE;EAAzE,+GAAyE;EACzE,SAAS;EACT,cAAc;;CAEf;;AAED;EACE,sBAAsB;EACtB,yFAAiF;UAAjF,iFAAiF;CAClF;;AAED;EACE,eAAe;EACf,+BAAuB;UAAvB,uBAAuB;EACvB,UAAU;EACV,mBAAmB;EACnB,YAAY;EACZ,WAAW;EACX,0BAA0B;EAC1B,iBAAiB;EACjB,oBAAoB;EACpB,YAAY;EACZ,mBAAmB;EACnB,sBAAsB;EACtB,gBAAgB;EAChB,uBAAuB;EACvB,iBAAiB;CAClB;;AAED;EACE,mCAAmC;CACpC;;AAED;EACE,sBAAsB;EACtB,mDAA2C;UAA3C,2CAA2C;CAC5C;;AAED;GACG,WAAW;CACb;;AAED;GACG,YAAY;CACd;;AAGD;EACE,sBAAsB;EACtB,yBAAyB;EACzB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,mBAAmB;CACpB;;AAED;EACE,mBAAmB;EACnB,WAAW;EACX,eAAe;EACf,oBAAoB;EACpB,YAAY;EACZ,eAAe;EACf,mBAAmB;EACnB,eAAe;CAChB;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,UAAU;EACV,YAAY;EACZ,iBAAiB;EACjB,mBAAmB;EACnB,YAAY;EACZ,aAAa;EACb,uBAAuB;EACvB,YAAY;CACb;;AAED;EACE,mBAAmB;EACnB,SAAS;EACT,YAAY;EACZ,eAAe;EACf,YAAY;EACZ,8BAA8B;EAC9B,YAAY;CACb;;AACD;IACI,gBAAgB;IAChB,WAAW;CACd;;AAED;EACE,YAAY;EACZ,aAAa;EACb,mBAAmB;EACnB,kBAAkB;EAClB,oBAAoB;EACpB,gHAA4E;EAA5E,kFAA4E;EAA5E,6EAA4E;EAA5E,4EAA4E;EAC5E,yEAAiE;UAAjE,iEAAiE;EACjE;IACE,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,aAAa;IACb,UAAU;IACV,gBAAgB;IAChB,mFAA4D;IAA5D,kEAA4D;IAA5D,6DAA4D;IAA5D,4DAA4D;IAC5D,uFAA+E;YAA/E,8EAA+E;GAgBhF;EAfC;IACE,YAAY;IACZ,YAAY;IACZ,aAAa;IACb,mBAAmB;IACnB,QAAa;IACb,UAAU;IACV,yBAAyB;IACzB,gGAAyE;IAAzE,+EAAyE;IAAzE,0EAAyE;IAAzE,yEAAyE;IACzE,yEAAiE;YAAjE,iEAAiE;IACjE,WAAW;GACZ;EACD;IACE,aAAa;GACd;EAEH;IACE,kBAAmB;GAIpB;EAHC;IACE,WAAW;GACZ;CAEJ","file":"Astrologybooking.css","sourcesContent":[" .root {\r\n  padding-left: 20px;\r\n  padding-right: 20px;\r\n}\r\n\r\n.container {\r\n  margin: 0 auto;\r\n  padding: 0 0 40px;\r\n  max-width: 380px;\r\n}\r\n\r\n.lead {\r\n  font-size: 1.25em;\r\n}\r\n\r\n.formGroup {\r\n  margin-bottom: 20px;\r\n  \r\n}\r\n\r\n.label {\r\n  \r\n  margin-bottom: 5px;\r\n  max-width: 100%;\r\n  font-weight: 700;\r\n  float: left;\r\n}\r\n\r\n.input {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  height: 46px;\r\n  outline: 0;\r\n  border: 1px solid #ccc;\r\n  border-radius: 10;\r\n  background: #fff;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\r\n  color: #616161;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\r\n  size: 15;\r\n  max-width: 30; \r\n  \r\n}\r\n\r\n.input:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.button {\r\n  display: block;\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 10px 16px;\r\n  width: 100%;\r\n  outline: 0;\r\n  border: 1px solid #373277;\r\n  border-radius: 0;\r\n  background: #483288;\r\n  color: #fff;\r\n  text-align: center;\r\n  text-decoration: none;\r\n  font-size: 18px;\r\n  line-height: 1.3333333;\r\n  cursor:  pointer;\r\n}\r\n\r\n.button:hover {\r\n  background: rgba(54, 50, 119, 0.8);\r\n}\r\n\r\n.button:focus {\r\n  border-color: #0074c2;\r\n  box-shadow: 0 0 8px rgba(0, 116, 194, 0.6);\r\n}\r\n\r\n.leftContainer {\r\n   float:left;\r\n}\r\n\r\n.rightContainer {\r\n   float:right;\r\n}\r\n\r\n\r\n.icon {\r\n  display: inline-block;\r\n  margin: -2px 12px -2px 0;\r\n  width: 20px;\r\n  height: 20px;\r\n  vertical-align: middle;\r\n  fill: currentColor;\r\n}\r\n\r\n.lineThrough {\r\n  position: relative;\r\n  z-index: 1;\r\n  display: block;\r\n  margin-bottom: 15px;\r\n  width: 100%;\r\n  color: #757575;\r\n  text-align: center;\r\n  font-size: 80%;\r\n}\r\n\r\n.lineThrough::before {\r\n  position: absolute;\r\n  top: 50%;\r\n  left: 50%;\r\n  z-index: -1;\r\n  margin-top: -5px;\r\n  margin-left: -20px;\r\n  width: 40px;\r\n  height: 10px;\r\n  background-color: #fff;\r\n  content: '';\r\n}\r\n\r\n.lineThrough::after {\r\n  position: absolute;\r\n  top: 49%;\r\n  z-index: -2;\r\n  display: block;\r\n  width: 100%;\r\n  border-bottom: 1px solid #ddd;\r\n  content: '';\r\n}\r\n#lastname{\r\n    max-width:100px;\r\n    float:left;\r\n}\r\n\r\n.squaredOne {\r\n  width: 28px;\r\n  height: 28px;\r\n  position: relative;\r\n  margin: 20px auto;\r\n  background: #fcfff4;\r\n  background: linear-gradient(to left, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);\r\n  box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n  label {\r\n    width: 20px;\r\n    height: 20px;\r\n    position: absolute;\r\n    to left: 4px;\r\n    left: 4px;\r\n    cursor: pointer;\r\n    background: linear-gradient(to left, #222 0%, #45484d 100%);\r\n    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);\r\n    &:after {\r\n      content: '';\r\n      width: 16px;\r\n      height: 16px;\r\n      position: absolute;\r\n      to left: 2px;\r\n      left: 2px;\r\n      background: $activeColor;\r\n      background: linear-gradient(to left, $activeColor 0%, $darkenColor 100%);\r\n      box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);\r\n      opacity: 0;\r\n    }\r\n    &:hover::after {\r\n      opacity: 0.3;\r\n    }\r\n  }\r\n  input[type=checkbox] {\r\n    visibility: hidden;\r\n    &:checked + label:after {\r\n      opacity: 1;\r\n    }   \r\n  } \r\n}"],"sourceRoot":"webpack://"}]);
   
   // exports
   exports.locals = {
@@ -16417,31 +16946,31 @@ module.exports =
   };
 
 /***/ },
-/* 237 */
+/* 240 */
 /***/ function(module, exports) {
 
   module.exports = require("react-bootstrap/lib/FormGroup");
 
 /***/ },
-/* 238 */
+/* 241 */
 /***/ function(module, exports) {
 
   module.exports = require("react-bootstrap/lib/ControlLabel");
 
 /***/ },
-/* 239 */
+/* 242 */
 /***/ function(module, exports) {
 
   module.exports = require("react-bootstrap/lib/HelpBlock");
 
 /***/ },
-/* 240 */
+/* 243 */
 /***/ function(module, exports) {
 
   module.exports = require("react-bootstrap-date-picker");
 
 /***/ },
-/* 241 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -16450,7 +16979,7 @@ module.exports =
     value: true
   });
   
-  var _promise = __webpack_require__(80);
+  var _promise = __webpack_require__(83);
   
   var _promise2 = _interopRequireDefault(_promise);
   
@@ -16466,29 +16995,29 @@ module.exports =
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _Saveastrobooking = __webpack_require__(242);
+  var _Saveastrobooking = __webpack_require__(245);
   
   var _Saveastrobooking2 = _interopRequireDefault(_Saveastrobooking);
   
-  var _Providerlist = __webpack_require__(97);
+  var _Providerlist = __webpack_require__(100);
   
   var _Providerlist2 = _interopRequireDefault(_Providerlist);
   
-  var _Login = __webpack_require__(117);
+  var _Login = __webpack_require__(120);
   
   var _Login2 = _interopRequireDefault(_Login);
   
-  var _config = __webpack_require__(19);
+  var _config = __webpack_require__(21);
   
-  var _util = __webpack_require__(91);
+  var _util = __webpack_require__(94);
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
-  var request = __webpack_require__(92);
+  var request = __webpack_require__(95);
   
   var message = 'Booking done Sucessfully  ';
   var href = 'http://' + _config.host + '/';
@@ -16674,7 +17203,7 @@ module.exports =
   }
   
   function getProviderData() {
-    var request = __webpack_require__(92);
+    var request = __webpack_require__(95);
   
     console.log('calling API');
     var url = 'http://' + _config.apihost + '/searchByType?servicetype=' + bookingtype;
@@ -16719,7 +17248,7 @@ module.exports =
   }*/
 
 /***/ },
-/* 242 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -16728,15 +17257,15 @@ module.exports =
     value: true
   });
   
-  var _react = __webpack_require__(41);
+  var _react = __webpack_require__(44);
   
   var _react2 = _interopRequireDefault(_react);
   
-  var _withStyles = __webpack_require__(55);
+  var _withStyles = __webpack_require__(58);
   
   var _withStyles2 = _interopRequireDefault(_withStyles);
   
-  var _Saveastrobooking = __webpack_require__(243);
+  var _Saveastrobooking = __webpack_require__(246);
   
   var _Saveastrobooking2 = _interopRequireDefault(_Saveastrobooking);
   
@@ -16795,12 +17324,12 @@ module.exports =
   exports.default = (0, _withStyles2.default)(_Saveastrobooking2.default)(Saveastrobooking);
 
 /***/ },
-/* 243 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
   
-      var content = __webpack_require__(244);
-      var insertCss = __webpack_require__(52);
+      var content = __webpack_require__(247);
+      var insertCss = __webpack_require__(55);
   
       if (typeof content === 'string') {
         content = [[module.id, content, '']];
@@ -16815,8 +17344,8 @@ module.exports =
       // Only activated in browser context
       if (false) {
         var removeCss = function() {};
-        module.hot.accept("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Saveastrobooking.css", function() {
-          content = require("!!./../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!./../../../node_modules/postcss-loader/index.js?pack=default!./Saveastrobooking.css");
+        module.hot.accept("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Saveastrobooking.css", function() {
+          content = require("!!../../../node_modules/css-loader/index.js?{\"sourceMap\":true,\"modules\":true,\"localIdentName\":\"[name]_[local]_[hash:base64:3]\",\"minimize\":false}!../../../node_modules/postcss-loader/index.js?pack=default!./Saveastrobooking.css");
   
           if (typeof content === 'string') {
             content = [[module.id, content, '']];
@@ -16829,10 +17358,10 @@ module.exports =
     
 
 /***/ },
-/* 244 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
-  exports = module.exports = __webpack_require__(51)();
+  exports = module.exports = __webpack_require__(54)();
   // imports
   
   
@@ -16857,10 +17386,10 @@ module.exports =
   };
 
 /***/ },
-/* 245 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var extend = __webpack_require__(246);
+  var extend = __webpack_require__(249);
   
   function Assets(options) {
     if (!(this instanceof Assets)) {
@@ -16872,7 +17401,7 @@ module.exports =
   }
   
   ['data', 'path', 'size', 'url'].forEach(function (resolver) {
-    Assets[resolver] = __webpack_require__(247)("./" + resolver);
+    Assets[resolver] = __webpack_require__(250)("./" + resolver);
     Assets.prototype[resolver] = function (path, callback) {
       return Assets[resolver](path, this.options, callback);
     };
@@ -16882,42 +17411,42 @@ module.exports =
 
 
 /***/ },
-/* 246 */
+/* 249 */
 /***/ function(module, exports) {
 
   module.exports = require("lodash/object/extend");
 
 /***/ },
-/* 247 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
   var map = {
-  	"./__utils__/composeAbsolutePathname": 248,
-  	"./__utils__/composeAbsolutePathname.js": 248,
-  	"./__utils__/composeQueryString": 252,
-  	"./__utils__/composeQueryString.js": 252,
-  	"./__utils__/composeRelativePathname": 253,
-  	"./__utils__/composeRelativePathname.js": 253,
-  	"./__utils__/convertPathToUrl": 249,
-  	"./__utils__/convertPathToUrl.js": 249,
-  	"./__utils__/defaultCachebuster": 254,
-  	"./__utils__/defaultCachebuster.js": 254,
-  	"./__utils__/encodeBuffer": 255,
-  	"./__utils__/encodeBuffer.js": 255,
-  	"./__utils__/ensureTrailingSlash": 250,
-  	"./__utils__/ensureTrailingSlash.js": 250,
-  	"./__utils__/exists": 256,
-  	"./__utils__/exists.js": 256,
-  	"./data": 257,
-  	"./data.js": 257,
-  	"./index": 245,
-  	"./index.js": 245,
-  	"./path": 259,
-  	"./path.js": 259,
-  	"./size": 263,
-  	"./size.js": 263,
-  	"./url": 265,
-  	"./url.js": 265
+  	"./__utils__/composeAbsolutePathname": 251,
+  	"./__utils__/composeAbsolutePathname.js": 251,
+  	"./__utils__/composeQueryString": 255,
+  	"./__utils__/composeQueryString.js": 255,
+  	"./__utils__/composeRelativePathname": 256,
+  	"./__utils__/composeRelativePathname.js": 256,
+  	"./__utils__/convertPathToUrl": 252,
+  	"./__utils__/convertPathToUrl.js": 252,
+  	"./__utils__/defaultCachebuster": 257,
+  	"./__utils__/defaultCachebuster.js": 257,
+  	"./__utils__/encodeBuffer": 258,
+  	"./__utils__/encodeBuffer.js": 258,
+  	"./__utils__/ensureTrailingSlash": 253,
+  	"./__utils__/ensureTrailingSlash.js": 253,
+  	"./__utils__/exists": 259,
+  	"./__utils__/exists.js": 259,
+  	"./data": 260,
+  	"./data.js": 260,
+  	"./index": 248,
+  	"./index.js": 248,
+  	"./path": 262,
+  	"./path.js": 262,
+  	"./size": 266,
+  	"./size.js": 266,
+  	"./url": 268,
+  	"./url.js": 268
   };
   function webpackContext(req) {
   	return __webpack_require__(webpackContextResolve(req));
@@ -16930,17 +17459,17 @@ module.exports =
   };
   webpackContext.resolve = webpackContextResolve;
   module.exports = webpackContext;
-  webpackContext.id = 247;
+  webpackContext.id = 250;
 
 
 /***/ },
-/* 248 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var convertPathToUrl = __webpack_require__(249);
-  var ensureTrailingSlash = __webpack_require__(250);
+  var convertPathToUrl = __webpack_require__(252);
+  var ensureTrailingSlash = __webpack_require__(253);
   var path = __webpack_require__(5);
-  var url = __webpack_require__(251);
+  var url = __webpack_require__(254);
   
   module.exports = function (baseUrl, basePath, resolvedPath) {
     var from = ensureTrailingSlash(baseUrl);
@@ -16950,7 +17479,7 @@ module.exports =
 
 
 /***/ },
-/* 249 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
   var sep = __webpack_require__(5).sep;
@@ -16961,12 +17490,12 @@ module.exports =
 
 
 /***/ },
-/* 250 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var convertPathToUrl = __webpack_require__(249);
+  var convertPathToUrl = __webpack_require__(252);
   var path = __webpack_require__(5);
-  var url = __webpack_require__(251);
+  var url = __webpack_require__(254);
   
   module.exports = function (urlStr) {
     var urlObj = url.parse(urlStr);
@@ -16976,13 +17505,13 @@ module.exports =
 
 
 /***/ },
-/* 251 */
+/* 254 */
 /***/ function(module, exports) {
 
   module.exports = require("url");
 
 /***/ },
-/* 252 */
+/* 255 */
 /***/ function(module, exports) {
 
   module.exports = function (current, addon) {
@@ -16994,10 +17523,10 @@ module.exports =
 
 
 /***/ },
-/* 253 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var convertPathToUrl = __webpack_require__(249);
+  var convertPathToUrl = __webpack_require__(252);
   var path = __webpack_require__(5);
   
   module.exports = function (basePath, relativeTo, resolvedPath) {
@@ -17008,10 +17537,10 @@ module.exports =
 
 
 /***/ },
-/* 254 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var fs = __webpack_require__(30);
+  var fs = __webpack_require__(33);
   
   module.exports = function (resolvedPath) {
     var mtime = fs.statSync(resolvedPath).mtime;
@@ -17020,7 +17549,7 @@ module.exports =
 
 
 /***/ },
-/* 255 */
+/* 258 */
 /***/ function(module, exports) {
 
   module.exports = function (buffer, mediaType) {
@@ -17032,10 +17561,10 @@ module.exports =
 
 
 /***/ },
-/* 256 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var fs = __webpack_require__(30);
+  var fs = __webpack_require__(33);
   
   module.exports = function (filePath, callback) {
     fs.stat(filePath, function (err) {
@@ -17045,16 +17574,16 @@ module.exports =
 
 
 /***/ },
-/* 257 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var encodeBuffer = __webpack_require__(255);
-  var extend = __webpack_require__(246);
-  var fs = __webpack_require__(30);
-  var mime = __webpack_require__(258);
-  var Promise = __webpack_require__(31);
-  var resolvePath = __webpack_require__(259);
-  var url = __webpack_require__(251);
+  var encodeBuffer = __webpack_require__(258);
+  var extend = __webpack_require__(249);
+  var fs = __webpack_require__(33);
+  var mime = __webpack_require__(261);
+  var Promise = __webpack_require__(34);
+  var resolvePath = __webpack_require__(262);
+  var url = __webpack_require__(254);
   
   var preadFile = Promise.promisify(fs.readFile);
   
@@ -17085,22 +17614,22 @@ module.exports =
 
 
 /***/ },
-/* 258 */
+/* 261 */
 /***/ function(module, exports) {
 
   module.exports = require("mime");
 
 /***/ },
-/* 259 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var async = __webpack_require__(260);
-  var exists = __webpack_require__(256);
-  var extend = __webpack_require__(246);
-  var flatten = __webpack_require__(261);
-  var glob = __webpack_require__(262);
+  var async = __webpack_require__(263);
+  var exists = __webpack_require__(259);
+  var extend = __webpack_require__(249);
+  var flatten = __webpack_require__(264);
+  var glob = __webpack_require__(265);
   var path = __webpack_require__(5);
-  var Promise = __webpack_require__(31);
+  var Promise = __webpack_require__(34);
   
   var pglob = Promise.promisify(glob);
   
@@ -17143,30 +17672,30 @@ module.exports =
 
 
 /***/ },
-/* 260 */
+/* 263 */
 /***/ function(module, exports) {
 
   module.exports = require("async");
 
 /***/ },
-/* 261 */
+/* 264 */
 /***/ function(module, exports) {
 
   module.exports = require("lodash/array/flatten");
 
 /***/ },
-/* 262 */
+/* 265 */
 /***/ function(module, exports) {
 
   module.exports = require("glob");
 
 /***/ },
-/* 263 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var calipers = __webpack_require__(264)('webp', 'png', 'jpeg', 'gif', 'svg');
-  var Promise = __webpack_require__(31);
-  var resolvePath = __webpack_require__(259);
+  var calipers = __webpack_require__(267)('webp', 'png', 'jpeg', 'gif', 'svg');
+  var Promise = __webpack_require__(34);
+  var resolvePath = __webpack_require__(262);
   
   module.exports = function (to, options, callback) {
     if (typeof options === 'function') {
@@ -17189,22 +17718,22 @@ module.exports =
 
 
 /***/ },
-/* 264 */
+/* 267 */
 /***/ function(module, exports) {
 
   module.exports = require("calipers");
 
 /***/ },
-/* 265 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var composeAbsolutePathname = __webpack_require__(248);
-  var composeQueryString = __webpack_require__(252);
-  var composeRelativePathname = __webpack_require__(253);
-  var defaultCachebuster = __webpack_require__(254);
-  var extend = __webpack_require__(246);
-  var resolvePath = __webpack_require__(259);
-  var url = __webpack_require__(251);
+  var composeAbsolutePathname = __webpack_require__(251);
+  var composeQueryString = __webpack_require__(255);
+  var composeRelativePathname = __webpack_require__(256);
+  var defaultCachebuster = __webpack_require__(257);
+  var extend = __webpack_require__(249);
+  var resolvePath = __webpack_require__(262);
+  var url = __webpack_require__(254);
   
   module.exports = function (to, options, callback) {
     if (typeof options === 'function') {
@@ -17254,28 +17783,28 @@ module.exports =
 
 
 /***/ },
-/* 266 */
+/* 269 */
 /***/ function(module, exports) {
 
   module.exports = require("mongodb");
 
 /***/ },
-/* 267 */
+/* 270 */
 /***/ function(module, exports) {
 
   module.exports = require("express-session");
 
 /***/ },
-/* 268 */
+/* 271 */
 /***/ function(module, exports) {
 
   module.exports = require("debug");
 
 /***/ },
-/* 269 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var jade = __webpack_require__(270);
+  var jade = __webpack_require__(273);
   
   module.exports = function template(locals) {
   var jade_debug = [ new jade.DebugItem( 1, "C:\\dtsolutions\\bmfapp\\src\\views\\index.jade" ) ];
@@ -17378,7 +17907,7 @@ module.exports =
   }
 
 /***/ },
-/* 270 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -17598,7 +18127,7 @@ module.exports =
       throw err;
     }
     try {
-      str = str || __webpack_require__(30).readFileSync(filename, 'utf8')
+      str = str || __webpack_require__(33).readFileSync(filename, 'utf8')
     } catch (ex) {
       rethrow(err, null, lineno)
     }
@@ -17630,10 +18159,10 @@ module.exports =
 
 
 /***/ },
-/* 271 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
-  var jade = __webpack_require__(270);
+  var jade = __webpack_require__(273);
   
   module.exports = function template(locals) {
   var jade_debug = [ new jade.DebugItem( 1, "C:\\dtsolutions\\bmfapp\\src\\views\\error.jade" ) ];

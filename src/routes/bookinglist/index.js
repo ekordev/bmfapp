@@ -3,6 +3,7 @@ import React from 'react';
 import Bookinglist from './Bookinglist';
 import { host, apihost } from '../../config';
 import Login from '../login/Login';
+import {getSessionid} from '../../scripts/util';
 
 
  var sessionid;
@@ -59,7 +60,7 @@ function getBookingData() {
   });
 }
 
-function getSessionid() {
+/*function getSessionid() {
   var request = require('request');
   console.log('genSessionid - calling API');
   var url = `http://${apihost}/genSessionid`;
@@ -82,4 +83,4 @@ function getSessionid() {
 
  });
  
-}
+}*/

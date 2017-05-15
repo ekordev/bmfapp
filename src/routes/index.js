@@ -90,8 +90,9 @@ export default {
   ],
 
   async action({ next, render, context }) {
-    const component = await next();
-   // console.log("User: "+context.getUser('user'));
+  const component = await next();
+   console.log("User: "+context.getUser('user'));
+   console.log("Context Object: "+context);
     
     if (component === undefined) return component;
     return render(

@@ -21,7 +21,7 @@ const user = 'Customer';
 function Home({ sessionid, email, bookinglist, usertype }, context) {
   context.setTitle(title);
   context.setUser(user);
- //context.getUser('user');
+  //context.getUser('user');
   var logoutlink = "/logout?sessionid="+sessionid;
   var bookinglink = "/booking?sessionid="+sessionid+"&email="+email;
   var cateringbookinglink = "/cateringbooking?sessionid="+sessionid+"&email="+email;
