@@ -34,14 +34,13 @@ path: '/changebookingdate',
     console.log("Booking Id: "+id);
     changeddate = query.newdate
    
-   
        
     var body = await Changedate();
-    /*console.log("Calling SendEmail");
+    console.log("Calling SendEmail");
     var mail = await sendEmail();
     console.log("Calling sendSMS");
     var sms = await sendSMS();
-    console.log("Body: "+body);*/
+    console.log("Body: "+body);
     if (!status) {
       message = 'Unable to Change booking date  the Event';
       href = `http://${host}/home`;
@@ -150,7 +149,7 @@ function sendEmail() {
 }
 
 
-function getSessionid() {
+/*function getSessionid() {
   var request = require('request');
   console.log('genSessionid - calling API');
   var url = `http://${apihost}/genSessionid`;
@@ -173,7 +172,7 @@ function getSessionid() {
 
  });
  
-}
+}*/
 
 function getBookingRecord() {
   var request = require('request');

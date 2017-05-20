@@ -20,6 +20,8 @@ import assets from '../node_modules/assets'; // eslint-disable-line import/no-un
 import { port, auth, analytics, mongodbUrl } from './config';
 var mongodb = require('mongodb');
 var session = require('express-session');
+const fileUpload = require('express-fileupload');
+
 
 const debug = require('debug')('bmfapp')  
 const name = 'bmfapp';
@@ -32,6 +34,8 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: true }
 }))
+
+app.use(fileUpload());
 
 //
 // Tell any CSS tooling (such as Material UI) to use all vendor prefixes if the
@@ -111,7 +115,7 @@ app.post('*', async (req, res, next) => {
     await resolve(routes, {
       path: req.path,
       query: req.body,
-      files: req.file,
+      files: req.files,
       
       context: {
         insertCss: styles => css.push(styles._getCss()), // eslint-disable-line no-underscore-dangle
