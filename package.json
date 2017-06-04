@@ -5,7 +5,7 @@
     "npm": ">=3.3 <4"
   },
   "dependencies": {
-    "@risingstack/trace": "^3.6.2",
+    
     "ag-grid": "^6.2.1",
     "assets": "^2.1.0",
     "babel-polyfill": "6.9.0",
