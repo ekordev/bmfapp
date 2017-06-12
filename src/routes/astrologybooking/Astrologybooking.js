@@ -76,7 +76,7 @@ let date1 = '2017-04-24'
 
           <div className={s.formGroup} >
             <label className={s.label} htmlFor="">
-              Upload Jathagam:
+              Upload Horoscpe:
             </label>
             <input type="file" name="astroFile" />
           </div>

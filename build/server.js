@@ -215,6 +215,10 @@ module.exports =
   
               console.log("Path Post:" + req.path);
               console.log("Query Post:" + (0, _stringify2.default)(req.body));
+              if (req.files) {
+                console.log("File Name: " + req.files.name);
+              }
+  
               if (false) {
                 data.trackingId = _config.analytics.google.trackingId;
               }
@@ -224,7 +228,7 @@ module.exports =
                 console.log(" User: " + data.user);
               }
   
-              _context.next = 11;
+              _context.next = 12;
               return (0, _universalRouter.resolve)(_routes2.default, {
                 path: req.path,
                 query: req.body,
@@ -258,25 +262,25 @@ module.exports =
                 }
               });
   
-            case 11:
+            case 12:
   
               res.status(statusCode);
               res.send(template(data));
-              _context.next = 18;
+              _context.next = 19;
               break;
   
-            case 15:
-              _context.prev = 15;
+            case 16:
+              _context.prev = 16;
               _context.t0 = _context['catch'](0);
   
               next(_context.t0);
   
-            case 18:
+            case 19:
             case 'end':
               return _context.stop();
           }
         }
-      }, _callee, undefined, [[0, 15]]);
+      }, _callee, undefined, [[0, 16]]);
     }));
   
     return function (_x, _x2, _x3) {
@@ -16858,7 +16862,7 @@ module.exports =
             _react2.default.createElement(
               'label',
               { className: _Astrologybooking2.default.label, htmlFor: '' },
-              'Upload Jathagam:'
+              'Upload Horoscpe:'
             ),
             _react2.default.createElement('input', { type: 'file', name: 'astroFile' })
           ),

@@ -100,6 +100,11 @@ app.post('*', async (req, res, next) => {
     //var sess = req.session;
    console.log("Path Post:"+req.path);
    console.log("Query Post:"+JSON.stringify(req.body));
+   if ( req.files)
+   {
+    console.log("File Name: "+req.files.name);
+   }
+    
     if (process.env.NODE_ENV === 'production') {
       data.trackingId = analytics.google.trackingId;
     }
