@@ -813,7 +813,7 @@ module.exports =
   var port = exports.port = process.env.PORT || 3000;
   var host = exports.host = process.env.WEBSITE_HOSTNAME || 'localhost:' + port;
   
-  var apiport = exports.apiport = process.env.PORT || 3002;
+  var apiport = exports.apiport = process.env.PORT || 3006;
   var apihost = exports.apihost = process.env.WEBSITE_HOSTNAME || 'localhost:' + apiport;
   
   var databaseUrl = exports.databaseUrl = process.env.DATABASE_URL || 'sqlite:database.sqlite';
@@ -1710,6 +1710,10 @@ module.exports =
   
   var _regenerator2 = _interopRequireDefault(_regenerator);
   
+  var _stringify = __webpack_require__(2);
+  
+  var _stringify2 = _interopRequireDefault(_stringify);
+  
   var _asyncToGenerator2 = __webpack_require__(3);
   
   var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
@@ -1902,7 +1906,8 @@ module.exports =
                 component = _context.sent;
   
                 console.log("User: " + context.getUser('user'));
-                console.log("Context Object: " + context);
+                console.log("Context Object: " + (0, _stringify2.default)(context, null, 4));
+                //console.log("Next Object: "+component);
   
                 if (!(component === undefined)) {
                   _context.next = 7;
@@ -3345,7 +3350,7 @@ module.exports =
         usertype = _ref.usertype;
   
     context.setTitle(title);
-    context.setUser(user);
+    context.setUser(usertype);
     //context.getUser('user');
     var logoutlink = "/logout?sessionid=" + sessionid;
     var bookinglink = "/booking?sessionid=" + sessionid + "&email=" + email;

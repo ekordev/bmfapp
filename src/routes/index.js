@@ -92,7 +92,8 @@ export default {
   async action({ next, render, context }) {
   const component = await next();
    console.log("User: "+context.getUser('user'));
-   console.log("Context Object: "+context);
+   console.log("Context Object: "+JSON.stringify(context,null,4));
+   //console.log("Next Object: "+component);
     
     if (component === undefined) return component;
     return render(
