@@ -124,18 +124,22 @@ module.exports =
   
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   
-  var mongodb = __webpack_require__(269); // eslint-disable-line import/no-unresolved
-  
+  var busboy = __webpack_require__(269);
   //import UniversalRouter from 'universal-router';
+  // eslint-disable-line import/no-unresolved
   
-  var session = __webpack_require__(270);
-  var fileUpload = __webpack_require__(271);
+  var mongodb = __webpack_require__(270);
+  var session = __webpack_require__(271);
+  var busboy = __webpack_require__(269);
+  var fs = __webpack_require__(272);
   
-  var debug = __webpack_require__(272)('bmfapp');
+  var debug = __webpack_require__(273)('bmfapp');
   var name = 'bmfapp';
   debug('booting %s', name);
   
   var app = (0, _express2.default)();
+  app.use(busboy());
+  
   app.use(session({
     secret: '1234567890QWERTY',
     resave: false,
@@ -143,7 +147,7 @@ module.exports =
     cookie: { secure: true }
   }));
   
-  app.use(fileUpload());
+  //app.use(fileUpload());
   
   //
   // Tell any CSS tooling (such as Material UI) to use all vendor prefixes if the
@@ -208,16 +212,25 @@ module.exports =
               _context.prev = 0;
               css = [];
               statusCode = 200;
-              template = __webpack_require__(273); // eslint-disable-line global-require
+              template = __webpack_require__(274); // eslint-disable-line global-require
   
               data = { title: '', description: '', user: '', css: '', body: '', entry: 'assets.main.js' }; //assets.main.js
               //var sess = req.session;
   
               console.log("Path Post:" + req.path);
               console.log("Query Post:" + (0, _stringify2.default)(req.body));
-              if (req.files) {
-                console.log("File Name: " + req.files.name);
+  
+              if (!req.busboy) {
+                _context.next = 10;
+                break;
               }
+  
+              req.busboy.on("file", function (fieldName, fileStream, fileName, encoding, mimeType) {
+                console.log("File Name: " + filename);
+              });
+              return _context.abrupt('return', req.pipe(req.busboy));
+  
+            case 10:
   
               if (false) {
                 data.trackingId = _config.analytics.google.trackingId;
@@ -228,7 +241,7 @@ module.exports =
                 console.log(" User: " + data.user);
               }
   
-              _context.next = 12;
+              _context.next = 14;
               return (0, _universalRouter.resolve)(_routes2.default, {
                 path: req.path,
                 query: req.body,
@@ -262,25 +275,25 @@ module.exports =
                 }
               });
   
-            case 12:
+            case 14:
   
               res.status(statusCode);
               res.send(template(data));
-              _context.next = 19;
+              _context.next = 21;
               break;
   
-            case 16:
-              _context.prev = 16;
+            case 18:
+              _context.prev = 18;
               _context.t0 = _context['catch'](0);
   
               next(_context.t0);
   
-            case 19:
+            case 21:
             case 'end':
               return _context.stop();
           }
         }
-      }, _callee, undefined, [[0, 16]]);
+      }, _callee, undefined, [[0, 18]]);
     }));
   
     return function (_x, _x2, _x3) {
@@ -298,7 +311,7 @@ module.exports =
               _context2.prev = 0;
               css = [];
               statusCode = 200;
-              template = __webpack_require__(273); // eslint-disable-line global-require
+              template = __webpack_require__(274); // eslint-disable-line global-require
   
               data = { title: '', description: '', user: '', css: '', body: '', entry: 'assets.main.js' }; //assets.main.js
               //var sess = req.session;
@@ -384,7 +397,7 @@ module.exports =
   app.use(function (err, req, res, next) {
     // eslint-disable-line no-unused-vars
     console.log(pe.render(err)); // eslint-disable-line no-console
-    var template = __webpack_require__(275); // eslint-disable-line global-require
+    var template = __webpack_require__(276); // eslint-disable-line global-require
     var statusCode = err.status || 500;
     res.status(statusCode);
     res.send(template({
@@ -17814,31 +17827,37 @@ module.exports =
 /* 269 */
 /***/ (function(module, exports) {
 
-  module.exports = require("mongodb");
+  module.exports = require("connect-busboy");
 
 /***/ }),
 /* 270 */
 /***/ (function(module, exports) {
 
-  module.exports = require("express-session");
+  module.exports = require("mongodb");
 
 /***/ }),
 /* 271 */
 /***/ (function(module, exports) {
 
-  module.exports = require("express-fileupload");
+  module.exports = require("express-session");
 
 /***/ }),
 /* 272 */
 /***/ (function(module, exports) {
 
-  module.exports = require("debug");
+  module.exports = require("fs-extra");
 
 /***/ }),
 /* 273 */
+/***/ (function(module, exports) {
+
+  module.exports = require("debug");
+
+/***/ }),
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
-  var jade = __webpack_require__(274);
+  var jade = __webpack_require__(275);
   
   module.exports = function template(locals) {
   var jade_debug = [ new jade.DebugItem( 1, "C:\\dtsolutions\\bmfapp\\src\\views\\index.jade" ) ];
@@ -17941,7 +17960,7 @@ module.exports =
   }
 
 /***/ }),
-/* 274 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
   'use strict';
@@ -18193,10 +18212,10 @@ module.exports =
 
 
 /***/ }),
-/* 275 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
-  var jade = __webpack_require__(274);
+  var jade = __webpack_require__(275);
   
   module.exports = function template(locals) {
   var jade_debug = [ new jade.DebugItem( 1, "C:\\dtsolutions\\bmfapp\\src\\views\\error.jade" ) ];

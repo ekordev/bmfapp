@@ -1,4 +1,4 @@
-
+var busboy = require('connect-busboy');
 import 'babel-polyfill';
 import path from 'path';
 import express from 'express';
@@ -20,7 +20,8 @@ import assets from '../node_modules/assets'; // eslint-disable-line import/no-un
 import { port, auth, analytics, mongodbUrl } from './config';
 var mongodb = require('mongodb');
 var session = require('express-session');
-const fileUpload = require('express-fileupload');
+var busboy = require('connect-busboy');
+var fs = require('fs-extra'); 
 
 
 const debug = require('debug')('bmfapp')  
@@ -28,6 +29,8 @@ const name = 'bmfapp';
 debug('booting %s', name);
 
 const app = express();
+app.use(busboy());
+
 app.use(session({
   secret: '1234567890QWERTY',
   resave: false,
@@ -35,7 +38,7 @@ app.use(session({
   cookie: { secure: true }
 }))
 
-app.use(fileUpload());
+//app.use(fileUpload());
 
 //
 // Tell any CSS tooling (such as Material UI) to use all vendor prefixes if the
@@ -100,10 +103,12 @@ app.post('*', async (req, res, next) => {
     //var sess = req.session;
    console.log("Path Post:"+req.path);
    console.log("Query Post:"+JSON.stringify(req.body));
-   if ( req.files)
-   {
-    console.log("File Name: "+req.files.name);
-   }
+   if(req.busboy) {
+        req.busboy.on("file", function(fieldName, fileStream, fileName, encoding, mimeType) {
+            console.log("File Name: "+filename);
+        });
+        return req.pipe(req.busboy);
+    }
     
     if (process.env.NODE_ENV === 'production') {
       data.trackingId = analytics.google.trackingId;
