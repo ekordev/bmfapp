@@ -24,9 +24,9 @@ var busboy = require('connect-busboy');
 var fs = require('fs-extra'); 
 
 
-const debug = require('debug')('bmfapp')  
+/*const debug = require('debug')('bmfapp')  
 const name = 'bmfapp';
-debug('booting %s', name);
+debug('booting %s', name);*/
 
 const app = express();
 app.use(busboy());
