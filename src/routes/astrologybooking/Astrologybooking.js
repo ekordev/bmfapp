@@ -31,7 +31,7 @@ let date1 = '2017-04-24'
     <div className={s.root}>
       <div className={s.container}>
         <h1>{title}</h1>
-        <form name="form1" method="post" action="saveastrobooking" >
+        <form name="form1" method="post" encType="multipart/form-data" action="saveastrobooking" >
           <div className= {s.leftContainer}>
           <input id="status" type="hidden"  value="booked" name="status" />
             <label className={s.label} htmlFor="dateofbooking">

@@ -52,13 +52,17 @@
 .cards {
   display: flex;
   margin: 0 auto;
-  max-width: 1600px;
-
+  max-width: 1800px;
+ 
 }
 
 .card {
   margin: 0 5px;
   flex: 0 0 300px;
+  flex-flow: column-reverse;
+  padding: 5px;
+  height: 400px;
+  margin-top: 10px;
 }
 
 html {

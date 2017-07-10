@@ -38,6 +38,13 @@ export default {
           var result = await storePasscode(email, code);
         }
 
+        else
+        {
+          console.log("Email id not register with us");
+          errormessage = "Email id not register with us";
+          return <Forgotpass errormessage={errormessage} />;
+        }
+
     }
     console.log("Status: "+status);
     if (status == true)
@@ -49,6 +56,7 @@ export default {
     else
     {
       console.log("Error in Reseting password request");
+      errormessage = "Error in Reseting password request";
       return <Forgotpass errormessage={errormessage} />;
     }
       

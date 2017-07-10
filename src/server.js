@@ -103,12 +103,13 @@ app.post('*', async (req, res, next) => {
     //var sess = req.session;
    console.log("Path Post:"+req.path);
    console.log("Query Post:"+JSON.stringify(req.body));
-   if(req.busboy) {
+   console.log("Http Request: "+req.busboy);
+   /*if(req.busboy != undefined) {
         req.busboy.on("file", function(fieldName, fileStream, fileName, encoding, mimeType) {
             console.log("File Name: "+filename);
         });
         return req.pipe(req.busboy);
-    }
+    }*/
     
     if (process.env.NODE_ENV === 'production') {
       data.trackingId = analytics.google.trackingId;
@@ -125,7 +126,7 @@ app.post('*', async (req, res, next) => {
     await resolve(routes, {
       path: req.path,
       query: req.body,
-      files: req.files,
+     
       
       context: {
         insertCss: styles => css.push(styles._getCss()), // eslint-disable-line no-underscore-dangle

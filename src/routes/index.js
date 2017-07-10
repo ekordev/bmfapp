@@ -41,6 +41,7 @@ import confirmOTP from './confirmOTP';
 import cateringbooking from './cateringbooking';
 import astrologybooking from './astrologybooking';
 import saveastrobooking from './saveastrobooking';
+import expirederr from './expirederror';
 
 export default {
 
@@ -86,6 +87,7 @@ export default {
     saveastrobooking,
     content,
     error,
+    expirederr
 
   ],
 
