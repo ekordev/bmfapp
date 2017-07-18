@@ -1,6 +1,7 @@
 
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import  PropTypes from 'prop-types';
 import emptyFunction from 'fbjs/lib/emptyFunction';
 import s from './App.css';
 import Header from '../Header';

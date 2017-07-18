@@ -46,7 +46,7 @@ function Home({ sessionid, email, bookinglist, usertype }, context) {
               Search:
             </label>
       <input type="text" id="category" name="category" />
-      
+      <input type="hidden" id="usertype" name="usertype" value={usertype}/>
       <br/>
       <br/>
       <input type="radio" name="searchterm" value="pincode" />Pincode
@@ -142,6 +142,7 @@ function Home({ sessionid, email, bookinglist, usertype }, context) {
       <br/>
        <form name="searchform" method="get" action="searchprovider" >
       <input type="text" id="category" name="category" />
+      <input type="hidden" id="usertype" name="usertype" value={usertype}/>
       
       <br/>
       <br/>

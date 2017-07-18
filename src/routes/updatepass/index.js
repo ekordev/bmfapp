@@ -38,6 +38,7 @@ export default {
      }
       
      return <Updatepass message={message} message1={message1} redirectlink={href}/>
+     
   }
 
 };

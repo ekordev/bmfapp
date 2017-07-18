@@ -135,3 +135,32 @@ function sendEmail(email, subject, message) {
   });
    });
 }
+
+function deletePassCode() {
+  var request = require('request');
+  console.log('Check Code - calling API');
+  var url = `http://${apihost}/removeCode?code=` +passcode;
+  console.log("deletePassCode - URL: " + url);
+  
+  return new Promise(function(resolve, reject) {
+  request.delete(url, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      console.log('deletePassCode- Response from API' + body);
+
+      if ( body == 'true')
+          status = true;
+      else
+          status = false;
+     resolve(body);
+    }
+    else {
+      status = false;
+      console.log("deletePassCode -API Server not running: "+error);
+      return reject(error);
+    }
+    console.log("deletePassCode - Returning from API call")
+  });
+
+ });
+ 
+}

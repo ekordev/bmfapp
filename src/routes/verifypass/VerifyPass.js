@@ -9,7 +9,7 @@ const user = 'Customer'
 function VerifyPass({message, sessionid}, props, context) {
   //context.setUser(user);
   context.setTitle(title);
-  
+  context.setUser(user);
   return (
     <div className={s.root}>
       <div className={s.container}>

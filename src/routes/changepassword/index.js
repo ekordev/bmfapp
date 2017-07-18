@@ -1,8 +1,10 @@
 import React from 'react';
 import Changepassword from './Changepassword';
-import Login from '../login/Login';
-import { apihost } from '../../config';
+import Expirederror from '../expirederror/Expirederror';
+import { host, apihost} from '../../config';
 var status = false ;
+var message;
+var link=`http://${host}/forgotpass`;
 
 
 export default {
@@ -16,6 +18,7 @@ export default {
     console.log("Email ID:" + email);
     var startdate = new Date();
     var body = await checkCode(code, email);
+
     var enddate = new Date();
     var difftime = enddate.getTime()-startdate.getTime();
     console.log("Execution Time:"+ difftime);
@@ -25,7 +28,15 @@ export default {
      }
       
     else
-     return <Login />;
+      {
+
+        if ( body = 'expired')
+          message = "Passcode Expired. To get new passcode Click Here";
+        else
+          message = " Passcode not available"
+        return <Expirederror message={message} redirectlink={link} message1='Click Here'/>;
+      }
+     
 
   },
 
@@ -41,6 +52,7 @@ function checkCode(code, email) {
   request(url, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       console.log('Checkcode - Response from API' + body);
+      
 
       if ( body == 'true')
           status = true;

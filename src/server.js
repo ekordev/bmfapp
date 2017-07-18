@@ -101,10 +101,10 @@ app.post('*', async (req, res, next) => {
     const template = require('./views/index.jade'); // eslint-disable-line global-require
     const data = { title: '', description: '', user: '', css: '', body: '', entry:'assets.main.js'  }; //assets.main.js
     //var sess = req.session;
-   console.log("Path Post:"+req.path);
+  /* console.log("Path Post:"+req.path);
    console.log("Query Post:"+JSON.stringify(req.body));
    console.log("Http Request: "+req.busboy);
-   /*if(req.busboy != undefined) {
+   if(req.busboy != undefined) {
         req.busboy.on("file", function(fieldName, fileStream, fileName, encoding, mimeType) {
             console.log("File Name: "+filename);
         });
@@ -158,17 +158,17 @@ app.get('*', async (req, res, next) => {
     const template = require('./views/index.jade'); // eslint-disable-line global-require
     const data = { title: '', description: '', user: '', css: '', body: '', entry:'assets.main.js'  }; //assets.main.js
     //var sess = req.session;
-   console.log("Path get:"+req.path);
-   console.log("Query get:"+JSON.stringify(req.query));
+  // console.log("Path get:"+req.path);
+   //console.log("Query get:"+JSON.stringify(req.query));
     if (process.env.NODE_ENV === 'production') {
       data.trackingId = analytics.google.trackingId;
     }
     
-     if ( req.query.user != undefined )
+   if ( req.query.user != undefined )
 
     {
-      data['user'] = req.query.user; 
-      console.log(" User: "+data.user);
+      data['user'] = req.query.usertype; 
+      console.log(" User - Server.js : "+data.user);
     }
     
     await resolve(routes, {
