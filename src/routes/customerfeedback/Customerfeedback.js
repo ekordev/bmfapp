@@ -7,26 +7,51 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Customerfeedback.css';
 
-function Customerfeedback() {
+const title = 'Customer Feedback';
+
+function Customerfeedback(props, context) {
+  context.setTitle(title);
+  console.log("Props: "+JSON.stringify(props))
   return (
     <div className={s.root}>
       <div className={s.container}>
-        <a
-          className={s.link}
-          href="https://gitter.im/kriasoft/react-starter-kit"
-        >Ask a question</a>
-        <span className={s.spacer}>|</span>
-        <a
-          className={s.link}
-          href="https://github.com/kriasoft/react-starter-kit/issues/new"
-        >Report an issue</a>
+        <h1>{title}</h1>
+   
+        <form name="form1" method="post" action="forgotpass" >
+          
+          <div className={s.formGroup}>
+            <label className={s.label} htmlFor="Provider Name">
+              Email:
+            </label>
+            <input
+              className={s.input}
+              id="providername"
+              type="text"
+              name="providername"
+              readOnly            
+            />
+          <label className={s.label} htmlFor="Feedback">
+              Your valuable Feedback
+            </label>
+            <textarea rows="4" cols="50" name="feedback" placeholder="Enter your feedback">
+    </textarea>
+          </div>
+          <div className={s.formGroup}>
+            <button className={s.button}   type="submit" >
+              Send Feedback
+            </button>
+            
+          </div>
+        </form>
+        
       </div>
     </div>
   );
 }
 
+Customerfeedback.contextTypes = { setTitle: PropTypes.func.isRequired };
 export default withStyles(s)(Customerfeedback);

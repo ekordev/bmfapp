@@ -1,8 +1,8 @@
 
 
 import React from 'react';
-import Booking from './Booking';
-import Login from '../login/Login';
+
+import Customerfeedback from './Customerfeedback';
 import { apihost } from '../../config';
 import {getSessionid} from '../../scripts/util';
 
@@ -10,9 +10,8 @@ export default {
 
   path: '/customerfeedback',
 
-  async action({query}) {
-     
-
+  async action({query}, {path}) {
+     return <Customerfeedback  user="customer"/>;
 }
 
-}
+};

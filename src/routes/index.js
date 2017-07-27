@@ -42,6 +42,7 @@ import cateringbooking from './cateringbooking';
 import astrologybooking from './astrologybooking';
 import saveastrobooking from './saveastrobooking';
 import expirederr from './expirederror';
+import customerfeedback from './customerfeedback';
 
 export default {
 
@@ -77,6 +78,7 @@ export default {
     saveprovider,
     booking,
     managebooking,
+    customerfeedback,
     cancelbooking,
     changebookingdate,
     providerlist,
@@ -87,8 +89,8 @@ export default {
     saveastrobooking,
     content,
     error,
-    expirederr
-
+    expirederr,
+    customerfeedback,
   ],
 
   async action({ next, render, context }) {

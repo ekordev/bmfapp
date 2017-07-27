@@ -166,7 +166,7 @@ function sendEmail() {
   var url = `http://${apihost}/sendmail`;
   console.log("URL: " + url);
 
-  var subject = "Your booking for the event with id: "+id+" has been cancelled";
+  var subject = "Your booking for the event with id: "+id+" has been "+bookingstatus;
   var message = "<b>Your booking for the event Cancelled as per your requst. Thank you for the booking and We continue to provide our best service. ";
   var formdata = { 
   tomail: email+' ,'+providermail, 

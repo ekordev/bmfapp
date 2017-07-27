@@ -20,7 +20,7 @@ const user = 'Customer';
 
 function Home({ sessionid, email, bookinglist, usertype }, context) {
   context.setTitle(title);
-  context.setUser(usertype);
+  context.setUser(user);
   //context.getUser('user');
   var logoutlink = "/logout?sessionid="+sessionid;
   var bookinglink = "/booking?sessionid="+sessionid+"&email="+email;
@@ -269,11 +269,10 @@ function Home({ sessionid, email, bookinglist, usertype }, context) {
        </button>
         </form>
        </div> 
-      
-    
-   
+        
      </div>
-    
+     
+        
   );
   }
 }

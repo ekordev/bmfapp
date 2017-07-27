@@ -13,7 +13,7 @@ html {
 .container {
   margin: 0 auto;
   padding: 0 0 40px;
-  max-width: 380px;
+  max-width: 900px;
 }
 
 .lead {
@@ -29,6 +29,7 @@ html {
   margin-bottom: 5px;
   max-width: 100%;
   font-weight: 700;
+  color: black;
 }
 
 .input {
@@ -172,4 +173,49 @@ html {
   width: 100%;
   border-bottom: 1px solid #ddd;
   content: '';
+}
+
+.wrapper {
+  width: 800px;
+  height: 400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr ;
+  grid-template-rows: 1fr 1fr ;
+  grid-gap: 30px ;
+  background-color: #fafafa;
+  align-content: space-around;
+  justify-content: space-between;
+  grid-auto-rows: 100px;
+  grid-column-gap: 20px;
+  grid-row-gap: 1em;
+  border: gold;
+
+}
+
+.item1 {
+  grid-column:  1  ;
+  grid-row: 1 / 2 ;
+}
+
+.item2 {
+  grid-column: 2 ;
+  grid-row: 1 / 2 ;
+}
+
+.cont {
+  width: 800px;
+  margin: 0 auto;
+}
+
+.code {
+  background-color: #333;
+  padding: 20px;
+}
+
+.div {
+  padding: 10px;
+  background-color: burlywood;
+  color: #fff;
+  border-radius: 5px;
 }
