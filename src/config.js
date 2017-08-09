@@ -27,8 +27,8 @@ export const auth = {
 
   // https://cloud.google.com/console/project
   google: {
-    id: process.env.GOOGLE_CLIENT_ID || '251410730550-ahcg0ou5mgfhl8hlui1urru7jn5s12km.apps.googleusercontent.com',
-    secret: process.env.GOOGLE_CLIENT_SECRET || 'Y8yR9yZAhm9jQ8FKAL8QIEcd',
+    id: process.env.GOOGLE_CLIENT_ID || ' 794506586484-po1rtlnq5b8mhnggu95khh17lvmrp63k.apps.googleusercontent.com ',
+    secret: process.env.GOOGLE_CLIENT_SECRET || ' f28gkDwFB-zv3it7yF0gKnFg ',
   },
 
   // https://apps.twitter.com/

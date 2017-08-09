@@ -1,4 +1,4 @@
-var busboy = require('connect-busboy');
+
 import 'babel-polyfill';
 import path from 'path';
 import express from 'express';
@@ -20,7 +20,7 @@ import assets from '../node_modules/assets'; // eslint-disable-line import/no-un
 import { port, auth, analytics, mongodbUrl } from './config';
 var mongodb = require('mongodb');
 var session = require('express-session');
-var busboy = require('connect-busboy');
+const fileUpload = require('express-fileupload');
 var fs = require('fs-extra'); 
 
 
@@ -29,7 +29,7 @@ const name = 'bmfapp';
 debug('booting %s', name);*/
 
 const app = express();
-app.use(busboy());
+app.use(fileUpload());
 
 app.use(session({
   secret: '1234567890QWERTY',
@@ -38,7 +38,7 @@ app.use(session({
   cookie: { secure: true }
 }))
 
-//app.use(fileUpload());
+
 
 //
 // Tell any CSS tooling (such as Material UI) to use all vendor prefixes if the
@@ -98,13 +98,21 @@ app.post('*', async (req, res, next) => {
   try {
     let css = [];
     let statusCode = 200;
+   // let astrofile;
     const template = require('./views/index.jade'); // eslint-disable-line global-require
     const data = { title: '', description: '', user: '', css: '', body: '', entry:'assets.main.js'  }; //assets.main.js
     //var sess = req.session;
-  /* console.log("Path Post:"+req.path);
+   console.log("Path Post:"+req.path);
    console.log("Query Post:"+JSON.stringify(req.body));
-   console.log("Http Request: "+req.busboy);
-   if(req.busboy != undefined) {
+   if ( req.files )
+    {
+      console.log("Files: " + req.files.astroFile);
+     // astrofile =   req.files.astroFile
+      
+    }
+   
+  // console.log("Http Request: "+req.busboy);
+  /* if(req.busboy != undefined) {
         req.busboy.on("file", function(fieldName, fileStream, fileName, encoding, mimeType) {
             console.log("File Name: "+filename);
         });
@@ -126,8 +134,8 @@ app.post('*', async (req, res, next) => {
     await resolve(routes, {
       path: req.path,
       query: req.body,
-     
-      
+      request: req.files,
+           
       context: {
         insertCss: styles => css.push(styles._getCss()), // eslint-disable-line no-underscore-dangle
         setTitle: value => (data.title = value),
@@ -143,7 +151,7 @@ app.post('*', async (req, res, next) => {
         return true;
       },
     });
-
+    //res.header("Content-Type",'multipart/form-data');
     res.status(statusCode);
     res.send(template(data));
   } catch (err) {
@@ -174,7 +182,7 @@ app.get('*', async (req, res, next) => {
     await resolve(routes, {
       path: req.path,
       query: req.query,
-      files: req.files,
+      
       
       context: {
         insertCss: styles => css.push(styles._getCss()), // eslint-disable-line no-underscore-dangle
@@ -191,7 +199,7 @@ app.get('*', async (req, res, next) => {
         return true;
       },
     });
-
+    
     res.status(statusCode);
     res.send(template(data));
   } catch (err) {

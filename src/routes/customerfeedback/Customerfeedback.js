@@ -13,15 +13,15 @@ import s from './Customerfeedback.css';
 
 const title = 'Customer Feedback';
 
-function Customerfeedback(props, context) {
+function Customerfeedback({email}, context) {
   context.setTitle(title);
-  console.log("Props: "+JSON.stringify(props))
+  console.log("email: "+email);
   return (
     <div className={s.root}>
       <div className={s.container}>
         <h1>{title}</h1>
    
-        <form name="form1" method="post" action="forgotpass" >
+        <form name="form1" method="post" action="savefeedback" >
           
           <div className={s.formGroup}>
             <label className={s.label} htmlFor="Provider Name">
@@ -32,7 +32,22 @@ function Customerfeedback(props, context) {
               id="providername"
               type="text"
               name="providername"
+              value ={email}
               readOnly            
+            />
+          <label className={s.label} htmlFor="Feedback">
+              Your valuable Feedback
+            </label>
+          <label className={s.label} htmlFor="Rate the Service">
+              Rate the Service:
+            </label>
+            <input
+              className={s.input}
+              id="Rating"
+              type="text"
+              name="Rating"
+             
+              placeholder="Rate 1-5 5 being hightest"            
             />
           <label className={s.label} htmlFor="Feedback">
               Your valuable Feedback

@@ -28,8 +28,8 @@ export default {
     userEmail = query.usernameOrEmail;
     password = query.password;
     sessionid = query.sessionid;
-    console.log(userEmail);
-    console.log(password);
+    console.log("User Email: "+userEmail);
+    console.log("Password:"+ password);
     console.log("SessionId: "+sessionid);
     //var sessionbody = await checkSessionid(sessionid);
     //console.log("Session Exist: "+sessionbody);

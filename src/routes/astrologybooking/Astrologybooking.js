@@ -98,7 +98,7 @@ let date1 = '2017-04-24'
               id="bookingtype"
               type="hidden"
               name="bookingtype"
-              value="astrology"
+              value="Astrology"
               />
           </div>
           <div className={s.formGroup}>

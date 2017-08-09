@@ -19,6 +19,8 @@ var sessionid;
 var id;
 var bookingstatus;
 var provider;
+var subject;
+var emailmessage;
 
 
 export default {
@@ -71,7 +73,18 @@ path: '/managebooking',
            
     var body = await updatebookingstatus();
     console.log("Calling SendEmail");
-    var mail = await sendEmail();
+    if ( bookingstatus == 'canceled')
+      {
+        emailmessage = "<b>Your booking for the event Cancelled as per your request. Thank you for the booking and We continue to provide our best service. ";
+        subject = "Your booking for the event with id: "+id+" has been "+bookingstatus;
+      }
+      else
+        {
+          var url = href+'customerfeedback?email='+email;
+          emailmessage = "<b>Your booking for the event closed by provider. Thank you for the booking and We continue to provide our best service.     <br> We appriciate your valuable feedback."+"<a href='"+url+ "' >Your Feedback</a>";
+          subject = "Your booking for the event with id: "+id+" has been "+bookingstatus;
+        }
+        var mail = await sendEmail(subject, emailmessage);
    // console.log("Calling sendSMS");
     //var sms = await sendSMS();
     console.log("Body: "+body);
@@ -161,17 +174,17 @@ async function sendSMS() {
 }
 
 
-function sendEmail() {
+function sendEmail( subject, emailmessage) {
   console.log('calling API - sendEmail');
   var url = `http://${apihost}/sendmail`;
   console.log("URL: " + url);
 
-  var subject = "Your booking for the event with id: "+id+" has been "+bookingstatus;
-  var message = "<b>Your booking for the event Cancelled as per your requst. Thank you for the booking and We continue to provide our best service. ";
+ //var subject = "Your booking for the event with id: "+id+" has been "+bookingstatus;
+ // var message = "<b>Your booking for the event Cancelled as per your request. Thank you for the booking and We continue to provide our best service. ";
   var formdata = { 
   tomail: email+' ,'+providermail, 
   subject: subject, 
-  message: message
+  message: emailmessage
 };
   
   //data = JSON.stringify('{\"tomail\": \"'+email+'\", \"subject\": '+subject+'\", \"message\": \" '+message+'\"}');

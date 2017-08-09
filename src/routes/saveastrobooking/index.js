@@ -27,10 +27,10 @@ path: '/saveastrobooking',
     phone = query.mobile;
     email = query.email;
 
-    var file_path = req.files.astroFile.path;
-    var target_path = '../src/astrofiles/' + req.files.astroFile.name;
-    /*bookingtype = query.bookingtype;
-    console.log("Bookingtype: "+bookingtype);*/
+   /*var file_path = files.astroFile.path;
+    var target_path = '../src/astrofiles/' + files.astroFile.name;*/
+    bookingtype = query.bookingtype;
+    console.log("Bookingtype: "+bookingtype);
     console.log("Email: "+email);
     sessionid = query.sessionid;
     bookingid=query.bookingid;
@@ -42,7 +42,7 @@ path: '/saveastrobooking',
          return <Login sessionid = {sessionbody}/>
        }        
       
-     query.filepath=target_path;
+     //query.filepath=target_path;
      console.log("Modifie Query String - index.js - Saveastrobooking: " + JSON.stringify(query));
 
     var body = await SavebookingData(query);
