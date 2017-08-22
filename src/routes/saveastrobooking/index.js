@@ -55,13 +55,13 @@ path: '/saveastrobooking',
       message = 'Unable to book the Event';
       href = `http://${host}/booking`;
       message1 = 'Click here to Register.';
-      return <Saveastrobooking message={message} redirectlink={href} message1={message1} sessionid = {sessionid} />;
+      return <Saveastrobooking message={message} redirectlink={href} message1={message1} sessionid = {sessionid}  />;
     }
     else
     {
       providerlist = await getProviderData();
       console.log("Service Provider List: "+providerlist);
-      return <Providerlist providerlist={providerlist} customeremail={email} sessionid = {sessionid} bookingid={bookingid} />
+      return <Providerlist providerlist={providerlist} customeremail={email} sessionid = {sessionid} bookingid={bookingid} bookingype={bookingtype} />
      // return <Saveastrobooking message={message} redirectlink={href} message1={message1} />;
     }
    

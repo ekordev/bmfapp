@@ -14,11 +14,12 @@ import s from './Providerlist.css';
 const title = 'Service Provider Search';
 
 
-function Providerlist({providerlist, cateringProviderlist, customeremail, sessionid, bookingid}, context) {
+function Providerlist({providerlist, cateringProviderlist, customeremail, sessionid, bookingid, bookingtype}, context) {
   //context.setTitle(title);
   
    var providerdata = JSON.parse(providerlist);
    console.log("catering Provider List: "+cateringProviderlist);
+   console.log("Booking Type: "+bookingtype);
    var cateringproviderdata;
    if (cateringProviderlist != undefined )
     cateringproviderdata = JSON.parse(cateringProviderlist);
@@ -62,6 +63,8 @@ function Providerlist({providerlist, cateringProviderlist, customeremail, sessio
          <input type="hidden" name="customeremail"  value={customeremail} />
          <input type="hidden" name="sessionid"  value={sessionid} />
          <input type="hidden" name="bookingid"  value={bookingid} />
+         <input type="hidden" name="bookingtype"  value={bookingtype} />
+         
          <button   className={s.button}  type="submit" >
              Submit
          </button>

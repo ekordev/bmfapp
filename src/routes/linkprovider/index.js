@@ -11,6 +11,8 @@ var href = `http://${host}/`;
 var message1 = 'Click here to Home Page'
 var status = true;
 var bookingid;
+var bookingtype;
+var url;
 
 
 export default {
@@ -32,7 +34,10 @@ async  action({query}, {path}) {
     var customeremail = query.customeremail;
     var cateringprovideremail = query.cateringprovideremail;
     var providerphone;
-    var bookingid = query.bookingid;
+    
+    bookingid = query.bookingid;
+    bookingtype = query.bookingtype;
+    console.log("Bookingtype index.js - LinkProider  "+bookingtype);
     
     var providerrec = JSON.parse(await getProviderRecord(provideremail));
         console.log("Provider Record: "+providerrec);
@@ -56,9 +61,10 @@ async  action({query}, {path}) {
         var bookingresponse = await SavebookingData(bookingrec[0]);
     } 
 
-    
-
-    var url = `http://${apihost}/updateProviderLink?provideremail=`+provideremail+'&email='+customeremail+'&phone='+providerphone+'&bookingid='+bookingid;
+    if ( bookingtype != undefined)
+      url = `http://${apihost}/updateAstroProviderLink?provideremail=`+provideremail+'&email='+customeremail+'&phone='+providerphone+'&bookingid='+bookingid;
+    else
+     url = `http://${apihost}/updateProviderLink?provideremail=`+provideremail+'&email='+customeremail+'&phone='+providerphone+'&bookingid='+bookingid;
     console.log("Link Provider - Provider Email: "+provideremail);
     console.log("Link Provider - Customer Email: "+customeremail);
     console.log("URL: " + url);

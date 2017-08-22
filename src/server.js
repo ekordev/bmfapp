@@ -25,9 +25,9 @@ var fs = require('fs-extra');
 
 
 /*const debug = require('debug')('bmfapp')  
-const name = 'bmfapp';
+coname = 'bmfapp';
 debug('booting %s', name);*/
-
+ 
 const app = express();
 app.use(fileUpload());
 
@@ -45,9 +45,9 @@ app.use(session({
 // user agent is not known.
 // -----------------------------------------------------------------------------
 global.navigator = global.navigator || {};
-global.navigator.userAgent = global.navigator.userAgent || 'all';
+global.navigator.userAgent = global.navigator.userAgent || 'll';
 
-//
+//a
 // Register Node.js middleware
 // -----------------------------------------------------------------------------
 //app.use(bodyParser);
@@ -106,7 +106,7 @@ app.post('*', async (req, res, next) => {
    console.log("Query Post:"+JSON.stringify(req.body));
    if ( req.files )
     {
-      console.log("Files: " + req.files.astroFile);
+      console.log("Files: " + req.files.astroFile.name);
      // astrofile =   req.files.astroFile
       
     }
@@ -166,8 +166,8 @@ app.get('*', async (req, res, next) => {
     const template = require('./views/index.jade'); // eslint-disable-line global-require
     const data = { title: '', description: '', user: '', css: '', body: '', entry:'assets.main.js'  }; //assets.main.js
     //var sess = req.session;
-  // console.log("Path get:"+req.path);
-   //console.log("Query get:"+JSON.stringify(req.query));
+    console.log("Path get:"+req.path);
+    console.log("Query get:"+JSON.stringify(req.query));
     if (process.env.NODE_ENV === 'production') {
       data.trackingId = analytics.google.trackingId;
     }
