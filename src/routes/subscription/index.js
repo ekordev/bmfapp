@@ -12,7 +12,18 @@ export default {
 
   async action({query}, {path}) {
      var provideremail = query.email
-     return <Subscription  email={provideremail}/>;
+
+     if ( sessionid === undefined || sessionid == '')
+      {
+        var body = await getSessionid();
+        console.log("Sessionid: "+body);
+        return <Login sessionid = {body}/>
+      }        
+      else
+       {
+          var subid = Math.floor(1000000 + Math.random() * 9000000);
+          return <Subscription  email={provideremail} id={subid}/>;
+       }
 }
 
 };

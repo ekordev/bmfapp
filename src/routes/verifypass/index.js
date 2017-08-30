@@ -46,6 +46,7 @@ export default {
     validLogin = await verifylogin(url);
     console.log("Result from API call: "+validLogin)
      if (validLogin == 'true') {
+      var loginres = await loginactivity();
       var body = await SaveSessionData();
       console.log(" Going to Home Page");
       var bookinglist = await getBookingData();
@@ -137,5 +138,35 @@ function getBookingData() {
 
   });
 
+  });
+}
+
+
+function loginactivity()
+{
+  var url = `http://${apihost}/storelogindetails`;
+  console.log("URL -- veriylogin: "+url);
+  var createdate = new Date();
+  var data = { 
+  email: userEmail, 
+  sessionid: sessionid, 
+  logintime: createdate,
+  logouttime: ' '
+};
+  return new Promise(function(resolve, reject) {
+    request.post(url, { form: data }, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          console.log('loginactivity function - Response from API' + body)
+          
+          resolve(body);
+        }
+        if (error) {
+          console.log("Error in updating logout activity");
+          status = false;
+          return reject(error);
+        }
+
+     console.log("Store Login activity status: " + validLogin);
+    });
   });
 }

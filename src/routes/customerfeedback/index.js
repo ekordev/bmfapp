@@ -11,8 +11,9 @@ export default {
   path: '/customerfeedback',
 
   async action({query}, {path}) {
-     var provideremail = query.email
-     return <Customerfeedback  email={provideremail}/>;
+     var provideremail = query.provideremail;
+     var customeremail = query.email;
+     return <Customerfeedback  email={provideremail} customeremail={customeremail}/>;
 }
 
 };

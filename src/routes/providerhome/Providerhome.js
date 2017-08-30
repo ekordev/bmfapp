@@ -68,7 +68,7 @@ function Providerhome({ sessionid,  bookinglist, email, provider }, context) {
       </header>
       <Link className={s.link} to={updateEmail}>Change E-mail</Link>
       <Link className={s.link} to={updatePhone}>Change Mobile No</Link>
-      <Link className={s.link} to="/contact">Add New Service</Link>
+      <Link className={s.link} to="/addnewservice">Add New Service</Link>
      <br/>
             <Link className={s.link} to={logoutlink} >Logout</Link>
             

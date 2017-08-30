@@ -21,6 +21,7 @@ var bookingstatus;
 var provider;
 var subject;
 var emailmessage;
+var href1;
 
 
 export default {
@@ -39,12 +40,12 @@ path: '/managebooking',
          return <Login sessionid = {sessionbody}/>
        }        
    
-    email = query.email;
+    providermail = query.email;
     id = query.bookingid;
     provider = query.provider; 
     console.log("Provider - Manageing Booking: "+provider);
 
-    console.log("Email: "+email);
+    console.log("Provider Email: "+providermail);
   
     var bookingrec = JSON.parse(await getBookingRecord());
 
@@ -59,14 +60,15 @@ path: '/managebooking',
       bookingstatus = "closed";
     else
       bookingstatus = "canceled";
+    console.log("Booking Status: "+bookingstatus);
 
     //var bookingrec = JSON.parse(await getBookingRecord());
     console.log("booking Record: "+bookingrec);
     providermobile = bookingrec[0].providerphone;
     phone = bookingrec[0].mobile;
     console.log("Customer Mobile: "+phone);
-    providermail = bookingrec[0].provideremail;
-
+    email = bookingrec[0].email;
+    console.log("Customer Email:"+email);
     console.log("Provider Phone: "+providermobile);
     console.log("Provider Email: "+providermail);
 
@@ -80,7 +82,7 @@ path: '/managebooking',
       }
       else
         {
-          var url = href+'customerfeedback?email='+email;
+          var url = href+'customerfeedback?email='+email+'&provideremail='+providermail;
           emailmessage = "<b>Your booking for the event closed by provider. Thank you for the booking and We continue to provide our best service.     <br> We appriciate your valuable feedback."+"<a href='"+url+ "' >Your Feedback</a>";
           subject = "Your booking for the event with id: "+id+" has been "+bookingstatus;
         }
@@ -105,12 +107,12 @@ path: '/managebooking',
       else
          message = 'Sucessfully closed the booking';
       if ( provider != undefined)
-       href = href=`http://${host}/providerhome?sessionid=`+sessionid+'&email='+email;
+        href1 =`http://${host}/providerhome?sessionid=`+sessionid+'&email='+email;
       else 
-       href = href=`http://${host}/home?sessionid=`+sessionid+'&email='+email;
+        href1 = `http://${host}/home?sessionid=`+sessionid+'&email='+email;
       message1 = 'Click here to Home Page.';
     }
-   return <Cancelbooking message={message} redirectlink={href} message1={message1} sessionid = {sessionid} />;
+   return <Cancelbooking message={message} redirectlink={href1} message1={message1} sessionid = {sessionid} />;
   },
 
 };

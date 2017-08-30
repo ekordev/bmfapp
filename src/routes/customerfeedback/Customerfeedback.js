@@ -13,7 +13,7 @@ import s from './Customerfeedback.css';
 
 const title = 'Customer Feedback';
 
-function Customerfeedback({email}, context) {
+function Customerfeedback({email, customeremail}, context) {
   context.setTitle(title);
   console.log("email: "+email);
   return (
@@ -24,14 +24,14 @@ function Customerfeedback({email}, context) {
         <form name="form1" method="post" action="savefeedback" >
           
           <div className={s.formGroup}>
-            <label className={s.label} htmlFor="Provider Name">
+            <label className={s.label} htmlFor="Provider Email">
               Email:
             </label>
             <input
               className={s.input}
-              id="providername"
+              id="provideremail"
               type="text"
-              name="providername"
+              name="provideremail"
               value ={email}
               readOnly            
             />
