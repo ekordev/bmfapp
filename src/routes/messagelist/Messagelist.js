@@ -25,7 +25,7 @@ function Messagelist({Messagedata, customeremail, sessionid}, props, context) {
         <caption>Service Providers</caption>
           <thead>
           <tr>
-          <th>Event</th><th>Function Date</th><th>Mobile</th><th>Status</th><th>Event Type</th></tr></thead>
+          <th>Event</th><th>Message</th></tr></thead>
           <tbody>
          
            { Messagedata.map((obj, index) => (
