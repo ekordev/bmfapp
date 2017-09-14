@@ -26,6 +26,10 @@ function Home({ sessionid, email, bookinglist, usertype }, context) {
   var bookinglink = "/booking?sessionid="+sessionid+"&email="+email;
   var cateringbookinglink = "/cateringbooking?sessionid="+sessionid+"&email="+email;
   var astrologybookinglink = "/astrologybooking?sessionid="+sessionid+"&email="+email;
+  var subscriptionlink = "/subscription?sessionid="+sessionid+"&email="+email;
+  var messageslink = "/messages?sessionid="+sessionid+"&email="+email;
+
+
   console.log("Astrologybooking Link: "+astrologybookinglink);
   var bookingdata = JSON.parse(bookinglist);
   var size = bookingdata.length;
@@ -33,9 +37,8 @@ function Home({ sessionid, email, bookinglist, usertype }, context) {
   if ( size == 0)
    {
     return( 
-    
-     <div className={s.cards} >
-     <div className={s.card}>
+    <div>
+     <div className={s.item1}>
       <header>
         <h2>Search Provider</h2>
       </header>
@@ -76,7 +79,7 @@ function Home({ sessionid, email, bookinglist, usertype }, context) {
      </form>         
     </div>
 
-    <div className={s.card}>
+    <div className={s.item2}>
     <header>
         <h2>Service Booking for you</h2>
       </header>
@@ -113,28 +116,38 @@ function Home({ sessionid, email, bookinglist, usertype }, context) {
               /> 
     </div>
     
-    <div className={s.card}>
+    <div className={s.item4}>
     <header>
         <h2>Booking History</h2>
       </header>
-      <div> 
+      
       <p className={s.p}><b> No booking history available</b> </p>
     </div>
-      
-       </div> 
-     </div>
 
-      )     
+    <div className={s.item3}>
+    <header>
+        <h2>Message Center</h2>
+      </header>
+      <Link className={s.link} to={subscriptionlink}>
+      <span> Message Subscription </span>
+      </Link>
+      <Link className={s.link} to={messageslink}>
+      </Link>
+     </div>
+               
+    </div> 
+    )
    }
   else
   {
   return (
-    //<div className={s.root}>
-     // <div className={s.container}>
-     //   <h1>{title}</h1>
+   <div className={s.root}>
+    <div className={s.container}>
+    
+     <div className={s.wrapper}>
        
-    <div className={s.cards} >
-     <div className={s.card}>
+    <div className={s.div}>
+     <div className={s.item1}>
       <header>
         <h2>Search Provider</h2>
       </header>
@@ -172,8 +185,10 @@ function Home({ sessionid, email, bookinglist, usertype }, context) {
               />
      </form>         
     </div>
+    </div>
 
-    <div className={s.card}>
+    <div className={s.div}>
+    <div className={s.item2}>
     <header>
         <h2>Service Booking</h2>
       </header>
@@ -211,8 +226,10 @@ function Home({ sessionid, email, bookinglist, usertype }, context) {
               value={usertype}
               />
     </div>
+    </div>
     
-    <div className={s.card}>
+    <div className={s.div}>
+    <div className={s.item4}>
     <header>
         <h2>Booking History</h2>
       </header>
@@ -269,9 +286,25 @@ function Home({ sessionid, email, bookinglist, usertype }, context) {
        </button>
         </form>
        </div> 
-        
+       
+       </div >
+       <div className={s.div}>
+       <div className={s.item3}>
+        <header>
+        <h2>Message Center</h2>
+        </header>
+      <Link className={s.link} to={subscriptionlink}>
+      <span> Message Subscription </span>
+      </Link>
+      <Link className={s.link} to={messageslink}>
+      Messages for you
+      </Link>
      </div>
-     
+     </div>
+      
+     </div>
+     </div >
+     </div >
         
   );
   }

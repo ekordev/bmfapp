@@ -11,7 +11,8 @@ export default {
   path: '/subscription',
 
   async action({query}, {path}) {
-     var provideremail = query.email
+     var provideremail = query.email;
+     var sessionid = query.sessionid;
 
      if ( sessionid === undefined || sessionid == '')
       {
@@ -22,7 +23,7 @@ export default {
       else
        {
           var subid = Math.floor(1000000 + Math.random() * 9000000);
-          return <Subscription  email={provideremail} id={subid}/>;
+          return <Subscription  sessionid={sessionid} email={provideremail} id={subid}/>;
        }
 }
 

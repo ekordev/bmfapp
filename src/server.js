@@ -102,8 +102,8 @@ app.post('*', async (req, res, next) => {
     const template = require('./views/index.jade'); // eslint-disable-line global-require
     const data = { title: '', description: '', user: '', css: '', body: '', entry:'assets.main.js'  }; //assets.main.js
     //var sess = req.session;
-   console.log("Path Post:"+req.path);
-   console.log("Query Post:"+JSON.stringify(req.body));
+   //console.log("Path Post:"+req.path);
+   //console.log("Query Post:"+JSON.stringify(req.body));
    if ( req.files )
     {
       console.log("Files: " + req.files.astroFile.name);
@@ -166,8 +166,8 @@ app.get('*', async (req, res, next) => {
     const template = require('./views/index.jade'); // eslint-disable-line global-require
     const data = { title: '', description: '', user: '', css: '', body: '', entry:'assets.main.js'  }; //assets.main.js
     //var sess = req.session;
-    console.log("Path get:"+req.path);
-    console.log("Query get:"+JSON.stringify(req.query));
+   // console.log("Path get:"+req.path);
+    //console.log("Query get:"+JSON.stringify(req.query));
     if (process.env.NODE_ENV === 'production') {
       data.trackingId = analytics.google.trackingId;
     }

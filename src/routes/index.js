@@ -44,6 +44,8 @@ import saveastrobooking from './saveastrobooking';
 import expirederr from './expirederror';
 import customerfeedback from './customerfeedback';
 import savefeedback from './savefeedback';
+import subscription from './subscription';
+import savesubscription from './savesubscription';
 
 export default {
 
@@ -90,6 +92,8 @@ export default {
     cateringbooking,
     astrologybooking,
     saveastrobooking,
+    subscription,
+    savesubscription,
     content,
     error,
     expirederr,
@@ -98,9 +102,9 @@ export default {
 
   async action({ next, render, context }) {
   const component = await next();
-  //S console.log("User: "+context.getUser('user'));
+   console.log("User: "+context.getUser('user'));
   // console.log("Context Object: "+JSON.stringify(context,null,4));
-   //console.log("Next Object: "+component);
+  // console.log("Next Object: "+component);
     
     if (component === undefined) return component;
     return render(

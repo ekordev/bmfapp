@@ -8,8 +8,8 @@ var message = 'Your Subscription Sucessfully Registered. <a href="http://'+apiho
 var status = true;
 var email;
 var message = 'Thanking your for your registering Subscription. '
-var href =  `http://${host}/login`;
-var message1= 'Click here to login';
+var href ;
+var message1= 'Click here for home page';
 var password;
 
 export default {
@@ -18,16 +18,19 @@ export default {
 
  async action({query}, {path}) {
     console.log("Query String: " + JSON.stringify(query));
-   
+    var customeremail = query.email;
+    var sessionid = query.sessionid;
     var result = await SaveSubscriptionData(query);
     console.log("Status -- SaveSubscriptionData: "+status);
     
+    href=`http://${host}/home?sessionid=`+sessionid+'&email='+customeremail;;
+    
     if (!status) {
       message = 'Error in Error in Saving Subscription Data';
-      href = `http://${host}/serviceprovider`;
+     
       message1= 'Click here to Register'
     }
-    return <Savesubscription message={message}  message1={message1}  href={href} />;
+    return <Savesubscription sessionid={sessionid} message={message}  message1={message1}  href={href} />;
     
   },
 
@@ -38,7 +41,7 @@ function SaveSubscriptionData(data) {
   //console.log("Inside storePasscode method email: " + email);
   // console.log("Inside storePasscode method Code: " + code);
   console.log('calling API');
-  var url = `http://${apihost}/storefeedback`;
+  var url = `http://${apihost}/saveSubscription`;
   console.log("URL: " + url);
 
   return new Promise(function(resolve, reject) {

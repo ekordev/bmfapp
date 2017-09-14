@@ -13,7 +13,7 @@ import s from './Subscription.css';
 
 const title = 'Customer Message Subscription';
 
-function Subscription({email, id}, context) {
+function Subscription({email, id, sessionid}, context) {
   context.setTitle(title);
   console.log("email: "+email);
   return (
@@ -24,6 +24,14 @@ function Subscription({email, id}, context) {
         <form name="form1" method="post" action="savesubscription" >
           
           <div className={s.formGroup}>
+          <input
+              className={s.input}
+              id="subid"
+              type="hidden"
+              name="subid"
+              value ={id}
+                          
+            />
             <label className={s.label} htmlFor="Customer Email">
               Email:
             </label>
@@ -48,21 +56,26 @@ function Subscription({email, id}, context) {
               placeholder="Birthday, Marriage"            
             />
           <label className={s.label} htmlFor="Date">
-              Your valuable Feedback
+              Event Date
             </label>
-            <input  className={s.input} type = "date" name="feedback" placeholder="Enter your feedback">
+            <input  className={s.input} type = "date" name="eventdate" placeholder="Enter Event Date">
     </input>
     <label className={s.label} htmlFor="Channel">
               Where to deliver message
             </label>
-            <input  className={s.input} type = "date" name="feedback" placeholder="Enter your feedback">
-        </input>
+            <input  className={s.input} type = "text" name="feedback" placeholder="SMS,email">
+        </input>l
           </div>
           <div className={s.formGroup}>
             <button className={s.button}   type="submit" >
-              Send Feedback
+              Save Subscription
             </button>
-            
+            <input
+              id="sessionid"
+              type="hidden"
+              name="sessionid"
+              value={sessionid}
+              />
           </div>
         </form>
         
