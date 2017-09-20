@@ -13,6 +13,7 @@ export default {
   async action({query}) {
  
     var date = new Date();
+    var usertype="customer";
     var currentdate = date.getDate() + '/' + date.getMonth()+1 + '/' + date.getFullYear();
     console.log("Query String",JSON.stringify(query));
     var sessionid = query.sessionid;
@@ -34,7 +35,7 @@ export default {
        else
         {
           var bookingid = Math.floor(1000000 + Math.random() * 9000000);
-          return  <Booking sessionid={sessionid} bookingid={bookingid} email={email} phone={customermobile}/>;
+          return  <Booking sessionid={sessionid} bookingid={bookingid} email={email} phone={customermobile} usertype={usertype} />;
         }
         
     

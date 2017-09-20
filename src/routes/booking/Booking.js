@@ -12,7 +12,7 @@ var year = date.getFullYear();
 var currentdate = day + '/' + month + '/' + year;
 
 
-function Booking({sessionid, bookingid, email, phone}, context) {
+function Booking({sessionid, bookingid, email, phone, usertype}, context) {
   context.setTitle(title);
   return (
     <div className={s.root}>
@@ -109,6 +109,12 @@ function Booking({sessionid, bookingid, email, phone}, context) {
               type="hidden"
               name="sessionid"
               value={sessionid}
+              />
+              <input
+              id="usertype"
+              type="hidden"
+              name="usertype"
+              value={usertype}
               />
             <input
               id="bookingid"

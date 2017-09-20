@@ -102,14 +102,25 @@ export default {
 
   async action({ next, render, context }) {
   const component = await next();
-   console.log("User: "+context.getUser('user'));
-  // console.log("Context Object: "+JSON.stringify(context,null,4));
-  // console.log("Next Object: "+component);
-    
+  
+  console.log("Next Object: "+JSON.stringify(component));
+  var usertype = component.props.usertype;
+  console.log("User Type: "+usertype);
+     
     if (component === undefined) return component;
+
+    if ( usertype != undefined )
+    {
     return render(
-      <App context={context}>{component}</App>
+      <App context={context} usertype={usertype}>{component}</App>
     );
+  }
+  else
+  {
+    return render(
+    <App context={context} >{component}</App>
+  );
+  }
   },
 
 };
