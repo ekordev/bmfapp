@@ -78,7 +78,7 @@ async  action({query}, {path}) {
    else
    {
     // var mail =  sendEmail(customeremail, provideremail, bookingid);
-     href=`http://${host}/home?sessionid=`+sessionid+'&email='+customeremail;
+     href=`http://${host}/home?sessionid=`+sessionid+'&email='+customeremail+'&usertype=customer';
    }
       return <LinkProvider message={message} redirectlink={href} message1={message1} sessionid={sessionid}/>;
   },

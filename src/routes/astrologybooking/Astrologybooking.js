@@ -1,8 +1,9 @@
 
-import React, { PropTypes } from 'react';
+import React, { Component } from 'react';
+import  PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Astrologybooking.css';
-var DatePicker = require("react-bootstrap-date-picker");
+//var DatePicker = require("react-bootstrap-date-picker");
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import HelpBlock from 'react-bootstrap/lib/HelpBlock';

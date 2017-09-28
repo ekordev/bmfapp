@@ -117,7 +117,7 @@ button:focus {
 
 .wrapper {
   width: 1400px;
-  height: 900px;
+  height: 1000px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr ;
@@ -134,23 +134,23 @@ button:focus {
 }
 
 .item1 {
-  grid-column: auto  ;
-  grid-row: auto  ;
+  grid-column: 1  ;
+  grid-row: 1  ;
 }
 
 .item2 {
-  grid-column: auto ;
-  grid-row: auto ;
+  grid-column: 1 ;
+  grid-row: 1 ;
 }
 
 .item3 {
   grid-column:  auto  ;
-  grid-row: 2 ;
+  grid-row: auto ;
 }
 
 .item4 {
   grid-column: auto ;
-  grid-row: 2  ;
+  grid-row: 1 ;
 }
 
 .lineThrough {  position: relative;

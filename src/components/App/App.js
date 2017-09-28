@@ -5,9 +5,9 @@ import  PropTypes from 'prop-types';
 import emptyFunction from 'fbjs/lib/emptyFunction';
 import s from './App.css';
 import Header from '../Header';
-import CustomerHeader from '../CustomerHeader';
 import Feedback from '../Feedback';
 import Footer from '../Footer';
+import CustomerHeader from '../CustomerHeader';
 
 class App extends Component {
 
@@ -55,20 +55,22 @@ class App extends Component {
 
     console.log( "this.props App: "+JSON.stringify(this.props));
     var userType = this.props.usertype;
+    var sessionid = this.props.sessionid;
     console.log("User Type App: "+userType);
+    console.log("Session Id: "+sessionid);
 
     if ( userType == 'customer')
     {
     return !this.props.error ? (
       
       <div>
-        <CustomerHeader />
+        <CustomerHeader sessionid={sessionid}/>
         {this.props.children}
         <Footer />
       </div>
     ) : this.props.children;
   }
-  elseif
+  else
   {
     return !this.props.error ? (
       

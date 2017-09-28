@@ -105,14 +105,15 @@ export default {
   
   console.log("Next Object: "+JSON.stringify(component));
   var usertype = component.props.usertype;
+  var sessionid =component.props.sessionid;
   console.log("User Type: "+usertype);
-     
+  console.log("Session Id: "+sessionid);
     if (component === undefined) return component;
 
     if ( usertype != undefined )
     {
     return render(
-      <App context={context} usertype={usertype}>{component}</App>
+      <App context={context} usertype={usertype} sessionid={sessionid}>{component}</App>
     );
   }
   else

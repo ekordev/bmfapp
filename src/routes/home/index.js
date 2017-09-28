@@ -14,6 +14,7 @@ export default {
   async action({query}, {path}) {
     sessionid = query.sessionid;
     email=query.email;
+    var usertype = 'customer';
     console.log("Sessionid - index.js - Home "+sessionid);
        if ( sessionid === undefined || sessionid == '')
        {
@@ -23,7 +24,7 @@ export default {
        else
        {
         var bookinglist = await getBookingData();
-        return <Home  sessionid={sessionid} bookinglist={bookinglist} email={email}/>;
+        return <Home  sessionid={sessionid} bookinglist={bookinglist} email={email} usertype={usertype} />;
        }
   },
 

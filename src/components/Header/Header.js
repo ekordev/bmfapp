@@ -1,6 +1,7 @@
 
 
-import React from 'react';
+import React, { Component } from 'react';
+import  PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Header.css';
 import Link from '../Link';
@@ -23,3 +24,4 @@ function Header() {
 }
 
 export default withStyles(s)(Header);
+//export default withStyles(Header,s);

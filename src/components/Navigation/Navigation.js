@@ -1,6 +1,7 @@
 
 
-import React, { PropTypes } from 'react';
+import React, { Component } from 'react';
+import  PropTypes from 'prop-types';
 import cx from 'classnames';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Navigation.css';
@@ -25,7 +26,8 @@ function Navigation({ className }) {
 }
 
 Navigation.propTypes = {
-  className: PropTypes.string,
+  className: PropTypes.string
 };
 
 export default withStyles(s)(Navigation);
+//export default Navigation;
