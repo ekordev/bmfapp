@@ -1,5 +1,5 @@
 {
-  "name": "Header",
+  "name": "customerheader",
   "version": "0.0.0",
   "private": true,
   "main": "./CustomerHeader.js"

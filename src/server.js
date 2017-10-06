@@ -1,4 +1,3 @@
-
 import 'babel-polyfill';
 import path from 'path';
 import express from 'express';
@@ -104,10 +103,12 @@ app.post('*', async (req, res, next) => {
     //var sess = req.session;
    //console.log("Path Post:"+req.path);
    //console.log("Query Post:"+JSON.stringify(req.body));
+   var astrofile;
    if ( req.files )
     {
-      console.log("Files: " + req.files.astroFile.name);
-     // astrofile =   req.files.astroFile
+      console.log("File Data: ", req.files.astroFile.data);
+      console.log("Files Name: " + req.files.astroFile.name);
+      astrofile =   req.files.astroFile;
       
     }
    
@@ -123,18 +124,12 @@ app.post('*', async (req, res, next) => {
       data.trackingId = analytics.google.trackingId;
     }
 
-    if ( req.query.user != undefined )
-
-    {
-      data['user'] = req.query.user;
-      console.log(" User Server.js: "+data.user);
-    }
-    
+   
     
     await resolve(routes, {
       path: req.path,
       query: req.body,
-      request: req.files,
+      files : astrofile,
            
       context: {
         insertCss: styles => css.push(styles._getCss()), // eslint-disable-line no-underscore-dangle
