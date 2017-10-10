@@ -156,7 +156,7 @@ function getPassword() {
 }
 
 function saveLogin(password) {
-  var data = { "userEmail": email, "password": password};
+  var data = { "userEmail": email, "password": password, "name": fn};
   console.log("Data: "+data);
   var url = `http://${apihost}/addcred`;
   return new Promise(function(resolve, reject) {

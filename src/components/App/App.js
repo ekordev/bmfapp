@@ -8,6 +8,7 @@ import Header from '../Header';
 import Feedback from '../Feedback';
 import Footer from '../Footer';
 import CustomerHeader from '../CustomerHeader';
+import ProviderHeader from '../ProviderHeader';
 
 class App extends Component {
 
@@ -70,7 +71,19 @@ class App extends Component {
       </div>
     ) : this.props.children;
   }
-  else
+
+  else if ( userType == 'provider')
+  {
+  return !this.props.error ? (
+    
+    <div>
+      <ProviderHeader sessionid={sessionid}/>
+      {this.props.children}
+      <Footer />
+    </div>
+  ) : this.props.children;
+}
+ else
   {
     return !this.props.error ? (
       

@@ -40,7 +40,8 @@ export default {
       var sessiondatastatus = await SaveSessionData();
       console.log(" Going to Provider Home Page");
       var bookinglist = await getBookingData();
-      return <Providerhome sessionid={sessionid} email={userEmail} bookinglist={bookinglist} />;
+      var usertype = 'provider';
+      return <Providerhome sessionid={sessionid} email={userEmail} bookinglist={bookinglist} usertype={usertype}/>;
     }
 
     else {

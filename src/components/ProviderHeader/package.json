@@ -1,0 +1,6 @@
+{
+  "name": "providerheader",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./ProviderHeader.js"
+}

@@ -8,7 +8,7 @@ import cx from 'classnames';
 const title = 'Welcome to World of Opporunity';
 const user = 'Customer';
 
-function Providerhome({ sessionid,  bookinglist, email, provider }, context) {
+function Providerhome({ sessionid,  bookinglist, email,  usertype }, context) {
   context.setTitle(title);
   context.setUser(user);
  // context.getUser('user');
@@ -56,7 +56,7 @@ function Providerhome({ sessionid,  bookinglist, email, provider }, context) {
 
     <div className={s.card}>
     <header>
-        <h2>Service Booking</h2>
+        <h2>Managing Profile</h2>
       </header>
       <Link className={s.link} to={updateEmail}>Change E-mail</Link>
       <Link className={s.link} to={updatePhone}>Change Mobile No</Link>
@@ -134,7 +134,7 @@ function Providerhome({ sessionid,  bookinglist, email, provider }, context) {
 
     <div className={s.card}>
     <header>
-        <h2>Service Booking</h2>
+        <h2>Managing Profile</h2>
       </header>
       <Link className={s.link} to={updateEmail}>Change E-mail</Link>
       <Link className={s.link} to={updatePhone}>Change Mobile No</Link>
@@ -198,7 +198,7 @@ function Providerhome({ sessionid,  bookinglist, email, provider }, context) {
               name="email"
               value={email}
               />
-              <input type="hidden" name="provider" value="provider" />
+              <input type="hidden" name="usertype" value={usertype} />
         <br/>
         <br/>
         <input type="radio" name="manage" value="cancel" checked />Cancel<br/>

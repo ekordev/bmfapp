@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './CustomerHeader.css';
@@ -7,6 +5,7 @@ import Link from '../Link';
 import Navigation from '../Navigation';
 import logoUrl from './bmf.png';
 import logoutUrl from './logout.jpg';
+import { host, apihost, smsAPIKey } from '../../config';
 
 function CustomerHeader({sessionid}) {
   //console.log("HTTP QUERY: "+query);
