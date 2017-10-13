@@ -12,11 +12,12 @@ var request = require('request');
 var res;
 var userEmail;
 var password;
-var validLogin;
+var validLogin=false;
 var url;
 var page;
-var status;
+var status=false;
 var sessionid;
+var name;
 export default {
 
   path: '/verifypass',
@@ -44,8 +45,8 @@ export default {
     url = `http://${apihost}/checklogin?usernameOrEmail=` + userEmail + '&password=' + password;
     
     validLogin = await verifylogin(url);
-    console.log("Result from API call: "+validLogin)
-     if (validLogin == 'true') {
+    console.log("Result from API call: "+status);
+     if ( status == 'true') {
       var loginres = await loginactivity();
       var body = await SaveSessionData();
       console.log(" Going to Home Page");
@@ -70,16 +71,30 @@ function verifylogin(url)
   return new Promise(function(resolve, reject) {
   request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
-          console.log('Response from API' + body)
-          validLogin = body;
+          console.log('Response from API' + body);
+          var resobj = JSON.parse(body);
+          console.log("Response Object: "+resobj);
+          console.log("Customer Name: "+ resobj.name);
+          if ( resobj.name != undefined)
+          {
+            status = 'true';
+            name = resobj.name;
+            console.log("Name: ",body.name);
+          }
+          else
+          {
+            status = false;
+            console.log("Error Message "+resobj.status);
+          }
           resolve(body);
         }
         else {
           console.log("Server not responding");
-          validLogin = false;
+          status = false;
+          return reject(error);
         }
 
-     console.log("ValidLogin status: " + validLogin);
+     console.log("ValidLogin status: " + status);
     });
   });
 }
@@ -132,7 +147,7 @@ function getBookingData() {
     }
     else
     {
-      console.log("Error Object: "+error);
+      console.log("Error Object: "+body.status);
       return reject(error);
     }
 
@@ -151,7 +166,8 @@ function loginactivity()
   email: userEmail, 
   sessionid: sessionid, 
   logintime: createdate,
-  logouttime: ' '
+  logouttime: ' ',
+  name: name
 };
   return new Promise(function(resolve, reject) {
     request.post(url, { form: data }, function (error, response, body) {
@@ -170,3 +186,5 @@ function loginactivity()
     });
   });
 }
+
+

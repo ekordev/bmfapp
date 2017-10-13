@@ -122,6 +122,29 @@ export default {
     <App context={context} >{component}</App>
   );
   }
+  
   },
 
 };
+
+function getLastloginactivity()
+{
+  var url = `http://${apihost}/findlogindetails?email=`+userEmail;
+  console.log("URL -- veriylogin: "+url);
+  return new Promise(function(resolve, reject) {
+    request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          console.log('loginactivity function - Response from API' + body)
+          
+          resolve(body);
+        }
+        if (error) {
+          console.log("Error in updating logout activity");
+          status = false;
+          return reject(error);
+        }
+
+     console.log("Store Login activity status: " + validLogin);
+    });
+  });
+}

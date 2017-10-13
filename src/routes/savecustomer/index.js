@@ -35,12 +35,13 @@ export default {
     email = query.email;
     var body = await checkDuplicate(email);
     console.log("Response: "+body);
+    console.log("Status: "+status);
     if ( status == 'true')
      {
       var customerdata = await saveCustomerData(query);
       console.log("Customerdata: "+customerdata);
       console.log("Status--saveCustomerData: "+status);
-      if ( status == 'true')
+      if ( status )
       {
         password = await getPassword();
         console.log("generated Password: "+password);

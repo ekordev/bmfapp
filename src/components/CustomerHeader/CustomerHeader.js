@@ -4,7 +4,7 @@ import s from './CustomerHeader.css';
 import Link from '../Link';
 import Navigation from '../Navigation';
 import logoUrl from './bmf.png';
-import logoutUrl from './logout.jpg';
+import logoutUrl from './logout.png';
 import { host, apihost, smsAPIKey } from '../../config';
 
 function CustomerHeader({sessionid}) {

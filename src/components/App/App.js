@@ -1,5 +1,3 @@
-
-
 import React, { Component } from 'react';
 import  PropTypes from 'prop-types';
 import emptyFunction from 'fbjs/lib/emptyFunction';
@@ -58,7 +56,7 @@ class App extends Component {
     var userType = this.props.usertype;
     var sessionid = this.props.sessionid;
     console.log("User Type App: "+userType);
-    console.log("Session Id: "+sessionid);
+    console.log("App Session Id: "+sessionid);
 
     if ( userType == 'customer')
     {

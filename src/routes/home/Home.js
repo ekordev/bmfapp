@@ -95,8 +95,7 @@ function Home({ sessionid, email, bookinglist, usertype }, context) {
       <Link className={s.link} to="/">Marriage Services</Link>      
       <Link className={s.link} to={cateringbookinglink}>Catering</Link>
       <br/>
-      <Link className={s.link} to={logoutlink} >Logout</Link>
-            
+                  
       <input
               id="sessionid"
               type="hidden"
@@ -206,8 +205,7 @@ function Home({ sessionid, email, bookinglist, usertype }, context) {
       
       <Link className={s.link} to={cateringbookinglink}>Catering</Link>
       <br/>
-      <Link className={s.link} to={logoutlink} >Logout</Link>
-            
+                  
       <input
               id="sessionid"
               type="hidden"
@@ -237,7 +235,7 @@ function Home({ sessionid, email, bookinglist, usertype }, context) {
       <form name="form1" method="get" action="managebooking" >
     
     <table>
-        <caption>Your Booking</caption>
+        <caption>Your Bookings</caption>
           <thead>
           <tr>
           <th>Select</th><th>Booking ID</th><th>Booking Date</th><th>Event Date</th><th>Event</th><th>E-mail</th><th>Phone</th><th>Status</th>

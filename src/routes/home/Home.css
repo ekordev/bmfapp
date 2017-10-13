@@ -39,7 +39,7 @@ html {
   margin-right: 8px;
   margin-left: 8px;
   border-radius: 3px;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(177, 60, 60, 0.199);
   color: #fff;
 }
 
@@ -69,7 +69,11 @@ img {
   max-width: 100%;
 }
 
-
+tbody {
+  width: 200px;
+  height: 100px;
+  overflow: auto;
+ }
 
 table, th, td {
   border: 1px solid gold;
@@ -192,4 +196,5 @@ button:focus {
   color: #1B0D0D;
   border: 2px solid blue;
   border-radius: 5px;
+  overflow:auto;
 }
